@@ -1,16 +1,15 @@
 /* ===== RECEITAS E ILUSTRAÇÕES ===== */
 const SLOTS=[['cafe','Café da manhã'],['almoco','Almoço'],['lanche','Lanche'],['jantar','Jantar'],['ceia','Ceia']];
-const SHORT={C1:'Tapioca',C2:'Mingau',L1:'Vitamina',E1:'Iogurte',E2:'Iogurte',M1:'Macarrão',M2:'Omelete',M3:'Peixe',M4:'Crepe',M5:'Purê',C3:'Panqueca',C4:'Crepioca',C5:'Iogurte e ovos',L2:'Iogurte batido',L3:'Tapioca de atum',L4:'Ovos e leite',E3:'Leite com whey',E4:'Ovos mexidos',M6:'Salada morna',M7:'Macarrão e abobrinha',M8:'Peixe ao molho',M9:'Tapioca salgada'};
-const SN={ovo:'ovo',atum:'atum',sardinha:'sardinha',peixe:'filé de peixe',frango:'frango',mussarela:'mussarela',parmesao:'parmesão',iogurte:'iogurte',leite:'leite sem lactose',whey:'whey',azeite:'azeite',tapioca:'tapioca',arroz:'arroz cozido',feijao:'feijão cozido',macarrao:'macarrão de arroz',aveia:'aveia',amendoim:'pasta de amendoim',passata:'molho de tomate',batata:'batata',cenoura:'cenoura',abobrinha:'abobrinha',pepino:'pepino',tomate:'tomate',espinafre:'espinafre',banana:'banana',morango:'morango',mamao:'mamão',uva:'uva',limao:'limão'};
+const SHORT={C1:'Pão com ovos',C2:'Mingau',L1:'Vitamina',E1:'Iogurte',E2:'Iogurte',M1:'Macarrão',M2:'Omelete',M3:'Peixe',M4:'Crepe',M5:'Purê',C3:'Panqueca',C4:'Queijo quente',C5:'Iogurte e ovos',L2:'Iogurte batido',L3:'Sanduíche de atum',L4:'Ovos e leite',E3:'Leite com whey',E4:'Ovos mexidos',M6:'Salada morna',M7:'Macarrão e abobrinha',M8:'Peixe ao molho',M9:'Sanduíche quente'};
+const SN={ovo:'ovo',atum:'atum',sardinha:'sardinha',peixe:'filé de peixe',frango:'frango',mussarela:'mussarela',parmesao:'parmesão',iogurte:'iogurte',leite:'leite sem lactose',whey:'whey',azeite:'azeite',pao:'pão',arroz:'arroz cozido',feijao:'feijão cozido',macarrao:'macarrão de arroz',aveia:'aveia',amendoim:'pasta de amendoim',passata:'molho de tomate',batata:'batata',cenoura:'cenoura',abobrinha:'abobrinha',pepino:'pepino',tomate:'tomate',espinafre:'espinafre',banana:'banana',morango:'morango',mamao:'mamão',uva:'uva',limao:'limão'};
 
 const RECIPES={
  C1:{steps:[
-  'Aqueça uma frigideira antiaderente em fogo médio, sem óleo.',
-  'Peneire a goma de tapioca em disco fino (40 g Lucas, 30 g Pri). Em cerca de 1 min ela se junta; vire e deixe mais 30 s.',
-  'Em outra frigideira, mexa os ovos com sal e um fio de azeite por 2 min. Desligue e misture a mussarela.',
-  'Recheie a tapioca com os ovos e dobre ao meio.',
+  'Torre o pão na frigideira ou na torradeira (Lucas 3 fatias, Pri 1).',
+  'Mexa os ovos com sal e um fio de azeite por 2 min em fogo médio. Desligue e misture a mussarela.',
+  'Coloque os ovos sobre o pão.',
   'Sirva com o iogurte e a fruta: banana para o Lucas, morango para a Pri.'],
-  tips:['Use a goma já hidratada (a que vem pronta para peneirar). Se usar fécula seca, hidrate antes.','Pri: banana só se estiver firme. Banana muito madura pesa no FODMAP.']},
+  tips:['Pão francês serve igual: 1 pão equivale a 2 fatias. A Pri fica com meio pão.','Pri: 1 fatia de pão de trigo por refeição fica dentro do FODMAP baixo. Mais que isso pode incomodar.']},
  C2:{steps:[
   'Leve a aveia e o leite sem lactose à panela em fogo médio, mexendo por 4 a 5 min até ficar cremoso.',
   'Fora do fogo, junte a pasta de amendoim e a banana amassada (Lucas). Pri: coloque os morangos fatiados por cima.',
@@ -61,10 +60,10 @@ const RECIPES={
   'Sirva com o iogurte por cima. Lucas: um fio de pasta de amendoim.'],
   tips:['Pri: banana firme, ainda com a ponta verde. Madura demais pesa no FODMAP.','Rende mais fácil em panquecas pequenas, que viram sem quebrar.']},
  C4:{steps:[
-  'Bata os ovos com a goma de tapioca e uma pitada de sal (Lucas: 3 ovos e 40 g; Pri: 2 ovos e 25 g).',
-  'Despeje na frigideira antiaderente quente, tampe e deixe 2 min. Vire, coloque a mussarela e dobre.',
+  'Faça os ovos fritos ou mexidos (Lucas 3, Pri 2).',
+  'Monte o pão com a mussarela e o ovo. Frigideira tampada em fogo baixo, 2 min de cada lado, até o queijo derreter. Lucas: 3 fatias, Pri: 1 fatia aberta.',
   'Café com leite sem lactose (Lucas 300 ml, Pri 200 ml) e mamão picado ao lado.'],
-  tips:['A crepioca fica pronta em 5 min e não precisa peneirar a goma.']},
+  tips:['Sem frigideira livre? Sanduicheira ou airfryer a 180 °C por 4 min.']},
  C5:{steps:[
   'Coloque o iogurte na tigela, junte a aveia e a fruta: banana para o Lucas, morango para a Pri.',
   'Lucas: 1 colher de pasta de amendoim por cima.',
@@ -75,8 +74,8 @@ const RECIPES={
   'Divida em dois copos: o do Lucas maior, o da Pri menor.'],
   tips:['Fica mais grosso que a vitamina de leite. Se quiser mais líquido, junte um pouco de água gelada.']},
  L3:{steps:[
-  'Peneire a goma em disco na frigideira quente (Lucas 50 g, Pri 30 g). Vire quando juntar.',
-  'Recheie com atum escorrido, mussarela e tomate em cubos. Dobre e deixe 1 min para o queijo derreter.',
+  'Misture o atum escorrido com tomate em cubos, sal e um fio de limão.',
+  'Monte no pão com a mussarela (Lucas 3 fatias, Pri 1 fatia aberta). Se quiser quente, 2 min na frigideira tampada.',
   'Lucas: um copo de leite sem lactose ao lado.'],
   tips:['A Pri leva a lata inteira de atum aqui, porque é a proteína principal do lanche dela.']},
  L4:{steps:[
@@ -112,10 +111,10 @@ const RECIPES={
   'Lucas: arroz e feijão do lote. Pri: batata cozida ou assada.'],
   tips:['O molho segura o peixe úmido, então não tem como ressecar.']},
  M9:{steps:[
-  'Peneire a goma em disco grande na frigideira (Lucas 70 g, Pri 45 g). Vire quando juntar.',
+  'Pri: batata em cubos na airfryer a 200 °C por 18 min (ou a batata assada do dia).',
   'Lucas: mexa 2 ovos com o atum. Pri: aqueça o frango desfiado do lote.',
-  'Recheie com o recheio de cada um, a mussarela, o tomate e o espinafre. Dobre e deixe 1 min tampado.'],
-  tips:['É o jantar mais rápido da lista quando o frango do lote já está pronto.']},
+  'Monte com a mussarela, o tomate e o espinafre (Lucas: 2 sanduíches com 4 fatias; Pri: 1 fatia aberta). Frigideira tampada, 2 min de cada lado.'],
+  tips:['A Pri leva batata no lugar do segundo pão, para ficar dentro do FODMAP baixo.']},
  B1:{steps:[
   'Tempere o peito de frango com sal, páprica, limão e um fio de azeite.',
   'Forno a 200 °C por 22 a 25 min, até ficar branco por dentro e sem rosa.',
@@ -148,8 +147,9 @@ const PL='<ellipse cx="60" cy="69" rx="46" ry="5" fill="rgba(0,0,0,.10)"/><ellip
 const cc=(x,y,r,f,s)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${f}"${s?` stroke="${s}"`:''}/>`;
 const egg=(x,y,k)=>`<g transform="translate(${x} ${y}) scale(${k||1})"><ellipse rx="9" ry="6.5" fill="#fff" stroke="#E2DDD0"/>${cc(0,0,3.4,'#F2B632')}</g>`;
 const rc=(x,y,w,h,f,rot)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="2" fill="${f}"${rot?` transform="rotate(${rot} ${x+w/2} ${y+h/2})"`:''}/>`;
+const bread=(x,y,r)=>`<g transform="translate(${x} ${y}) rotate(${r||0})"><path d="M-13 12V-4q-4-1-4-6q0-8 17-8t17 8q0 5-4 6v16z" fill="#E9C089" stroke="#B9884A" stroke-width="1.5"/><path d="M-10 10V-5q-3-1-3-5q0-5 13-5t13 5q0 4-3 5v15z" fill="#FBF1DC"/></g>`;
 const SCENES={
- C1:PL+'<path d="M28 48 A32 22 0 0 1 92 48 Z" fill="#EBD6A4" stroke="#CDB57F"/>'+cc(50,38,5,'#F4C842')+cc(62,34,6,'#F8D552')+cc(73,39,5,'#F4C842')+cc(58,42,3.5,'#FBE9A0')+'<path d="M70 58q14 8 26-7q-11 13-26 7z" fill="#F4D35E" stroke="#C9A93A"/>'+'<rect x="18" y="50" width="16" height="13" rx="3" fill="#fff" stroke="#D6D1C6"/>'+cc(26,50,5,'#C0306F'),
+ C1:PL+bread(44,44,-8)+'<path d="M58 42q6-12 18-8q12-2 16 8q0 10-16 10q-14 2-18-10z" fill="#F7D553" stroke="#D9B93F"/>'+cc(70,40,2.6,'#FBE9A0')+'<path d="M70 58q14 8 26-7q-11 13-26 7z" fill="#F4D35E" stroke="#C9A93A"/>'+'<rect x="14" y="52" width="14" height="12" rx="3" fill="#fff" stroke="#D6D1C6"/>',
  C2:'<ellipse cx="60" cy="70" rx="40" ry="4" fill="rgba(0,0,0,.1)"/><path d="M20 36Q22 70 60 72Q98 70 100 36Z" fill="#EDE8DC" stroke="#D2CCBD" stroke-width="1.5"/><ellipse cx="60" cy="36" rx="40" ry="11" fill="#F8F6F1" stroke="#D2CCBD" stroke-width="1.5"/><ellipse cx="60" cy="37" rx="34" ry="8.5" fill="#E7D4AE"/>'+cc(48,36,5,'#F5DA6E','#D9B93F')+cc(60,39,5,'#F5DA6E','#D9B93F')+cc(72,36,5,'#F5DA6E','#D9B93F')+cc(56,34,3,'#C0306F')+egg(104,60,.8)+egg(14,62,.8),
  L1:'<ellipse cx="58" cy="72" rx="26" ry="4" fill="rgba(0,0,0,.1)"/><path d="M40 10L78 10L72 68Q59 74 46 68Z" fill="#F3E6D4" stroke="#CFC3AE" stroke-width="1.5"/><path d="M42 20L76 20L74 30Q58 36 44 30Z" fill="#F7EEDF"/><rect x="62" y="0" width="5" height="40" rx="2" fill="#BC2B6A" transform="rotate(14 64 20)"/>'+'<path d="M84 56q16 6 26-8q-9 16-26 8z" fill="#F4D35E" stroke="#C9A93A"/>'+cc(24,58,6,'#C0306F')+cc(24,52,2,'#3C8B4B'),
  E1:'<ellipse cx="60" cy="70" rx="40" ry="4" fill="rgba(0,0,0,.1)"/><path d="M20 36Q22 70 60 72Q98 70 100 36Z" fill="#EDE8DC" stroke="#D2CCBD" stroke-width="1.5"/><ellipse cx="60" cy="36" rx="40" ry="11" fill="#F8F6F1" stroke="#D2CCBD" stroke-width="1.5"/><ellipse cx="60" cy="37" rx="34" ry="8.5" fill="#FFFFFF"/>'+rc(44,30,9,7,'#F0922B',12)+rc(57,33,9,7,'#F49A3A',-8)+rc(69,30,9,7,'#F0922B',20)+cc(54,38,1.3,'#3A2A1A')+cc(64,31,1.3,'#3A2A1A'),
@@ -160,17 +160,17 @@ const SCENES={
  M4:PL+'<path d="M26 40L82 32L88 50L32 58Z" fill="#86C26A" stroke="#5E9B45" stroke-width="1.5"/><ellipse cx="85" cy="41" rx="6" ry="9" fill="#9BD07E" stroke="#5E9B45" stroke-width="1.5"/>'+cc(85,41,3.5,'#D9A68A')+cc(83,38,1.6,'#FBE9A0')+'<path d="M30 46q28-4 54-9" stroke="#B2DE98" stroke-width="2" fill="none"/>'+rc(30,58,14,8,'#E3B565',-10)+rc(48,60,14,8,'#E9C37A',8)+rc(66,59,14,8,'#E3B565',-6),
  M5:PL+'<path d="M26 52Q28 28 48 30Q66 28 68 52Z" fill="#F4E6B8" stroke="#DDCB92" stroke-width="1.5"/><path d="M34 40q8-8 18-4" stroke="#FFF6D6" stroke-width="3" fill="none"/>'+'<path d="M72 34q12-6 24 2q-12 8-24-2z" fill="#A9B7C0" stroke="#7F8E98"/>'+cc(76,35,1.2,'#27333B')+'<path d="M72 46q12-6 24 2q-12 8-24-2z" fill="#A9B7C0" stroke="#7F8E98"/>'+cc(76,47,1.2,'#27333B')+egg(84,60,.8)+rc(30,56,5,12,'#EE8A2A',20)+rc(40,58,5,12,'#EE8A2A',-10)+cc(58,60,4.5,'#D9382B'),
  C3:PL+cc(46,42,15,'#E2B26B','#C08A3E')+cc(66,40,15,'#E8BC77','#C08A3E')+cc(56,48,13,'#EDC584','#C08A3E')+'<path d="M46 46q10 4 20 0" stroke="#fff" stroke-width="3" fill="none"/>'+cc(78,56,4,'#F4D35E','#C9A93A')+cc(86,52,4,'#F4D35E','#C9A93A'),
- C4:PL+'<path d="M28 46A32 18 0 0 1 84 46Z" fill="#F2D27A" stroke="#D6A92A"/>'+'<path d="M34 46A26 12 0 0 1 78 46" fill="none" stroke="#FFF3C4" stroke-width="3"/>'+'<rect x="86" y="30" width="16" height="20" rx="3" fill="#fff" stroke="#D6D1C6"/><rect x="88" y="33" width="12" height="8" fill="#C89F78"/>'+rc(36,54,10,7,'#F0922B',10)+rc(50,56,10,7,'#F49A3A',-6),
+ C4:PL+bread(48,44,-6)+'<path d="M34 42h28" stroke="#F7D553" stroke-width="3"/>'+egg(48,36,.8)+'<rect x="80" y="28" width="16" height="20" rx="3" fill="#fff" stroke="#D6D1C6"/><rect x="82" y="31" width="12" height="8" fill="#C89F78"/>'+rc(70,54,10,7,'#F0922B',10)+rc(84,56,10,7,'#F49A3A',-6),
  C5:'<ellipse cx="60" cy="70" rx="40" ry="4" fill="rgba(0,0,0,.1)"/><path d="M20 36Q22 70 60 72Q98 70 100 36Z" fill="#EDE8DC" stroke="#D2CCBD" stroke-width="1.5"/><ellipse cx="60" cy="36" rx="40" ry="11" fill="#F8F6F1" stroke="#D2CCBD" stroke-width="1.5"/><ellipse cx="60" cy="37" rx="34" ry="8.5" fill="#FFFFFF"/>'+cc(48,35,3,'#E7D4AE')+cc(56,38,3,'#E7D4AE')+'<path d="M62 32q8 6 16 0" stroke="#F4D35E" stroke-width="5" fill="none" stroke-linecap="round"/>'+egg(14,56,.8)+egg(106,56,.8),
  L2:'<ellipse cx="58" cy="72" rx="26" ry="4" fill="rgba(0,0,0,.1)"/><path d="M40 10L78 10L72 68Q59 74 46 68Z" fill="#F6E7EC" stroke="#CFC3AE" stroke-width="1.5"/><path d="M42 20L76 20L74 30Q58 36 44 30Z" fill="#FBF3F6"/><rect x="62" y="0" width="5" height="40" rx="2" fill="#1E7B4E" transform="rotate(14 64 20)"/>'+cc(24,58,6,'#D9382B','#B02A20')+cc(96,58,6,'#D9382B','#B02A20'),
- L3:PL+'<path d="M24 48A36 22 0 0 1 96 48Z" fill="#F3EBD8" stroke="#D9CDB0"/>'+cc(44,42,4,'#D9A68A')+cc(56,38,4,'#D9A68A')+cc(68,42,4,'#D9A68A')+rc(48,44,8,5,'#FBE9A0')+cc(78,44,3.5,'#D9382B'),
+ L3:PL+bread(46,44,-10)+bread(72,46,8)+cc(46,40,3.5,'#D9A68A')+cc(52,44,3,'#D9A68A')+cc(70,42,3.5,'#D9382B')+rc(66,46,10,4,'#FBE9A0'),
  L4:'<ellipse cx="60" cy="70" rx="46" ry="4" fill="rgba(0,0,0,.1)"/><rect x="72" y="18" width="22" height="50" rx="4" fill="#FFFFFF" stroke="#D6D1C6" stroke-width="1.5"/>'+egg(30,56)+egg(50,60)+'<path d="M14 40q16 6 28-6q-10 14-28 6z" fill="#F4D35E" stroke="#C9A93A"/>',
  E3:'<ellipse cx="58" cy="70" rx="30" ry="4" fill="rgba(0,0,0,.1)"/><path d="M34 22h48v38q0 10-10 10H44q-10 0-10-10z" fill="#F3EBDD" stroke="#CFC3AE" stroke-width="1.5"/><path d="M82 30q14 0 14 12t-14 12" fill="none" stroke="#CFC3AE" stroke-width="4"/><ellipse cx="58" cy="24" rx="22" ry="4" fill="#D8BE95"/><path d="M50 14q4-6 0-12M62 14q4-6 0-12" stroke="#B9B2A3" stroke-width="2" fill="none"/>',
  E4:PL+'<path d="M34 44q6-12 18-8q10-8 20 2q12 0 12 10q-6 10-20 8q-12 6-22-2q-12-2-8-10z" fill="#F7D553" stroke="#D9B93F"/>'+cc(50,42,3,'#FBE9A0')+cc(64,46,3,'#FBE9A0')+cc(78,50,3.5,'#D9382B'),
  M6:PL+cc(42,40,7,'#EFD9A0','#D8BE78')+cc(56,48,7,'#EFD9A0','#D8BE78')+cc(70,40,7,'#EFD9A0','#D8BE78')+egg(48,54,.75)+egg(76,52,.75)+cc(62,36,4,'#D9382B')+cc(36,52,4,'#9ACB6A','#6FA24A')+cc(84,42,3.5,'#D9A68A'),
  M7:PL+'<ellipse cx="60" cy="44" rx="28" ry="15" fill="#F1E3B6"/><path d="M36 44q24-16 48 0M40 48q20-12 40 0M44 40q16-8 32 0" stroke="#DCC98F" stroke-width="2" fill="none"/>'+'<path d="M44 38a6 6 0 0 1 12 0z" fill="#7CB35B"/><path d="M62 44a6 6 0 0 1 12 0z" fill="#7CB35B"/><path d="M50 48a6 6 0 0 1 12 0z" fill="#8CC36A"/>'+cc(70,38,3,'#D9382B')+cc(56,42,1.4,'#fff')+cc(66,48,1.4,'#fff'),
  M8:PL+'<ellipse cx="60" cy="44" rx="34" ry="18" fill="#D2452D" opacity=".9"/><path d="M36 44Q48 32 64 36Q78 40 82 46Q70 54 54 52Q40 52 36 44Z" fill="#EEF1F2" stroke="#BCC7CC" stroke-width="1.5"/>'+cc(46,54,3,'#3C8B4B')+cc(72,32,3,'#3C8B4B')+cc(84,52,2.6,'#3C8B4B'),
- M9:PL+'<path d="M22 48A38 24 0 0 1 98 48Z" fill="#F3EBD8" stroke="#D9CDB0"/>'+cc(42,42,4,'#E7B563')+cc(54,37,4,'#E7B563')+cc(66,41,4,'#E7B563')+cc(78,43,3.5,'#D9382B')+cc(60,44,2.6,'#3C8B4B')+cc(48,45,2.4,'#3C8B4B'),
+ M9:PL+bread(42,42,-8)+bread(64,44,6)+'<path d="M30 46h46" stroke="#3C8B4B" stroke-width="3"/>'+cc(52,36,3,'#D9382B')+rc(80,46,10,9,'#E0B766',15)+rc(88,38,10,9,'#E5BF72',-10),
  B1:PL+'<path d="M30 38Q44 28 58 36Q62 48 46 52Q30 52 30 38Z" fill="#E7B563" stroke="#C48E3B" stroke-width="1.5"/><path d="M62 34Q78 28 90 38Q88 50 72 52Q58 50 62 34Z" fill="#EBBC6D" stroke="#C48E3B" stroke-width="1.5"/>'+cc(45,41,1.3,'#F7DDA6')+cc(76,40,1.3,'#F7DDA6')+cc(40,60,4,'#7CB35B')+cc(52,62,4,'#7CB35B'),
  B2:'<ellipse cx="60" cy="70" rx="40" ry="4" fill="rgba(0,0,0,.1)"/><path d="M18 34Q20 68 60 70Q100 68 102 34Z" fill="#E9E4D8" stroke="#D2CCBD" stroke-width="1.5"/><ellipse cx="60" cy="34" rx="42" ry="11" fill="#F8F6F1" stroke="#D2CCBD" stroke-width="1.5"/><path d="M24 34A18 8 0 0 1 60 34A18 8 0 0 1 24 34Z" fill="#FFFFFF"/><path d="M60 34A18 8 0 0 1 96 34A18 8 0 0 1 60 34Z" fill="#6B3E26"/>'+cc(42,33,1.3,'#E5E0D2')+cc(50,36,1.3,'#E5E0D2')+cc(72,32,2,'#8A5A3A')+cc(84,35,2,'#8A5A3A'),
  B3:'<ellipse cx="60" cy="68" rx="44" ry="5" fill="rgba(0,0,0,.1)"/>'+'<ellipse cx="38" cy="46" rx="14" ry="18" fill="#FBF8F0" stroke="#D9D3C2" stroke-width="1.5"/><ellipse cx="62" cy="48" rx="14" ry="18" fill="#FBF8F0" stroke="#D9D3C2" stroke-width="1.5"/><ellipse cx="85" cy="46" rx="14" ry="18" fill="#FBF8F0" stroke="#D9D3C2" stroke-width="1.5"/>'+cc(62,50,6,'#F2B632'),

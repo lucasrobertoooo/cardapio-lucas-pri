@@ -155,7 +155,7 @@ function viewCompras(){
       return `<label class="item${on?' done':''}"><input type="checkbox" data-act="pantry" data-key="${p.id}"${on?' checked':''}><span class="box">${CHECK}</span><span class="nm">${p.n}</span><span class="qt">${on?'tenho':'conferir'}</span>${p.t?`<span class="meta"><span>${p.t}</span></span>`:''}</label>`;}).join('');
     pantry=`<section class="aisle"><h3>${AISLES.desp}<span class="sub">marque o que já tem</span></h3><div class="list">${rows}</div></section>`;
   }
-  const HAVE=['arroz','feijao','aveia','tapioca','macarrao','amendoim','passata'];
+  const HAVE=['arroz','feijao','aveia','pao','macarrao','amendoim','passata'];
   const havePills=HAVE.map(id=>`<button class="chip" data-act="have" data-id="${id}" aria-pressed="${!!S.have[id]}">${S.have[id]?'Tenho: ':'Já tenho '}${ING[id].n.split(' (')[0].toLowerCase()}</button>`).join('');
   const stock=t.id==='T1'?`<section class="card stack"><div><div class="eyebrow">Estoque em casa</div><div class="sub">O que já tem entra na conta e some da lista de compras. Atum e sardinha em unidades, o resto é só marcar.</div></div><div class="pills">${havePills}</div><div class="stock">
     ${['atum','sardinha'].map(id=>`<div class="stepper"><button data-act="stock" data-id="${id}" data-d="-1" aria-label="Menos ${ING[id].n}">−</button><span>${S.stock[id]||0}</span><button data-act="stock" data-id="${id}" data-d="1" aria-label="Mais ${ING[id].n}">+</button><span class="sub">${ING[id].n}</span></div>`).join('')}</div></section>`:'';
@@ -246,7 +246,7 @@ function viewAjustes(){
    <div class="scroll-x"><table class="t"><thead><tr><th>Pode</th><th>Evitar</th></tr></thead><tbody>
     <tr><td class="ok-t">Frango, ovo, peixe, atum, sardinha</td><td class="no-t">Feijão, lentilha, grão-de-bico, soja</td></tr>
     <tr><td class="ok-t">Leite e iogurte sem lactose, mussarela, parmesão</td><td class="no-t">Leite comum, cottage, ricota, requeijão</td></tr>
-    <tr><td class="ok-t">Batata, arroz, tapioca, aveia (até 40 g), macarrão de arroz</td><td class="no-t">Pão e macarrão de trigo em quantidade</td></tr>
+    <tr><td class="ok-t">Batata, arroz, tapioca, aveia (até 40 g), macarrão de arroz, pão de trigo até 1 fatia (½ pão francês) por vez</td><td class="no-t">Pão e macarrão de trigo em quantidade</td></tr>
     <tr><td class="ok-t">Cenoura, abobrinha, tomate, pepino, espinafre</td><td class="no-t">Cebola, alho, cogumelo, couve-flor, beterraba</td></tr>
     <tr><td class="ok-t">Morango, uva, mamão, banana firme, laranja</td><td class="no-t">Manga, maçã, pera, abacate, banana muito madura</td></tr></tbody></table></div>
    <div class="sub">Tolerância varia de pessoa para pessoa e por porção. Se a Pri acompanha com nutricionista, vale alinhar esta lista com ela.</div></section>

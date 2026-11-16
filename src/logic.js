@@ -27,6 +27,7 @@ function fq(id,q){
     case 'azeite': return `${q===.25?'¼':q===.5?'½':fmt(q)} col. sopa de azeite`;
     case 'banana': return `${fmt(q)} banana${q>1?'s':''}`;
     case 'limao': return `${q===.5?'½':fmt(q)} limão`;
+    case 'pao': return `${fmt(q)} ${q===1?'fatia':'fatias'} de pão`;
     default: return `${fmt(q)} ${ING[id].u==='ml'?'ml':'g'} de ${SN[id]}`;
   }
 }
@@ -97,7 +98,7 @@ function buyText(it){
 }
 function needText(id,q){
   const u=ING[id].u;
-  if(u==='un')return `${fmt(q)} un`;if(u==='lata')return `${fmt(q)} ${q===1?'lata':'latas'}`;
+  if(u==='un')return `${fmt(q)} un`;if(u==='fatia')return `${fmt(q)} ${q===1?'fatia':'fatias'}`;if(u==='lata')return `${fmt(q)} ${q===1?'lata':'latas'}`;
   if(u==='ml')return `${fmt(q,0)} ml`;if(u==='g cozido')return `${fmt(q,0)} g cozido`;return `${fmt(q,0)} g`;
 }
 const PANTRY_STATIC=[

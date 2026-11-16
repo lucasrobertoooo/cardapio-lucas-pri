@@ -6,7 +6,7 @@ Falar e escrever em português do Brasil. Receitas em gramas e unidades métrica
 ## Quem usa e para quê
 - **Lucas** (78 kg): ganhar massa muscular, leve superávit. Meta ~160 g de proteína e ~2.800 kcal/dia. Vegetariano que come frutos do mar (ovo e laticínio entram). Não quer soja (acha chato de preparar). Dificuldade principal: bater proteína.
 - **Pri** (163 cm, 66 kg): perder gordura e ir para hipertrofia. Meta ~125 g de proteína e ~1.750 kcal/dia. Dieta **low FODMAP** (sem leguminosas, soja, lactose, alho, cebola, cogumelo, trigo em quantidade). Come frango. Prefere batata no lugar de arroz.
-- Querem **unificar ao máximo** a comida: mesmo iogurte sem lactose (natural desnatado Pense Zero, comum e não proteico; grego quase nunca), mesmo leite sem lactose, mesmo whey, mesma goma de tapioca, mesmo macarrão de arroz. Só diverge o necessário (feijão e arroz só do Lucas, frango só da Pri).
+- Querem **unificar ao máximo** a comida: mesmo iogurte sem lactose (natural desnatado Pense Zero, comum e não proteico; grego quase nunca), mesmo leite sem lactose, mesmo whey, mesmo pão de forma (ou francês; a Pri fica em 1 fatia por refeição por causa do trigo), mesmo macarrão de arroz. Só diverge o necessário (feijão e arroz só do Lucas, frango só da Pri).
 - Compram de **moto**: cabe uma mochila. Por isso 3 idas ao mercado por semana, com estimativa de peso por compra.
 - Prioridade: barato, fácil, gostoso. Proteína é o que importa; caloria é aproximada; a balança (média semanal) é o ajuste fino. Sem drama quando um dia escapa.
 
