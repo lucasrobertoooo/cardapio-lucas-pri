@@ -13,7 +13,7 @@ Falar e escrever em português do Brasil. Receitas em gramas e unidades métrica
 ## Arquitetura
 ```
 src/data.js     ingredientes (ING), refeições (MEALS), semana (WEEK), corredores (AISLES)
-src/recipes.js  passos e dicas (RECIPES, BASES), ilustrações SVG (SCENES), nomes curtos
+src/recipes.js  passos e dicas (RECIPES, BASES), nomes curtos, fotos (ill)
 src/logic.js    estado (localStorage), nutrição, extras, cálculo de compras (shopping), TRIPS
 src/sync.js     sincronização entre os celulares (Firebase Realtime Database via REST, sem biblioteca)
 src/ui.js       views (hoje, semana, compras, receitas, preparo, ajustes), eventos, hash routing
@@ -32,7 +32,7 @@ Regras que o código já segue (manter):
 - Cada ingrediente tem proteína (`p`) e kcal (`k`) por unidade de receita, fator de compra (`f`), tamanho de embalagem (`pack`), peso por unidade de compra (`wp`) e corredor (`aisle`).
 - Compras com sobra: o que sobra de uma ida abate da próxima. Frango e arroz são comprados antes do dia de cozinhar em lote (lote 1 no domingo, lote 2 na quarta). Feijão, uma vez por semana.
 - **Ajustes de ingredientes**: botão Ajustar em cada refeição (aba Hoje). Fica em `S.custom[refeição][L|P] = {ingrediente: quantidade}` e vale para todos os dias. Tudo lê `itemsOf(refeição, pessoa)`, nunca `MEALS[id].L` direto. `ADJ` em `data.js` define o passo do + e −, a medida caseira (`hu`, ex.: colher de cottage = 20 g) e o limite FODMAP da Pri por refeição (`pri`; 0 = evitar), que vira aviso no editor.
-- **Fotos**: `img/<id da refeição>.jpg` (ex.: `img/C1.jpg`, 3:2, ~800 px, < 80 KB). O build detecta sozinho, usa no lugar do desenho SVG e põe no cache offline. Sem foto, fica o SVG.
+- **Fotos**: `img/<id da refeição>.jpg` (840×560, 3:2, JPEG ~60 KB), geradas no ElevenLabs (GPT Image 2) com prompt em inglês começando pelo nome do prato + "Realistic food photography, 45 degree angle, soft natural daylight, light wooden table…". O build detecta sozinho e põe no cache offline. Refeição nova sem foto mostra um prato vazio.
 - **Trocas**: toda refeição de `MEALS` com o mesmo `slot` é alternativa das outras. A aba Hoje tem o botão Trocar em cada refeição; a troca fica em `S.swap` (`data|refeição`) e `slotsOf(day)` aplica sobre `WEEK`. Placar, compras, preparo e receitas sempre leem `slotsOf`, nunca `day.slots` direto. Alternativas novas usam só ingredientes já cadastrados em `ING`. `oc:1` marca refeições cujos ovos saem cozidos do lote.
 - **Sincronização** (`src/sync.js`): Firebase Realtime Database pela API REST, sem biblioteca. Em comum: `swap`, `custom`, `shop`, `stock`, `have`, `pantry`, `prep`, `targets`, `ref`, `maxKg` (lista `SHARED`). Só no aparelho: `checks`, `extras`, `steps`, `icon`. Cada mudança vira um PATCH por chave; sem rede, fica em fila no `localStorage` e sai quando a conexão volta. O código (`…/casas/<código>`) fica só nos aparelhos, nunca no repositório. Regras do banco: só `casas/$casa` com código de 20+ caracteres.
 - Estado em `localStorage` (chave `cardapio-lucas-pri-v1`), sempre dentro de try/catch. Rota por hash simples (`#hoje`, `#semana`, `#compras`, `#receitas`, `#preparo`, `#ajustes`).
