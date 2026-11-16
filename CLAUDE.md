@@ -32,6 +32,8 @@ Regras que o código já segue (manter):
 - Cada ingrediente tem proteína (`p`) e kcal (`k`) por unidade de receita, fator de compra (`f`), tamanho de embalagem (`pack`), peso por unidade de compra (`wp`) e corredor (`aisle`).
 - Compras com sobra: o que sobra de uma ida abate da próxima. Frango e arroz são comprados antes do dia de cozinhar em lote (lote 1 no domingo, lote 2 na quarta). Feijão, uma vez por semana.
 - **Ajustes de ingredientes**: botão Ajustar em cada refeição (aba Hoje). Fica em `S.custom[refeição][L|P] = {ingrediente: quantidade}` e vale para todos os dias. Tudo lê `itemsOf(refeição, pessoa)`, nunca `MEALS[id].L` direto. `ADJ` em `data.js` define o passo do + e −, a medida caseira (`hu`, ex.: colher de cottage = 20 g) e o limite FODMAP da Pri por refeição (`pri`; 0 = evitar), que vira aviso no editor.
+- **Lanche e ceia**: o lanche da tarde é a refeição maior (academia à noite). A ceia completa a proteína que faltar no dia (`ceiaInfo`/`dayItems` em logic.js): de ½ a 3× a receita, e some ("não precisa hoje") se a meta já fechou. Conta extras registrados. Não se ajusta sozinha se a ceia foi mexida no editor. Tudo que é por dia (placar, compras) lê `dayItems`.
+- **Unidade no editor**: cada ingrediente com medida caseira ou peso por unidade (`gw`) pode ser visto em gramas (⇄); a escolha é do aparelho (`S.unit`, não sincroniza). Tocar no número abre um campo para digitar (aceita 1½, 1/2, 0,5).
 - **Preparo único**: o que se faz de uma vez para os dois (massa, vitamina, mingau, panela de molho, purê, salada) fica em `junto` (com o nome em `jn`). O card soma as quantidades dos dois e mostra quanto fica com cada um. Num preparo único a composição é a mesma para os dois (mesma fruta); o que é só de um (ex.: pasta de amendoim do Lucas) fica fora de `junto` e entra depois, no prato dele. As receitas não repetem quantidades: falam do quadro “para os dois”.
 - **Peixe não entra no plano** (é caro e não compram sempre): pratos com `outros:1` ficam fora de `WEEK` e aparecem só no grupo Outros das trocas e das receitas.
 - **Medidas caseiras**: sempre que der, `ADJ.hu` (colher, colher de servir, concha, copo, xícara, fatia, unidade). Frango, peixe, camarão e macarrão ficam em gramas. As quantidades em `MEALS` são múltiplos do passo (`st`) da medida. Frações aparecem como ¼ ½ ¾ (`frac`).
@@ -48,7 +50,7 @@ Valores médios de tabela (TACO e rótulos). Feijão cozido = 5 g/100 g (a refer
 
 ## Como verificar antes de commitar
 1. `python3 build.py` e `node --check` no JS embutido.
-2. `node check.js` (também lista proteína e kcal de cada alternativa): Lucas deve ficar em ~165 a 180 g e ~2.800 a 3.000 kcal nos dias completos; Pri em ~125 a 135 g e ~1.600 a 1.850 kcal.
+2. `node check.js` (também lista proteína e kcal de cada alternativa): Lucas deve ficar em ~165 a 185 g e ~2.850 a 3.050 kcal e ~2.800 a 3.000 kcal nos dias completos; Pri em ~125 a 135 g e ~1.600 a 1.850 kcal.
 3. Abrir `index.html` no navegador (ou Playwright) em 390 px de largura, claro e escuro, sem scroll horizontal e sem erro no console.
 4. Conferir que cada compra fica abaixo do limite da mochila (padrão 14 kg).
 

@@ -240,13 +240,17 @@ table.t th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:va
 .ed.L .ed-h b{color:var(--lucas)}.ed.P .ed-h b{color:var(--pri)}
 .ed-h span{font-size:12px;color:var(--ink2);font-weight:600}
 .ed-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid color-mix(in srgb,var(--ink) 8%,transparent)}
-.ed-n{display:flex;flex-direction:column;min-width:0;font-size:14px}
+.ed-n{display:flex;flex-direction:column;min-width:0;font-size:14px;overflow-wrap:anywhere}
 .ed-warn{font-size:11.5px;color:var(--warn);font-weight:600}
 .ed-step{display:flex;align-items:center;gap:6px;flex:0 0 auto}
-.ed-step button{width:36px;height:36px;border-radius:50%;border:0;background:var(--surface);color:var(--ink);font-size:18px;font-weight:700;box-shadow:0 1px 2px rgba(0,0,0,.08)}
-.ed-step button:active{transform:scale(.94)}
-.ed-q{min-width:64px;text-align:center;display:flex;flex-direction:column;line-height:1.1}
+.ed-step>button{width:36px;height:36px;border-radius:50%;border:0;background:var(--surface);color:var(--ink);font-size:18px;font-weight:700;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.ed-step>button:active{transform:scale(.94)}
+.ed-q{min-width:64px;max-width:92px;text-align:center;display:flex;flex-direction:column;align-items:center;line-height:1.1}
 .ed-q b{font-size:16px}.ed-q small{font-size:11px;color:var(--ink2)}
+.ed-v{border:0;background:none;padding:2px 6px;border-radius:8px;color:var(--ink)}
+.ed-v b{font-size:16px;border-bottom:1.5px dashed color-mix(in srgb,var(--ink) 30%,transparent)}
+.ed-u{border:0;background:none;padding:2px 2px;font-size:11px;line-height:1.15;color:var(--leaf);font-weight:600;white-space:normal;text-align:center}
+.ed-in{width:64px;font:inherit;font-size:16px;font-weight:700;text-align:center;padding:4px;border:1.5px solid var(--leaf);border-radius:8px;background:var(--surface);color:var(--ink)}
 .ed-add{position:relative;display:flex;align-items:center;justify-content:center;margin-top:6px;padding:10px;border:1.5px dashed color-mix(in srgb,var(--ink) 25%,transparent);border-radius:12px;font-weight:600;font-size:14px;color:var(--ink2)}
 .ed-add select{position:absolute;inset:0;opacity:0;width:100%;font-size:16px;cursor:pointer}
 .icons{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}

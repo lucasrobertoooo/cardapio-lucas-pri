@@ -1,7 +1,7 @@
 /* ===== ESTADO E CÁLCULOS ===== */
 const KEY='cardapio-lucas-pri-v1';
 const DEF={checks:{},extras:{},shop:{},stock:{atum:4,sardinha:2},pantry:{},prep:{},steps:{},
-  targets:{L:{p:160,k:2800},P:{p:125,k:1750}},ref:{iog:3.6,whey:24},maxKg:14,have:{},swap:{},icon:'verde',custom:{}};
+  targets:{L:{p:160,k:2800},P:{p:125,k:1750}},ref:{iog:3.6,whey:24},maxKg:14,have:{},swap:{},icon:'verde',custom:{},unit:{}};
 function clone(o){return JSON.parse(JSON.stringify(o));}
 function loadState(){
   const s=clone(DEF);
@@ -28,7 +28,13 @@ function fmt(n,d){return Number(n).toLocaleString('pt-BR',{maximumFractionDigits
 function frac(n){const w=Math.floor(n+1e-9),r=n-w,F=[[.25,'¼'],[.5,'½'],[.75,'¾']].find(f=>Math.abs(f[0]-r)<.03);
   return r<.03?String(w):r>.97?String(w+1):F?(w?w+F[1]:F[1]):fmt(n,1);}
 const R0=n=>Math.round(n);
+/* Medida em gramas: cada aparelho escolhe, por ingrediente (S.unit[id]='g'). */
+function canGrams(id){const g=ING[id];return !!(g.hu||g.gw);}
+function inGrams(id){return S.unit[id]==='g'&&canGrams(id);}
+function gramsOf(id,q){const g=ING[id];return g.hu?q:q*(g.gw||1);}
+function gUnit(id){return ING[id].u==='ml'?'ml':'g';}
 function fq(id,q){
+  if(inGrams(id))return `${fmt(gramsOf(id,q),0)} ${gUnit(id)} de ${SN[id]}`;
   const n=frac(q),pl=q>1.01;
   switch(id){
     case 'ovo': return `${n} ${pl?'ovos':'ovo'}`;
@@ -82,9 +88,24 @@ function slotsOf(day){
   for(const k in day.slots){const sw=S.swap[`${day.d}|${k}`];out[k]=sw&&MEALS[sw]&&MEALS[sw].slot===KIND[k]?sw:day.slots[k];}
   return out;
 }
+/* Ceia = o que falta no dia. A quantidade da ceia de cada um é ajustada para completar a meta de proteína,
+   depois de somar café, almoço, lanche e jantar planejados. Entre metade e o triplo da receita; se a meta já fechou, a ceia sai (f=0).
+   Não ajusta se a ceia foi mexida à mão no editor, nem em dia parcial. */
+function ceiaInfo(day,who){
+  const sl=slotsOf(day),mid=sl.ceia;
+  if(!mid||!sl.cafe||!sl.jantar||(S.custom[mid]&&S.custom[mid][who]))return {f:1,auto:false};
+  let others=0;for(const s of SLOTS){if(s[0]==='ceia')continue;const m=sl[s[0]];if(m)others+=nut(itemsOf(m,who)).p;}
+  /* extras registrados no dia (ex.: 1 dose de whey a mais) também contam */
+  const ex=S.extras[`${day.d}|${who}`]||{};for(const e of EXTRAS){const c=ex[e.id]||0;if(c)others+=nut(e.it).p*c;}
+  const base=nut(itemsOf(mid,who)).p||1,gap=S.targets[who].p-others;
+  return {f:gap<=3?0:Math.min(3,Math.max(.5,gap/base)),auto:true,gap};
+}
+function scaleItems(its,f){if(f===1)return its;if(f===0)return [];return its.map(([id,q])=>{const st=ING[id].st||1;return [id,Math.max(st,Math.round(q*f/st)*st)];});}
+/* Ingredientes de uma refeição num dia, para uma pessoa (com ajustes do editor e a ceia completando o dia). */
+function dayItems(day,slot,who){const mid=slotsOf(day)[slot];if(!mid)return [];const its=itemsOf(mid,who);return slot==='ceia'?scaleItems(its,ceiaInfo(day,who).f):its;}
 function dayStats(day,who){
   const plan={p:0,k:0},done={p:0,k:0};
-  const sl=slotsOf(day);for(const s of SLOTS){const mid=sl[s[0]];if(!mid)continue;const n=nut(itemsOf(mid,who));plan.p+=n.p;plan.k+=n.k;
+  const sl=slotsOf(day);for(const s of SLOTS){const mid=sl[s[0]];if(!mid)continue;const n=nut(dayItems(day,s[0],who));plan.p+=n.p;plan.k+=n.k;
     if(S.checks[`${day.d}|${s[0]}|${who}`]){done.p+=n.p;done.k+=n.k;}}
   const ex=S.extras[`${day.d}|${who}`]||{};const xt={p:0,k:0};
   for(const e of EXTRAS){const c=ex[e.id]||0;if(c){const n=nut(e.it);xt.p+=n.p*c;xt.k+=n.k*c;}}
@@ -115,7 +136,7 @@ function needs(days,onlyMeals){
   const out={};
   for(const dd of days){const day=WEEK.find(x=>x.d===dd);if(!day)continue;const sl=slotsOf(day);
     for(const s of SLOTS){const mid=sl[s[0]];if(!mid)continue;
-      for(const who of ['L','P']){for(const it of itemsOf(mid,who)){
+      for(const who of ['L','P']){for(const it of dayItems(day,s[0],who)){
         const o=out[it[0]]||(out[it[0]]={tot:0,L:0,P:0,uses:[]});
         o.tot+=it[1];o[who]+=it[1];const sh=SHORT[mid];if(!o.uses.includes(sh))o.uses.push(sh);}}}}
   return out;

@@ -1,6 +1,6 @@
 // Service worker: o app abre sem internet (mercado com sinal ruim).
-// build.py troca b21336e364 pelo hash do build; versão nova = cache novo, o antigo é apagado.
-const CACHE = 'cardapio-b21336e364';
+// build.py troca 50807677d9 pelo hash do build; versão nova = cache novo, o antigo é apagado.
+const CACHE = 'cardapio-50807677d9';
 const FONTS = 'cardapio-fontes';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icons/claro-180.png', './icons/icon-192.png', './icons/icon-512.png', './icons/preto-180.png', './icons/rosa-180.png', './icons/verde-180.png', './img/B1.jpg', './img/B2.jpg', './img/B3.jpg', './img/B4.jpg', './img/C1.jpg', './img/C2.jpg', './img/C3.jpg', './img/C4.jpg', './img/C5.jpg', './img/E1.jpg', './img/E2.jpg', './img/E3.jpg', './img/E4.jpg', './img/L1.jpg', './img/L2.jpg', './img/L3.jpg', './img/L4.jpg', './img/M1.jpg', './img/M2.jpg', './img/M3.jpg', './img/M4.jpg', './img/M5.jpg', './img/M6.jpg', './img/M7.jpg', './img/M8.jpg', './img/M9.jpg'];
 const FONT_CSS = 'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap';

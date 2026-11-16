@@ -7,6 +7,7 @@ const AISLES = {
 // pack = tamanho da embalagem (unidade de compra), wp = g por unidade de compra
 // MEALS: slot = tipo (cafe, ref = almoço ou jantar, lanche, ceia); oc = os ovos da refeição são cozidos no lote.
 // junto = ingredientes feitos de uma vez para os dois (uma massa, uma vitamina, uma panela), jn = nome desse preparo.
+// O lanche da tarde é a refeição maior (academia à noite). A ceia completa a proteína que faltar no dia (ver ceiaFactor em logic.js).
 // outros = prato com ingrediente caro (peixe): fica fora do plano da semana, só aparece em Outros nas trocas.
 // Toda refeição do mesmo tipo é alternativa das outras na aba Hoje (botão Trocar).
 const ING = {
@@ -58,12 +59,13 @@ const ING = {
 };
 /* Editor de refeição: st = passo do + e −, hu = medida caseira [singular, plural, g ou ml por medida],
    pri = máximo por refeição para a Pri ficar no FODMAP baixo (0 = evitar).
-   Regra: sempre medida caseira (colher, concha, copo, xícara, unidade) quando der. Frango, peixe, camarão e macarrão ficam em gramas. */
+   Regra: sempre medida caseira (colher, concha, copo, xícara, unidade) quando der. Frango, peixe, camarão e macarrão ficam em gramas.
+   gw = gramas por unidade (para ver em gramas o que é contado em unidade: ovo, lata, banana...). */
 const ADJ = {
-  ovo:{st:1}, atum:{st:.5}, sardinha:{st:.5}, peixe:{st:20}, frango:{st:20}, camarao:{st:20},
+  ovo:{st:1, gw:50}, atum:{st:.5, gw:120}, sardinha:{st:.5, gw:84}, peixe:{st:20}, frango:{st:20}, camarao:{st:20},
   grao:{st:25, hu:['colher de servir','colheres de servir',50], pri:0},
   cottage:{st:20, hu:['colher','colheres',20], pri:40}, mussarela:{st:15, hu:['fatia','fatias',15]}, parmesao:{st:5, hu:['colher','colheres',5]},
-  iogurte:{st:50, hu:['copo','copos',200]}, leite:{st:50, hu:['copo','copos',200]}, whey:{st:.5}, azeite:{st:.25}, pao:{st:1, pri:1},
+  iogurte:{st:50, hu:['copo','copos',200]}, leite:{st:50, hu:['copo','copos',200]}, whey:{st:.5, gw:30}, azeite:{st:.25, gw:13}, pao:{st:1, pri:1, gw:25},
   arroz:{st:25, hu:['colher de servir','colheres de servir',50]}, feijao:{st:70, hu:['concha','conchas',140], pri:0},
   quinoa:{st:25, hu:['colher de servir','colheres de servir',50]}, macarrao:{st:10},
   aveia:{st:10, hu:['colher','colheres',10], pri:40}, amendoim:{st:15, hu:['colher','colheres',15], pri:30},
@@ -75,9 +77,9 @@ const ADJ = {
   berinjela:{st:20, hu:['xícara','xícaras',80], pri:75}, vagem:{st:25, hu:['xícara','xícaras',100], pri:75},
   couve:{st:20, hu:['xícara','xícaras',40]}, espinafre:{st:15, hu:['xícara','xícaras',30]}, alface:{st:10, hu:['folha','folhas',10]},
   pimentao:{st:37.5, hu:['pimentão','pimentões',150]}, pepino:{st:50, hu:['pepino','pepinos',200]}, tomate:{st:25, hu:['tomate','tomates',100]},
-  banana:{st:.5, pri:1}, laranja:{st:1}, kiwi:{st:1},
+  banana:{st:.5, pri:1, gw:100}, laranja:{st:1, gw:130}, kiwi:{st:1, gw:75},
   morango:{st:12, hu:['morango','morangos',12]}, mamao:{st:75, hu:['fatia','fatias',150]}, uva:{st:25, hu:['punhado','punhados',50], pri:150},
-  abacaxi:{st:40, hu:['fatia','fatias',80], pri:140}, limao:{st:.5}
+  abacaxi:{st:40, hu:['fatia','fatias',80], pri:140}, limao:{st:.5, gw:40}
 };
 for (const id in ADJ) Object.assign(ING[id], ADJ[id]);
 const MEALS = {
@@ -96,18 +98,18 @@ const MEALS = {
  C5:{slot:'cafe', n:'Iogurte com aveia, fruta e ovos cozidos', t:3, oc:1,
   L:[['iogurte',250],['aveia',40],['banana',1],['amendoim',15],['ovo',3]],
   P:[['iogurte',150],['aveia',20],['morango',96],['ovo',2]]},
- L1:{slot:'lanche', n:'Vitamina de whey com banana', t:3, junto:['leite','whey','banana','aveia'], jn:'Vitamina',
-  L:[['leite',300],['whey',1],['banana',1],['aveia',20],['amendoim',15]],
-  P:[['leite',200],['whey',1],['banana',.5],['aveia',10]]},
- L2:{slot:'lanche', n:'Iogurte batido com whey e morango', t:3, junto:['iogurte','whey','morango','aveia'], jn:'Batido',
-  L:[['iogurte',250],['whey',1],['morango',96],['aveia',30],['amendoim',15]],
-  P:[['iogurte',200],['whey',1],['morango',96],['aveia',20]]},
- L3:{slot:'lanche', n:'Sanduíche de atum com mussarela', t:5,
-  L:[['pao',3],['atum',1],['mussarela',30],['tomate',50],['leite',200]],
-  P:[['pao',1],['atum',1],['mussarela',15],['tomate',50]]},
- L4:{slot:'lanche', n:'Ovos cozidos com leite e fruta', t:2, oc:1,
-  L:[['ovo',3],['leite',300],['banana',1],['amendoim',15]],
-  P:[['ovo',2],['leite',250],['mussarela',15],['uva',100]]},
+ L1:{slot:'lanche', n:'Vitamina de whey com banana e pão (pasta de amendoim ou cottage)', t:5, junto:['leite','whey','banana','aveia'], jn:'Vitamina',
+  L:[['leite',300],['whey',1],['banana',1],['aveia',40],['pao',2],['amendoim',30]],
+  P:[['leite',200],['whey',1],['banana',.5],['aveia',30],['pao',1],['cottage',20]]},
+ L2:{slot:'lanche', n:'Iogurte batido com whey e morango e torrada com cottage', t:5, junto:['iogurte','whey','morango','aveia'], jn:'Batido',
+  L:[['iogurte',250],['whey',1],['morango',96],['aveia',40],['pao',2],['cottage',40],['amendoim',15]],
+  P:[['iogurte',200],['whey',1],['morango',96],['aveia',30],['pao',1],['cottage',20]]},
+ L3:{slot:'lanche', n:'Sanduíche de atum com mussarela, leite e banana', t:5, junto:['atum'], jn:'Atum',
+  L:[['pao',3],['atum',.5],['mussarela',30],['tomate',50],['leite',300],['banana',1]],
+  P:[['pao',1],['atum',.5],['mussarela',15],['tomate',50],['leite',200],['banana',.5]]},
+ L4:{slot:'lanche', n:'Ovos cozidos, pão com pasta de amendoim, leite e fruta', t:3, oc:1,
+  L:[['ovo',3],['leite',300],['banana',1],['pao',2],['amendoim',30]],
+  P:[['ovo',2],['leite',250],['uva',100],['pao',1],['amendoim',15]]},
  E1:{slot:'ceia', n:'Tigela de iogurte com aveia e mamão', t:1,
   L:[['iogurte',250],['aveia',10],['mamao',150]],
   P:[['iogurte',150],['mamao',150]]},

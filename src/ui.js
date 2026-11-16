@@ -48,14 +48,19 @@ function advice(day){
 function baseIng(){const s=new Set();WEEK.forEach(d=>Object.values(d.slots).forEach(mid=>['L','P'].forEach(w=>itemsOf(mid,w).forEach(it=>s.add(it[0])))));return s;}
 function sgn(n){n=R0(n);return n>0?`+${n}`:n<0?`−${-n}`:'='; }
 /* Preparo único: soma o que vai junto (uma massa, uma vitamina, uma panela) e mostra quanto fica com cada um. */
-function juntoBlock(mid){
+function juntoBlock(mid,day,slot){
   const m=MEALS[mid];if(!m.junto)return '';
-  const iL=itemsOf(mid,'L'),iP=itemsOf(mid,'P'),q=(its,id)=>(its.find(i=>i[0]===id)||[0,0])[1];
+  const iL=day?dayItems(day,slot,'L'):itemsOf(mid,'L'),iP=day?dayItems(day,slot,'P'):itemsOf(mid,'P'),q=(its,id)=>(its.find(i=>i[0]===id)||[0,0])[1];
   const ids=m.junto.filter(id=>q(iL,id)+q(iP,id)>0);if(!ids.length)return '';
   const kL=ids.reduce((a,id)=>a+ING[id].k*q(iL,id),0),kP=ids.reduce((a,id)=>a+ING[id].k*q(iP,id),0);
   const sL=Math.round(kL/(kL+kP||1)*20)*5;
   return `<div class="junto"><b>${m.jn} para os dois, de uma vez:</b> ${ids.map(id=>fq(id,q(iL,id)+q(iP,id))).join(', ')}.
     <span class="sub">Divida: <span class="L">Lucas ~${sL}%</span>, <span class="P">Pri ~${100-sL}%</span>.</span></div>`;
+}
+function ceiaNote(day){
+  const i={L:ceiaInfo(day,'L'),P:ceiaInfo(day,'P')};if(!i.L.auto&&!i.P.auto)return '';
+  const t=w=>{const x=i[w];if(!x.auto)return `${WHO[w]}: como ajustada no editor`;return x.gap<=3?`${WHO[w]}: hoje não precisa, a meta já fechou`:`${WHO[w]}: faltam ~${R0(x.gap)} g`;};
+  return `<div class="junto ceia-note"><b>Ceia completa o dia.</b> As quantidades se ajustam ao que falta de proteína depois do jantar. <span class="sub"><span class="L">${t('L')}</span> · <span class="P">${t('P')}</span></span></div>`;
 }
 function altsBlock(day,k,mid){
   const key=`${day.d}|${k}`,cur={L:nut(itemsOf(mid,'L')).p,P:nut(itemsOf(mid,'P')).p},have=baseIng();
@@ -72,6 +77,7 @@ function altsBlock(day,k,mid){
 }
 /* ----- Editor de ingredientes: vale para a refeição em todos os dias ----- */
 function amtOf(id,q){const g=ING[id],h=g.hu;
+  if(inGrams(id))return {big:fmt(gramsOf(id,q),0),small:gUnit(id)};
   if(h){const n=q/h[2];return {big:frac(n),small:`${n>1.01?h[1]:h[0]} · ${fmt(q,0)} ${g.u==='ml'?'ml':'g'}`};}
   if(g.u==='g'||g.u==='ml'||g.u==='g cozido')return {big:fmt(q,0),small:g.u==='ml'?'ml':g.u};
   const t=fq(id,q);return {big:frac(q),small:t.replace(/^[\d,½¼¾]+\s*/,'').replace(/ de .*/,'')};}
@@ -81,7 +87,8 @@ function editPane(mid,w){
     const warn=w==='P'&&g.pri!=null&&q>g.pri?`<span class="ed-warn">${g.pri===0?'A Pri evita (FODMAP)':`FODMAP: para a Pri, até ${g.hu||g.u==='g'||g.u==='g cozido'?fmt(g.pri,0)+' g':fq(id,g.pri)}`}</span>`:'';
     return `<div class="ed-row"><div class="ed-n"><b>${SN[id][0].toUpperCase()+SN[id].slice(1)}</b>${warn}</div>
       <div class="ed-step"><button data-act="edqty" data-mid="${mid}" data-who="${w}" data-id="${id}" data-d="-1" aria-label="Menos ${SN[id]}">${q-(g.st||1)<=0?'×':'−'}</button>
-      <span class="ed-q"><b>${a.big}</b><small>${a.small}</small></span>
+      <span class="ed-q">${V.edIn===`${mid}|${w}|${id}`?`<input class="ed-in" type="text" inputmode="decimal" autocomplete="off" data-act="edset" data-mid="${mid}" data-who="${w}" data-id="${id}" value="${inGrams(id)?fmt(gramsOf(id,q),0):g.hu?fmt(q/g.hu[2],2):fmt(q,2)}" aria-label="Quantidade de ${SN[id]}">`:`<button class="ed-v" data-act="edtype" data-key="${mid}|${w}|${id}" aria-label="Digitar quantidade de ${SN[id]}"><b>${a.big}</b></button>`}
+        ${canGrams(id)?`<button class="ed-u" data-act="edunit" data-id="${id}" aria-label="Trocar unidade de ${SN[id]}">${a.small} ⇄</button>`:`<small>${a.small}</small>`}</span>
       <button data-act="edqty" data-mid="${mid}" data-who="${w}" data-id="${id}" data-d="1" aria-label="Mais ${SN[id]}">+</button></div></div>`;}).join('');
   const present=new Set(its.map(i=>i[0]));
   const groups=Object.keys(AISLES).map(a=>{const ids=ING_IDS.filter(id=>ING[id].aisle===a&&!present.has(id));
@@ -98,9 +105,9 @@ function editBlock(mid){
 function slotCard(day,k,label){
   const base=day.slots[k],mid=slotsOf(day)[k],m=MEALS[mid],key=`${day.d}|${k}`,open=V.swap===key,ed=V.edit===key;
   const people=['L','P'].map(w=>{
-    const key=`${day.d}|${k}|${w}`,its=itemsOf(mid,w),n=nut(its),on=!!S.checks[key];
+    const key=`${day.d}|${k}|${w}`,its=dayItems(day,k,w),n=nut(its),on=!!S.checks[key];
     return `<label class="person ${w}${on?' done':''}"><input type="checkbox" data-act="chk" data-key="${key}"${on?' checked':''}><span class="box">${CHECK}</span>
-      <span class="who">${WHO[w]}</span><span class="nums">${R0(n.p)} g · ${R0(n.k)} kcal</span><span class="desc">${itemsText(its)}</span></label>`;
+      <span class="who">${WHO[w]}</span><span class="nums">${R0(n.p)} g · ${R0(n.k)} kcal</span><span class="desc">${its.length?itemsText(its):'Não precisa hoje. Se der fome, metade da receita.'}</span></label>`;
   }).join('');
   const both=S.checks[`${day.d}|${k}|L`]&&S.checks[`${day.d}|${k}|P`];
   return `<article class="slot"><div class="ill">${ill(mid)}</div>
@@ -110,7 +117,7 @@ function slotCard(day,k,label){
    <button class="link" data-act="editopen" data-key="${key}" aria-expanded="${ed}">${ed?'Fechar ajuste':'Ajustar'}</button>
    <button class="link" data-act="swapopen" data-key="${key}" aria-expanded="${open}">${open?'Fechar trocas':'Trocar'}</button>
    ${mid!==base?`<button class="link" data-act="swap" data-key="${key}" data-id="${base}">Voltar ao plano</button>`:''}</div></div>
-   ${juntoBlock(mid)}${open?altsBlock(day,k,mid):''}${ed?editBlock(mid):''}<div class="people">${people}</div></article>`;
+   ${k==='ceia'?ceiaNote(day):''}${juntoBlock(mid,day,k)}${open?altsBlock(day,k,mid):''}${ed?editBlock(mid):''}<div class="people">${people}</div></article>`;
 }
 function extrasBlock(day){
   const w=V.extraWho,key=`${day.d}|${w}`,ex=S.extras[key]||{};
@@ -267,6 +274,10 @@ function viewPreparo(){
 }
 
 /* ----- AJUSTES ----- */
+/* Aceita 2 · 0,5 · 1/2 · ½ · 1½ · 1 1/2 */
+function parseQty(s){s=String(s||'').trim().replace(',','.').replace('½',' .5').replace('¼',' .25').replace('¾',' .75');
+  let v=0,ok=false;for(const p of s.split(/\s+/).filter(Boolean)){const f=p.match(/^(\d+)\/(\d+)$/);const n=f?Number(f[1])/Number(f[2]):Number(p);if(!isFinite(n))return null;v+=n;ok=true;}
+  return ok?v:null;}
 const ICONS=[['verde','Verde'],['preto','Preto'],['rosa','Rosa'],['claro','Claro']];
 function applyIcon(){const l=document.getElementById('touch-icon');if(l&&ICONS.some(i=>i[0]===S.icon))l.href=`icons/${S.icon}-180.png`;}
 function syncBlock(){
@@ -355,7 +366,12 @@ document.addEventListener('click',e=>{
     case 'icon':S.icon=t.dataset.id;applyIcon();save();render(true);return;
     case 'swapopen':V.swap=V.swap===t.dataset.key?null:t.dataset.key;V.edit=null;render(true);return;
     case 'editopen':V.edit=t.dataset.key&&V.edit!==t.dataset.key?t.dataset.key:null;V.swap=null;render(true);return;
-    case 'edqty':{const d=t.dataset,c=customOf(d.mid,d.who),st=ING[d.id].st||1;c[d.id]=Math.max(0,Math.round(((c[d.id]||0)+Number(d.d)*st)*100)/100);save();render(true);return;}
+    case 'edqty':{const d=t.dataset,c=customOf(d.mid,d.who),g=ING[d.id];
+      /* em gramas o passo é menor: 5 g nos itens pequenos, 10 g no resto, 25 ml/g em leite e iogurte */
+      const st=inGrams(d.id)?(g.u==='ml'||d.id==='iogurte'?25:(g.st||1)<=15&&g.hu?5:10)/(g.hu?1:(g.gw||1)):(g.st||1);
+      c[d.id]=Math.max(0,Math.round(((c[d.id]||0)+Number(d.d)*st)*1000)/1000);save();render(true);return;}
+    case 'edtype':V.edIn=t.dataset.key;render(true);{const i=document.querySelector('.ed-in');if(i){i.focus();i.select();}}return;
+    case 'edunit':if(inGrams(t.dataset.id))delete S.unit[t.dataset.id];else S.unit[t.dataset.id]='g';save();render(true);return;
     case 'edreset':delete S.custom[t.dataset.mid];save();render(true);return;
     case 'swap':{const k=t.dataset.key,id=t.dataset.id,d=dayOf(k.split('|')[0]);
       if(id===d.slots[k.split('|')[1]])delete S.swap[k];else S.swap[k]=id;
@@ -365,6 +381,9 @@ document.addEventListener('click',e=>{
 document.addEventListener('change',e=>{
   const t=e.target.closest('[data-act]');if(!t)return;const a=t.dataset.act;
   if(a==='chk'){S.checks[t.dataset.key]=t.checked;save();render(true);}
+  else if(a==='edset'){V.edIn=null;const d=t.dataset,g=ING[d.id],v=parseQty(t.value);
+    if(v!=null){const q=inGrams(d.id)?(g.hu?v:v/(g.gw||1)):(g.hu?v*g.hu[2]:v);customOf(d.mid,d.who)[d.id]=Math.max(0,Math.round(q*1000)/1000);save();}
+    render(true);}
   else if(a==='edadd'){const id=t.value;if(!id||!ING[id])return;const g=ING[id],st=g.st||1;
     let q=g.hu?g.hu[2]:(g.u==='g'||g.u==='ml'||g.u==='g cozido')?Math.max(st,Math.round(50/st)*st):Math.max(st,g.u==='cs'?.5:1);
     /* para a Pri, começa dentro do limite FODMAP */
@@ -377,6 +396,8 @@ document.addEventListener('change',e=>{
     if(p[0]==='t')S.targets[p[1]][p[2]]=v;else if(p[0]==='r')S.ref[p[1]]=v;else if(p[0]==='maxkg')S.maxKg=v;save();render(true);}
 });
 window.addEventListener('hashchange',()=>go(location.hash.slice(1)));
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.classList&&e.target.classList.contains('ed-in'))e.target.blur();});
+document.addEventListener('focusout',e=>{if(e.target.classList&&e.target.classList.contains('ed-in'))setTimeout(()=>{if(V.edIn){V.edIn=null;render(true);}},0);});
 (function init(){
   document.getElementById('app').innerHTML=`<div class="wrap"><header class="hdr"><div><h1>Cardápio Lucas e Pri</h1><p>Semana de domingo 15 a domingo 22 de novembro</p><p id="sync-st" class="sync-st" hidden></p></div>
    <div class="who-legend"><span><span class="dot L"></span>Lucas</span><span><span class="dot P"></span>Pri</span></div></header><main id="main"></main></div><nav class="nav" id="nav" aria-label="Seções"></nav>`;
