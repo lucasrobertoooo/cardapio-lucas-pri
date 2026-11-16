@@ -230,6 +230,20 @@ function viewPreparo(){
 /* ----- AJUSTES ----- */
 const ICONS=[['verde','Verde'],['preto','Preto'],['rosa','Rosa'],['claro','Claro']];
 function applyIcon(){const l=document.getElementById('touch-icon');if(l&&ICONS.some(i=>i[0]===S.icon))l.href=`icons/${S.icon}-180.png`;}
+function syncBlock(){
+  const msg=V.syMsg?`<div class="tip">${V.syMsg}</div>`:'';
+  if(SY.url){const conf=V.confirm==='syleave';
+    return `<section class="card stack"><div class="stack" style="gap:6px"><div class="eyebrow">Sincronizar com o outro celular</div>
+     <div class="sub">Ligada. Situação: <b id="sync-box"></b></div>
+     <div class="sub">Em comum: trocas de refeição, as 3 listas de compras, estoque, despensa, preparo, metas e referências. Fica só aqui: o que cada um comeu, os extras e os passos de receita.</div></div>
+     <div class="row wrap"><button class="btn primary" data-act="sycopy">${V.syCopied?'Código copiado':'Copiar código para o outro celular'}</button>
+     <button class="btn${conf?' warn':''}" data-act="syleave">${conf?'Toque de novo para desligar':'Desligar neste celular'}</button></div>${msg}</section>`;}
+  return `<section class="card stack"><div><div class="eyebrow">Sincronizar com o outro celular</div>
+   <div class="sub">Deixa as trocas de refeição, as listas de compras, o estoque e o preparo iguais nos dois celulares, na hora. O que cada um comeu continua separado.</div></div>
+   <div class="fld-col"><label for="sy-db">1º celular: cole o endereço do banco do Firebase</label><input id="sy-db" class="in-text" type="text" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="https://….firebaseio.com"><button class="btn primary" data-act="sycreate">Criar código da casa</button></div>
+   <div class="fld-col"><label for="sy-code">2º celular: cole o código copiado no 1º</label><input id="sy-code" class="in-text" type="text" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="https://…/casas/…"><button class="btn" data-act="syjoin">Entrar</button></div>
+   ${msg}</section>`;
+}
 function numFld(label,hint,path,val,step){return `<div class="fld"><label for="n-${path}">${label}${hint?`<small>${hint}</small>`:''}</label><input id="n-${path}" type="number" inputmode="decimal" step="${step||1}" min="0" value="${val}" data-act="num" data-path="${path}"></div>`;}
 function viewAjustes(){
   const conf=V.confirm==='all';
@@ -255,7 +269,8 @@ function viewAjustes(){
     <tr><td class="ok-t">Cenoura, abobrinha, tomate, pepino, espinafre</td><td class="no-t">Cebola, alho, cogumelo, couve-flor, beterraba</td></tr>
     <tr><td class="ok-t">Morango, uva, mamão, banana firme, laranja</td><td class="no-t">Manga, maçã, pera, abacate, banana muito madura</td></tr></tbody></table></div>
    <div class="sub">Tolerância varia de pessoa para pessoa e por porção. Se a Pri acompanha com nutricionista, vale alinhar esta lista com ela.</div></section>
-  <section class="card stack"><div class="eyebrow">Dados</div><div class="sub">As marcações ficam salvas só neste aparelho e navegador. Quem abrir em outro celular começa do zero.</div>
+  ${syncBlock()}
+  <section class="card stack"><div class="eyebrow">Dados</div><div class="sub">Tudo fica salvo neste aparelho e funciona sem internet. Com a sincronização ligada, trocas, compras, estoque, preparo e metas também vão para o outro celular. O que cada um comeu fica só no aparelho de cada um.</div>${SY.url?'<div class="sub"><b>Atenção:</b> com a sincronização ligada, zerar tudo também zera as compras, trocas e o preparo no outro celular.</div>':''}
    <div><button class="btn${conf?' warn':''}" data-act="resetall">${conf?'Toque de novo para zerar tudo':'Zerar todas as marcações'}</button></div></section></div>`;
 }
 
@@ -267,6 +282,7 @@ function render(keep){
   $('#main').innerHTML=VIEWS[V.view]();
   $('#nav').innerHTML=navHtml();
   if(keep)window.scrollTo(0,y);
+  if(typeof syStatus==='function')syStatus();
 }
 function go(v){if(!VIEWS[v])v='hoje';V.view=v;V.confirm=null;render(false);window.scrollTo(0,0);}
 function setHash(v){try{if(location.hash.slice(1)===v){go(v);}else{location.hash=v;}}catch(e){go(v);}}
@@ -293,6 +309,10 @@ document.addEventListener('click',e=>{
     case 'step':S.steps[t.dataset.key]=!S.steps[t.dataset.key];save();render(true);return;
     case 'clearsteps':Object.keys(S.steps).forEach(x=>{if(x.indexOf(t.dataset.id+'|')===0)delete S.steps[x];});save();render(true);return;
     case 'filter':V.filter=t.dataset.f;render(true);return;
+    case 'sycreate':case 'syjoin':{const v=(document.getElementById(a==='sycreate'?'sy-db':'sy-code')||{}).value;V.syMsg=a==='sycreate'?syCreate(v):syJoin(v);render(true);syStatus();return;}
+    case 'sycopy':{const done=()=>{V.syCopied=true;render(true);syStatus();setTimeout(()=>{V.syCopied=false;render(true);syStatus();},2500);};
+      try{navigator.clipboard.writeText(SY.url).then(done,()=>{V.syMsg='Não deu para copiar. Código: '+SY.url;render(true);syStatus();});}catch(e){V.syMsg='Código: '+SY.url;render(true);syStatus();}return;}
+    case 'syleave':if(V.confirm==='syleave'){syLeave();V.confirm=null;V.syMsg='';}else arm('syleave');render(true);syStatus();return;
     case 'icon':S.icon=t.dataset.id;applyIcon();save();render(true);return;
     case 'swapopen':V.swap=V.swap===t.dataset.key?null:t.dataset.key;render(true);return;
     case 'swap':{const k=t.dataset.key,id=t.dataset.id,d=dayOf(k.split('|')[0]);
@@ -311,7 +331,7 @@ document.addEventListener('change',e=>{
 });
 window.addEventListener('hashchange',()=>go(location.hash.slice(1)));
 (function init(){
-  document.getElementById('app').innerHTML=`<div class="wrap"><header class="hdr"><div><h1>Cardápio Lucas e Pri</h1><p>Semana de domingo 15 a domingo 22 de novembro</p></div>
+  document.getElementById('app').innerHTML=`<div class="wrap"><header class="hdr"><div><h1>Cardápio Lucas e Pri</h1><p>Semana de domingo 15 a domingo 22 de novembro</p><p id="sync-st" class="sync-st" hidden></p></div>
    <div class="who-legend"><span><span class="dot L"></span>Lucas</span><span><span class="dot P"></span>Pri</span></div></header><main id="main"></main></div><nav class="nav" id="nav" aria-label="Seções"></nav>`;
   const h=(location.hash||'').slice(1);V.view=VIEWS[h]?h:'hoje';applyIcon();render(false);
 })();

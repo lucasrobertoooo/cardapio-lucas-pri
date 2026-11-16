@@ -233,6 +233,12 @@ table.t th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:va
   .hdr h1{font-size:23px}
   .trips{gap:6px}.trip{padding:8px}
 }
+.sync-st{margin:4px 0 0;font-size:12px;font-weight:600;color:var(--leaf)}
+.sync-st.offline,.sync-st.conn{color:var(--warn)}.sync-st.erro{color:var(--pri)}
+.fld-col{display:flex;flex-direction:column;gap:8px}
+.fld-col label{font-size:14px;font-weight:500}
+.in-text{width:100%;min-width:0;font:inherit;font-size:16px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink)}
+.row.wrap{flex-wrap:wrap}
 .icons{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
 .icon-opt{display:flex;flex-direction:column;align-items:center;gap:6px;border:2px solid transparent;background:none;border-radius:16px;padding:8px 4px;font-size:13px;font-weight:600;color:var(--ink2)}
 .icon-opt img{width:60px;height:60px;border-radius:14px;display:block;box-shadow:0 0 0 1px var(--line)}
@@ -564,7 +570,7 @@ function loadState(){
 }
 let S=loadState();
 let saveT=null;
-function save(){clearTimeout(saveT);saveT=setTimeout(()=>{try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}},150);}
+function save(){clearTimeout(saveT);saveT=setTimeout(()=>{try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}if(typeof syPush==='function')syPush();},150);}
 
 function fmt(n,d){return Number(n).toLocaleString('pt-BR',{maximumFractionDigits:d==null?1:d});}
 const R0=n=>Math.round(n);
@@ -674,6 +680,117 @@ function shopping(){
     return Object.assign({},t,{items,kg:w/1000});
   });
 }
+
+/* ===== SINCRONIZAÇÃO ENTRE OS CELULARES =====
+   Firebase Realtime Database pela API REST (sem biblioteca): PATCH para gravar, EventSource para ouvir.
+   Em comum: trocas de refeição, compras, estoque, despensa, preparo, metas e referências.
+   De cada aparelho: o que cada um comeu (checks), extras, passos de receita e ícone.
+   O código de sincronização é o endereço completo da casa no banco (…/casas/<código>) e fica só no aparelho. */
+const SHARED=['swap','shop','stock','have','pantry','prep','targets','ref','maxKg'];
+const SYK='cardapio-sync';
+const SY={url:'',pend:{},state:'off',es:null,base:{},remote:null,sending:false,retry:null};
+
+function syLoad(){try{const o=JSON.parse(localStorage.getItem(SYK)||'{}');SY.url=o.url||'';SY.pend=o.pend||{};}catch(e){}}
+function syStore(){try{localStorage.setItem(SYK,JSON.stringify({url:SY.url,pend:SY.pend}));}catch(e){}}
+function sharedOf(s){const o={};SHARED.forEach(f=>{if(s[f]!==undefined)o[f]=s[f];});return o;}
+/* {shop:{'T1|ovo':true}} -> {'shop/T1|ovo':true}; objetos vazios somem, como no Firebase */
+function flat(o,pre,out){out=out||{};
+  for(const k in o){const v=o[k],p=pre?pre+'/'+k:k;
+    if(v&&typeof v==='object')flat(v,p,out);else if(v!==undefined&&v!==null)out[p]=v;}
+  return out;}
+function unflat(f){const o={};
+  for(const p in f){const ks=p.split('/');let c=o;for(let i=0;i<ks.length-1;i++)c=c[ks[i]]=(c[ks[i]]&&typeof c[ks[i]]==='object')?c[ks[i]]:{};c[ks[ks.length-1]]=f[p];}
+  return o;}
+function setPath(root,path,val){
+  const ks=path.split('/').filter(Boolean);if(!ks.length)return val&&typeof val==='object'?val:{};
+  let c=root;const trail=[];
+  for(let i=0;i<ks.length-1;i++){if(!c[ks[i]]||typeof c[ks[i]]!=='object'){if(val===null)return root;c[ks[i]]={};}trail.push([c,ks[i]]);c=c[ks[i]];}
+  const last=ks[ks.length-1];if(val===null)delete c[last];else c[last]=val;
+  for(let i=trail.length-1;i>=0;i--){const [p,k]=trail[i];if(p[k]&&!Object.keys(p[k]).length)delete p[k];}
+  return root;}
+
+function syStatus(){
+  const el=document.getElementById('sync-st');const n=Object.keys(SY.pend).length;
+  const txt={off:'',conn:'Sincronizando…',ok:'Sincronizado com o outro celular',offline:n?`Sem internet · ${n} ${n>1?'mudanças esperando':'mudança esperando'}`:'Sem internet · usando o que está salvo',erro:'Sincronização recusada pelo banco. Veja Ajustes.'}[SY.state]||'';
+  if(el){el.textContent=txt;el.className='sync-st '+SY.state;el.hidden=!txt;}
+  const box=document.getElementById('sync-box');if(box)box.textContent=txt||'Desligada';
+}
+function sySet(st){SY.state=st;syStatus();}
+
+/* Chamado depois de cada save(): o que mudou nas partes compartilhadas vira PATCH */
+function syPush(){
+  if(!SY.url||SY.remote===null)return;
+  const now=flat(sharedOf(S));
+  for(const k in now)if(now[k]!==SY.base[k])SY.pend[k]=now[k];
+  for(const k in SY.base)if(!(k in now))SY.pend[k]=null;
+  SY.base=now;syStore();syFlush();
+}
+async function syFlush(){
+  if(!SY.url||SY.sending||!Object.keys(SY.pend).length){if(SY.url&&SY.state!=='erro'&&SY.remote!==null&&navigator.onLine!==false&&!Object.keys(SY.pend).length)sySet('ok');return;}
+  SY.sending=true;const batch=Object.assign({},SY.pend);
+  try{
+    const r=await fetch(SY.url+'/s.json',{method:'PATCH',body:JSON.stringify(batch)});
+    if(r.status===401||r.status===403){sySet('erro');return;}
+    if(!r.ok)throw new Error(r.status);
+    for(const k in batch)if(SY.pend[k]===batch[k])delete SY.pend[k];
+    syStore();sySet(Object.keys(SY.pend).length?'conn':'ok');
+  }catch(e){sySet('offline');clearTimeout(SY.retry);SY.retry=setTimeout(syFlush,15000);}
+  finally{SY.sending=false;if(Object.keys(SY.pend).length&&SY.state!=='offline'&&SY.state!=='erro')syFlush();}
+}
+/* Estado do banco + mudanças locais ainda não enviadas -> S */
+function syApply(){
+  const merged=Object.assign(flat(SY.remote||{}),SY.pend);
+  const sh=unflat(merged);
+  for(const f of SHARED){
+    if(f==='targets'){const t=sh.targets||{};S.targets={L:Object.assign({},DEF.targets.L,t.L),P:Object.assign({},DEF.targets.P,t.P)};}
+    else if(f==='ref')S.ref=Object.assign({},DEF.ref,sh.ref);
+    else if(f==='maxKg')S.maxKg=sh.maxKg!=null?sh.maxKg:DEF.maxKg;
+    else S[f]=sh[f]||{};
+  }
+  SY.base=flat(sharedOf(S));
+  try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}
+  const a=document.activeElement;
+  if(!(a&&a.tagName==='INPUT'&&a.type!=='checkbox'))render(true);
+}
+function syListen(){
+  if(SY.es)SY.es.close();SY.remote=null;sySet('conn');
+  const es=SY.es=new EventSource(SY.url+'/s.json');
+  const onEv=type=>e=>{let d;try{d=JSON.parse(e.data);}catch(x){return;}
+    const first=SY.remote===null;
+    if(first)SY.remote={};
+    if(type==='put')SY.remote=setPath(SY.remote,d.path,d.data);
+    else for(const k in (d.data||{}))SY.remote=setPath(SY.remote,(d.path==='/'?'':d.path)+'/'+k,d.data[k]);
+    if(first&&!Object.keys(SY.remote).length){
+      /* casa nova e vazia: este aparelho manda o que tem */
+      SY.pend=Object.assign(flat(sharedOf(S)),SY.pend);syStore();SY.base=flat(sharedOf(S));
+    }
+    syApply();syFlush();};
+  es.addEventListener('put',onEv('put'));
+  es.addEventListener('patch',onEv('patch'));
+  es.addEventListener('cancel',()=>{es.close();sySet('erro');});
+  es.onopen=()=>{if(SY.state==='offline')sySet(Object.keys(SY.pend).length?'conn':'ok');syFlush();};
+  es.onerror=()=>{if(SY.state!=='erro')sySet('offline');};
+}
+function syRandom(n){const a='abcdefghijkmnpqrstuvwxyz23456789';const b=new Uint8Array(n);crypto.getRandomValues(b);return [...b].map(x=>a[x%a.length]).join('');}
+function syValidBase(u){return /^https:\/\/[a-z0-9.-]+\.(firebaseio\.com|firebasedatabase\.app)$/.test(u)||/^http:\/\/(127\.0\.0\.1|localhost):\d+$/.test(u);}
+/* Primeiro celular: cola o endereço do banco e cria a casa */
+function syCreate(db){
+  db=(db||'').trim().replace(/\/+$/,'');
+  if(!syValidBase(db))return 'Endereço inválido. Ele termina em firebaseio.com ou firebasedatabase.app.';
+  SY.url=db+'/casas/'+syRandom(24);SY.pend={};syStore();syListen();return '';
+}
+/* Segundo celular: cola o código que o primeiro copiou (o banco manda, o que está aqui é trocado) */
+function syJoin(code){
+  code=(code||'').trim().replace(/\/+$/,'');
+  const m=code.match(/^(.*)\/casas\/([a-z0-9]{20,})$/);
+  if(!m||!syValidBase(m[1]))return 'Código inválido. Copie de novo no outro celular, em Ajustes.';
+  SY.url=code;SY.pend={};syStore();syListen();return '';
+}
+function syLeave(){if(SY.es)SY.es.close();SY.es=null;SY.url='';SY.pend={};SY.remote=null;syStore();sySet('off');}
+
+syLoad();
+if(SY.url){syListen();}
+window.addEventListener('online',()=>{if(SY.url){if(!SY.es||SY.es.readyState===2)syListen();else syFlush();}});
 
 /* ===== INTERFACE ===== */
 const $=(s,r)=>(r||document).querySelector(s);
@@ -907,6 +1024,20 @@ function viewPreparo(){
 /* ----- AJUSTES ----- */
 const ICONS=[['verde','Verde'],['preto','Preto'],['rosa','Rosa'],['claro','Claro']];
 function applyIcon(){const l=document.getElementById('touch-icon');if(l&&ICONS.some(i=>i[0]===S.icon))l.href=`icons/${S.icon}-180.png`;}
+function syncBlock(){
+  const msg=V.syMsg?`<div class="tip">${V.syMsg}</div>`:'';
+  if(SY.url){const conf=V.confirm==='syleave';
+    return `<section class="card stack"><div class="stack" style="gap:6px"><div class="eyebrow">Sincronizar com o outro celular</div>
+     <div class="sub">Ligada. Situação: <b id="sync-box"></b></div>
+     <div class="sub">Em comum: trocas de refeição, as 3 listas de compras, estoque, despensa, preparo, metas e referências. Fica só aqui: o que cada um comeu, os extras e os passos de receita.</div></div>
+     <div class="row wrap"><button class="btn primary" data-act="sycopy">${V.syCopied?'Código copiado':'Copiar código para o outro celular'}</button>
+     <button class="btn${conf?' warn':''}" data-act="syleave">${conf?'Toque de novo para desligar':'Desligar neste celular'}</button></div>${msg}</section>`;}
+  return `<section class="card stack"><div><div class="eyebrow">Sincronizar com o outro celular</div>
+   <div class="sub">Deixa as trocas de refeição, as listas de compras, o estoque e o preparo iguais nos dois celulares, na hora. O que cada um comeu continua separado.</div></div>
+   <div class="fld-col"><label for="sy-db">1º celular: cole o endereço do banco do Firebase</label><input id="sy-db" class="in-text" type="text" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="https://….firebaseio.com"><button class="btn primary" data-act="sycreate">Criar código da casa</button></div>
+   <div class="fld-col"><label for="sy-code">2º celular: cole o código copiado no 1º</label><input id="sy-code" class="in-text" type="text" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="https://…/casas/…"><button class="btn" data-act="syjoin">Entrar</button></div>
+   ${msg}</section>`;
+}
 function numFld(label,hint,path,val,step){return `<div class="fld"><label for="n-${path}">${label}${hint?`<small>${hint}</small>`:''}</label><input id="n-${path}" type="number" inputmode="decimal" step="${step||1}" min="0" value="${val}" data-act="num" data-path="${path}"></div>`;}
 function viewAjustes(){
   const conf=V.confirm==='all';
@@ -932,7 +1063,8 @@ function viewAjustes(){
     <tr><td class="ok-t">Cenoura, abobrinha, tomate, pepino, espinafre</td><td class="no-t">Cebola, alho, cogumelo, couve-flor, beterraba</td></tr>
     <tr><td class="ok-t">Morango, uva, mamão, banana firme, laranja</td><td class="no-t">Manga, maçã, pera, abacate, banana muito madura</td></tr></tbody></table></div>
    <div class="sub">Tolerância varia de pessoa para pessoa e por porção. Se a Pri acompanha com nutricionista, vale alinhar esta lista com ela.</div></section>
-  <section class="card stack"><div class="eyebrow">Dados</div><div class="sub">As marcações ficam salvas só neste aparelho e navegador. Quem abrir em outro celular começa do zero.</div>
+  ${syncBlock()}
+  <section class="card stack"><div class="eyebrow">Dados</div><div class="sub">Tudo fica salvo neste aparelho e funciona sem internet. Com a sincronização ligada, trocas, compras, estoque, preparo e metas também vão para o outro celular. O que cada um comeu fica só no aparelho de cada um.</div>${SY.url?'<div class="sub"><b>Atenção:</b> com a sincronização ligada, zerar tudo também zera as compras, trocas e o preparo no outro celular.</div>':''}
    <div><button class="btn${conf?' warn':''}" data-act="resetall">${conf?'Toque de novo para zerar tudo':'Zerar todas as marcações'}</button></div></section></div>`;
 }
 
@@ -944,6 +1076,7 @@ function render(keep){
   $('#main').innerHTML=VIEWS[V.view]();
   $('#nav').innerHTML=navHtml();
   if(keep)window.scrollTo(0,y);
+  if(typeof syStatus==='function')syStatus();
 }
 function go(v){if(!VIEWS[v])v='hoje';V.view=v;V.confirm=null;render(false);window.scrollTo(0,0);}
 function setHash(v){try{if(location.hash.slice(1)===v){go(v);}else{location.hash=v;}}catch(e){go(v);}}
@@ -970,6 +1103,10 @@ document.addEventListener('click',e=>{
     case 'step':S.steps[t.dataset.key]=!S.steps[t.dataset.key];save();render(true);return;
     case 'clearsteps':Object.keys(S.steps).forEach(x=>{if(x.indexOf(t.dataset.id+'|')===0)delete S.steps[x];});save();render(true);return;
     case 'filter':V.filter=t.dataset.f;render(true);return;
+    case 'sycreate':case 'syjoin':{const v=(document.getElementById(a==='sycreate'?'sy-db':'sy-code')||{}).value;V.syMsg=a==='sycreate'?syCreate(v):syJoin(v);render(true);syStatus();return;}
+    case 'sycopy':{const done=()=>{V.syCopied=true;render(true);syStatus();setTimeout(()=>{V.syCopied=false;render(true);syStatus();},2500);};
+      try{navigator.clipboard.writeText(SY.url).then(done,()=>{V.syMsg='Não deu para copiar. Código: '+SY.url;render(true);syStatus();});}catch(e){V.syMsg='Código: '+SY.url;render(true);syStatus();}return;}
+    case 'syleave':if(V.confirm==='syleave'){syLeave();V.confirm=null;V.syMsg='';}else arm('syleave');render(true);syStatus();return;
     case 'icon':S.icon=t.dataset.id;applyIcon();save();render(true);return;
     case 'swapopen':V.swap=V.swap===t.dataset.key?null:t.dataset.key;render(true);return;
     case 'swap':{const k=t.dataset.key,id=t.dataset.id,d=dayOf(k.split('|')[0]);
@@ -988,7 +1125,7 @@ document.addEventListener('change',e=>{
 });
 window.addEventListener('hashchange',()=>go(location.hash.slice(1)));
 (function init(){
-  document.getElementById('app').innerHTML=`<div class="wrap"><header class="hdr"><div><h1>Cardápio Lucas e Pri</h1><p>Semana de domingo 15 a domingo 22 de novembro</p></div>
+  document.getElementById('app').innerHTML=`<div class="wrap"><header class="hdr"><div><h1>Cardápio Lucas e Pri</h1><p>Semana de domingo 15 a domingo 22 de novembro</p><p id="sync-st" class="sync-st" hidden></p></div>
    <div class="who-legend"><span><span class="dot L"></span>Lucas</span><span><span class="dot P"></span>Pri</span></div></header><main id="main"></main></div><nav class="nav" id="nav" aria-label="Seções"></nav>`;
   const h=(location.hash||'').slice(1);V.view=VIEWS[h]?h:'hoje';applyIcon();render(false);
 })();

@@ -15,6 +15,7 @@ Falar e escrever em português do Brasil. Receitas em gramas e unidades métrica
 src/data.js     ingredientes (ING), refeições (MEALS), semana (WEEK), corredores (AISLES)
 src/recipes.js  passos e dicas (RECIPES, BASES), ilustrações SVG (SCENES), nomes curtos
 src/logic.js    estado (localStorage), nutrição, extras, cálculo de compras (shopping), TRIPS
+src/sync.js     sincronização entre os celulares (Firebase Realtime Database via REST, sem biblioteca)
 src/ui.js       views (hoje, semana, compras, receitas, preparo, ajustes), eventos, hash routing
 src/styles.css  tokens de tema claro/escuro, componentes
 src/sw.js       service worker (modelo): cache do app e das fontes do Google, abre sem internet
@@ -31,6 +32,7 @@ Regras que o código já segue (manter):
 - Cada ingrediente tem proteína (`p`) e kcal (`k`) por unidade de receita, fator de compra (`f`), tamanho de embalagem (`pack`), peso por unidade de compra (`wp`) e corredor (`aisle`).
 - Compras com sobra: o que sobra de uma ida abate da próxima. Frango e arroz são comprados antes do dia de cozinhar em lote (lote 1 no domingo, lote 2 na quarta). Feijão, uma vez por semana.
 - **Trocas**: toda refeição de `MEALS` com o mesmo `slot` é alternativa das outras. A aba Hoje tem o botão Trocar em cada refeição; a troca fica em `S.swap` (`data|refeição`) e `slotsOf(day)` aplica sobre `WEEK`. Placar, compras, preparo e receitas sempre leem `slotsOf`, nunca `day.slots` direto. Alternativas novas usam só ingredientes já cadastrados em `ING`. `oc:1` marca refeições cujos ovos saem cozidos do lote.
+- **Sincronização** (`src/sync.js`): Firebase Realtime Database pela API REST, sem biblioteca. Em comum: `swap`, `shop`, `stock`, `have`, `pantry`, `prep`, `targets`, `ref`, `maxKg` (lista `SHARED`). Só no aparelho: `checks`, `extras`, `steps`, `icon`. Cada mudança vira um PATCH por chave; sem rede, fica em fila no `localStorage` e sai quando a conexão volta. O código (`…/casas/<código>`) fica só nos aparelhos, nunca no repositório. Regras do banco: só `casas/$casa` com código de 20+ caracteres.
 - Estado em `localStorage` (chave `cardapio-lucas-pri-v1`), sempre dentro de try/catch. Rota por hash simples (`#hoje`, `#semana`, `#compras`, `#receitas`, `#preparo`, `#ajustes`).
 - Tema: tokens de cor em `:root`, redefinidos para escuro por `prefers-color-scheme` e por `data-theme`. Cores: cobalto = Lucas, framboesa = Pri, verde = concluído.
 - Mobile primeiro, alvos de toque grandes, navegação fixa embaixo, sem scroll horizontal.
