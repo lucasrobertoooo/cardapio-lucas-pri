@@ -1,22 +1,35 @@
 #!/usr/bin/env python3
-"""Junta src/ em um único index.html autocontido (sem dependências além das fontes do Google)."""
-import os
+"""Junta src/ em um único index.html autocontido e gera o sw.js (PWA offline)."""
+import hashlib, os
 root=os.path.dirname(os.path.abspath(__file__)); src=os.path.join(root,'src')
 r=lambda f:open(os.path.join(src,f),encoding='utf-8').read()
+w=lambda f,s:open(os.path.join(root,f),'w',encoding='utf-8').write(s)
+FONT_CSS='https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap'
 data=r('data.js').split("if (typeof module")[0]
 js="\n".join([data,r('recipes.js'),r('logic.js'),r('ui.js')])
 html=f'''<!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Cardápio Lucas e Pri</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Cardápio">
+<meta name="theme-color" content="#F0F4EF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0E1612" media="(prefers-color-scheme: dark)">
+<link rel="stylesheet" href="{FONT_CSS}">
 <style>
 {r('styles.css')}
 </style></head><body>
 <div id="app"></div>
 <script>
 {js}
+if('serviceWorker' in navigator&&location.protocol!=='file:')navigator.serviceWorker.register('sw.js').catch(()=>{{}});
 </script></body></html>
 '''
-open(os.path.join(root,'index.html'),'w',encoding='utf-8').write(html)
-print('index.html', len(html),'bytes')
+w('index.html',html)
+assets=b''.join(open(os.path.join(root,f),'rb').read() for f in ['manifest.webmanifest','icons/icon-180.png','icons/icon-192.png','icons/icon-512.png'])
+ver=hashlib.sha256(html.encode()+assets).hexdigest()[:10]
+w('sw.js',r('sw.js').replace('__VERSION__',ver).replace('__FONT_CSS__',FONT_CSS))
+print('index.html', len(html),'bytes · sw.js versão',ver)

@@ -2,6 +2,13 @@
 <html lang="pt-BR"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Cardápio Lucas e Pri</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Cardápio">
+<meta name="theme-color" content="#F0F4EF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0E1612" media="(prefers-color-scheme: dark)">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap">
 <style>
 /* Layout: coluna única de até 900px, placar fixo no topo da aba Hoje, navegação fixa embaixo (uso com uma mão, no celular, no mercado).
@@ -823,4 +830,5 @@ window.addEventListener('hashchange',()=>go(location.hash.slice(1)));
   const h=(location.hash||'').slice(1);V.view=VIEWS[h]?h:'hoje';render(false);
 })();
 
+if('serviceWorker' in navigator&&location.protocol!=='file:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script></body></html>

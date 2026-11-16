@@ -25,8 +25,9 @@ jobs:
       - name: Build
         run: |
           python3 build.py
-          mkdir -p _site
-          cp index.html _site/
+          mkdir -p _site/icons
+          cp index.html sw.js manifest.webmanifest _site/
+          cp icons/*.png _site/icons/
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
