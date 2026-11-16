@@ -928,7 +928,7 @@ function viewAjustes(){
    <div class="scroll-x"><table class="t"><thead><tr><th>Pode</th><th>Evitar</th></tr></thead><tbody>
     <tr><td class="ok-t">Frango, ovo, peixe, atum, sardinha</td><td class="no-t">Feijão, lentilha, grão-de-bico, soja</td></tr>
     <tr><td class="ok-t">Leite e iogurte sem lactose, mussarela, parmesão</td><td class="no-t">Leite comum, cottage, ricota, requeijão</td></tr>
-    <tr><td class="ok-t">Batata, arroz, tapioca, aveia (até 40 g), macarrão de arroz, pão de trigo até 1 fatia (½ pão francês) por vez</td><td class="no-t">Pão e macarrão de trigo em quantidade</td></tr>
+    <tr><td class="ok-t">Batata, arroz, aveia (até 40 g), macarrão de arroz, pão de trigo até 1 fatia (½ pão francês) por vez</td><td class="no-t">Pão e macarrão de trigo em quantidade</td></tr>
     <tr><td class="ok-t">Cenoura, abobrinha, tomate, pepino, espinafre</td><td class="no-t">Cebola, alho, cogumelo, couve-flor, beterraba</td></tr>
     <tr><td class="ok-t">Morango, uva, mamão, banana firme, laranja</td><td class="no-t">Manga, maçã, pera, abacate, banana muito madura</td></tr></tbody></table></div>
    <div class="sub">Tolerância varia de pessoa para pessoa e por porção. Se a Pri acompanha com nutricionista, vale alinhar esta lista com ela.</div></section>
@@ -993,5 +993,13 @@ window.addEventListener('hashchange',()=>go(location.hash.slice(1)));
   const h=(location.hash||'').slice(1);V.view=VIEWS[h]?h:'hoje';applyIcon();render(false);
 })();
 
-if('serviceWorker' in navigator&&location.protocol!=='file:')navigator.serviceWorker.register('sw.js').catch(()=>{});
+/* Atualização: o app abre do cache (funciona sem sinal) e, se houver versão nova publicada, recarrega sozinho uma vez. */
+if('serviceWorker' in navigator&&location.protocol!=='file:'){
+  const had=!!navigator.serviceWorker.controller;let reloaded=false;
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{if(had&&!reloaded){reloaded=true;location.reload();}});
+  navigator.serviceWorker.register('sw.js').then(reg=>{
+    reg.update().catch(()=>{});
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')reg.update().catch(()=>{});});
+  }).catch(()=>{});
+}
 </script></body></html>

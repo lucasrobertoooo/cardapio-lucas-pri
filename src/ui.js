@@ -251,7 +251,7 @@ function viewAjustes(){
    <div class="scroll-x"><table class="t"><thead><tr><th>Pode</th><th>Evitar</th></tr></thead><tbody>
     <tr><td class="ok-t">Frango, ovo, peixe, atum, sardinha</td><td class="no-t">Feijão, lentilha, grão-de-bico, soja</td></tr>
     <tr><td class="ok-t">Leite e iogurte sem lactose, mussarela, parmesão</td><td class="no-t">Leite comum, cottage, ricota, requeijão</td></tr>
-    <tr><td class="ok-t">Batata, arroz, tapioca, aveia (até 40 g), macarrão de arroz, pão de trigo até 1 fatia (½ pão francês) por vez</td><td class="no-t">Pão e macarrão de trigo em quantidade</td></tr>
+    <tr><td class="ok-t">Batata, arroz, aveia (até 40 g), macarrão de arroz, pão de trigo até 1 fatia (½ pão francês) por vez</td><td class="no-t">Pão e macarrão de trigo em quantidade</td></tr>
     <tr><td class="ok-t">Cenoura, abobrinha, tomate, pepino, espinafre</td><td class="no-t">Cebola, alho, cogumelo, couve-flor, beterraba</td></tr>
     <tr><td class="ok-t">Morango, uva, mamão, banana firme, laranja</td><td class="no-t">Manga, maçã, pera, abacate, banana muito madura</td></tr></tbody></table></div>
    <div class="sub">Tolerância varia de pessoa para pessoa e por porção. Se a Pri acompanha com nutricionista, vale alinhar esta lista com ela.</div></section>

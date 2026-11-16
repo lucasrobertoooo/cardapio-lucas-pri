@@ -24,7 +24,7 @@ manifest.webmanifest, icons/  PWA instalável (ícones em PNG)
 .github/workflows/pages.yml   publica no GitHub Pages a cada push na main
 ```
 - Ícones: `python3 icons/gerar.py` (Pillow) gera as variantes de 180 px (verde, preto, rosa, claro) e os 192/512 do manifest. A escolha em Ajustes troca o `apple-touch-icon`, que o iPhone lê na hora de adicionar à Tela de Início.
-- `index.html` e `sw.js` são saídas do build: editar só em `src/` e rodar `python3 build.py`. Cada build muda a versão do cache, então o celular pega a versão nova na abertura seguinte.
+- `index.html` e `sw.js` são saídas do build: editar só em `src/` e rodar `python3 build.py`. Cada build muda a versão do cache. O app abre do cache, procura versão nova ao abrir e ao voltar para a tela, e recarrega sozinho uma vez quando ela chega.
 - O painel de navegador do app Claude não registra service worker; testar o modo offline no Chrome.
 Regras que o código já segue (manter):
 - Tudo sai **calculado a partir do plano**: a lista de compras, o preparo em lote e os totais vêm de `MEALS` + `WEEK`. Nunca digitar quantidades à mão em outro lugar.
