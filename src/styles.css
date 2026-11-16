@@ -105,7 +105,15 @@ input:focus-visible + .box{outline:2px solid var(--leaf);outline-offset:2px}
 .person .desc{font-size:13px;color:var(--ink);grid-column:2}
 .person .nums{font-size:12px;color:var(--ink2);text-align:right;white-space:nowrap}
 .person.done .desc{opacity:.55;text-decoration:line-through}
-.slot-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.slot-actions{display:flex;gap:6px 14px;align-items:center;flex-wrap:wrap}
+.slot-actions .link{padding:6px 0}
+.alts{grid-column:1/-1;display:flex;flex-direction:column;gap:8px;border-top:1px dashed var(--line);padding-top:10px}
+.alt{display:grid;grid-template-columns:56px 1fr auto;gap:10px;align-items:center;background:var(--surface2);border-radius:12px;padding:8px}
+.alt .mini{width:56px;height:38px;border-radius:8px;overflow:hidden;background:var(--ill)}
+.alt .mini svg{width:100%;height:100%;display:block}
+.alt-tx{display:flex;flex-direction:column;gap:2px;min-width:0}
+.alt-tx b{font-size:14px;line-height:1.25}
+.alt-tx .L{color:var(--lucas);white-space:nowrap}.alt-tx .P{color:var(--pri);white-space:nowrap}
 
 /* extras */
 .pills{display:flex;flex-wrap:wrap;gap:8px}

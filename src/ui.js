@@ -12,7 +12,7 @@ const NAV=[
 function pad(n){return String(n).padStart(2,'0');}
 function todayStr(){const d=new Date();return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;}
 const TODAY=todayStr();
-const V={view:'hoje',day:ALL_DAYS.includes(TODAY)?TODAY:ALL_DAYS[0],trip:'T1',open:{},filter:'all',confirm:null,extraWho:'L'};
+const V={swap:null,view:'hoje',day:ALL_DAYS.includes(TODAY)?TODAY:ALL_DAYS[0],trip:'T1',open:{},filter:'all',confirm:null,extraWho:'L'};
 const CHECK='<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 const CHEV='<svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>';
 const WHO={L:'Lucas',P:'Pri'};
@@ -44,8 +44,22 @@ function advice(day){
   if(!out.length)return `<div class="tip ok">O plano do dia fecha a meta dos dois. Se um dia escapar, sem drama: vale a média da semana.</div>`;
   return `<div class="tip">${out.join('<br>')}</div>`;
 }
+/* Ingredientes que já entram no plano base da semana: alternativa que usa só eles não pede compra nova. */
+const BASE_ING=new Set();WEEK.forEach(d=>Object.values(d.slots).forEach(mid=>['L','P'].forEach(w=>MEALS[mid][w].forEach(it=>BASE_ING.add(it[0])))));
+function sgn(n){n=R0(n);return n>0?`+${n}`:n<0?`−${-n}`:'='; }
+function altsBlock(day,k,mid){
+  const key=`${day.d}|${k}`,cur={L:nut(MEALS[mid].L).p,P:nut(MEALS[mid].P).p};
+  const ids=Object.keys(MEALS).filter(id=>MEALS[id].slot===KIND[k]&&id!==mid);
+  const rows=ids.map(id=>{const m=MEALS[id],l=nut(m.L).p,p=nut(m.P).p;
+    const extra=[...new Set(m.L.concat(m.P).map(it=>it[0]))].filter(i=>!BASE_ING.has(i)).map(i=>SN[i]);
+    return `<div class="alt"><div class="mini">${ill(id)}</div><div class="alt-tx"><b>${m.n}</b>
+      <span class="sub">${m.t} min · <span class="L">Lucas ${R0(l)} g (${sgn(l-cur.L)})</span> · <span class="P">Pri ${R0(p)} g (${sgn(p-cur.P)})</span></span>
+      <span class="sub">${extra.length?`Compra a mais: ${extra.join(', ')}`:'Só com o que já está na lista'}</span></div>
+      <button class="btn small primary" data-act="swap" data-key="${key}" data-id="${id}">Usar</button></div>`;}).join('');
+  return `<div class="alts"><div class="eyebrow">Trocar por</div>${rows}</div>`;
+}
 function slotCard(day,k,label){
-  const mid=day.slots[k],m=MEALS[mid];
+  const base=day.slots[k],mid=slotsOf(day)[k],m=MEALS[mid],key=`${day.d}|${k}`,open=V.swap===key;
   const people=['L','P'].map(w=>{
     const key=`${day.d}|${k}|${w}`,n=nut(m[w]),on=!!S.checks[key];
     return `<label class="person ${w}${on?' done':''}"><input type="checkbox" data-act="chk" data-key="${key}"${on?' checked':''}><span class="box">${CHECK}</span>
@@ -53,10 +67,12 @@ function slotCard(day,k,label){
   }).join('');
   const both=S.checks[`${day.d}|${k}|L`]&&S.checks[`${day.d}|${k}|P`];
   return `<article class="slot"><div class="ill">${ill(mid)}</div>
-   <div><div class="slot-top"><span class="tag">${label}</span><span class="sub">${m.t} min</span></div><h3>${m.n}</h3>
+   <div><div class="slot-top"><span class="tag">${label}</span><span class="sub">${m.t} min${mid!==base?' · trocado':''}</span></div><h3>${m.n}</h3>
    <div class="slot-actions"><button class="link" data-act="recipe" data-id="${mid}">Ver receita</button>
-   <button class="link" data-act="both" data-day="${day.d}" data-slot="${k}">${both?'Desmarcar os dois':'Os dois comeram'}</button></div></div>
-   <div class="people">${people}</div></article>`;
+   <button class="link" data-act="both" data-day="${day.d}" data-slot="${k}">${both?'Desmarcar os dois':'Os dois comeram'}</button>
+   <button class="link" data-act="swapopen" data-key="${key}" aria-expanded="${open}">${open?'Fechar trocas':'Trocar'}</button>
+   ${mid!==base?`<button class="link" data-act="swap" data-key="${key}" data-id="${base}">Voltar ao plano</button>`:''}</div></div>
+   ${open?altsBlock(day,k,mid):''}<div class="people">${people}</div></article>`;
 }
 function extrasBlock(day){
   const w=V.extraWho,key=`${day.d}|${w}`,ex=S.extras[key]||{};
@@ -97,17 +113,19 @@ function viewSemana(){
   const full=WEEK.filter(d=>d.slots.cafe&&d.slots.jantar);
   const avg=w=>full.reduce((a,d)=>a+dayStats(d,w).plan.p,0)/full.length;
   const cards=WEEK.map(d=>{
-    const rows=SLOTS.filter(s=>d.slots[s[0]]).map(s=>{const mid=d.slots[s[0]];
-      return `<li><span class="sl">${s[1].split(' ')[0]}</span><span class="mini">${ill(mid)}</span><span>${MEALS[mid].n}</span></li>`;}).join('');
+    const sl=slotsOf(d);
+    const rows=SLOTS.filter(s=>sl[s[0]]).map(s=>{const mid=sl[s[0]];
+      return `<li><span class="sl">${s[1].split(' ')[0]}</span><span class="mini">${ill(mid)}</span><span>${MEALS[mid].n}${mid!==d.slots[s[0]]?' <span class="sub">(trocado)</span>':''}</span></li>`;}).join('');
     const l=dayStats(d,'L').plan,p=dayStats(d,'P').plan;
     return `<button class="dayc" data-act="day-go" data-day="${d.d}"><div class="top"><h3>${WD_FULL[d.wd]} ${d.d.slice(8)}</h3>${d.d===TODAY?'<span class="tag">hoje</span>':''}</div>
       <div class="tots"><span class="tot L">Lucas ${R0(l.p)} g · ${R0(l.k)} kcal</span><span class="tot P">Pri ${R0(p.p)} g · ${R0(p.k)} kcal</span></div><ul>${rows}</ul></button>`;}).join('');
-  const counts={};WEEK.forEach(d=>Object.values(d.slots).forEach(m=>{if(MEALS[m].slot==='ref')counts[m]=(counts[m]||0)+1;}));
+  const counts={};WEEK.forEach(d=>Object.values(slotsOf(d)).forEach(m=>{if(MEALS[m].slot==='ref')counts[m]=(counts[m]||0)+1;}));
+  const nAlt=k=>Object.keys(MEALS).filter(id=>MEALS[id].slot===k).length;
   const rod=Object.keys(counts).sort().map(m=>`${SHORT[m]} ${counts[m]}×`).join(' · ');
   return `<div class="stack"><section class="card stack"><div><div class="eyebrow">Plano da semana, domingo 15 a domingo 22</div>
    <div class="sub">Média dos dias completos: Lucas ${R0(avg('L'))} g de proteína (meta ${S.targets.L.p}), Pri ${R0(avg('P'))} g (meta ${S.targets.P.p}). O plano já inclui uma folga para os dias em que algo escapar. As barras mostram a proteína planejada em % da meta de cada um.</div></div>
    <div class="chart">${chartSvg()}</div><div class="who-legend"><span><span class="dot L"></span>Lucas</span><span><span class="dot P"></span>Pri</span></div>
-   <div class="sub">Almoço e jantar rodam em 5 pratos: ${rod}. Café, lanche e ceia são fixos, sem decisão.</div></section>
+   <div class="sub">Almoço e jantar desta semana: ${rod}. Não deu vontade ou faltou um ingrediente? Na aba Hoje, toque em Trocar em qualquer refeição: são ${nAlt('cafe')} cafés, ${nAlt('ref')} pratos, ${nAlt('lanche')} lanches e ${nAlt('ceia')} ceias, todos com o que costuma estar na lista. Compras e preparo se recalculam sozinhos.</div></section>
    <div class="week">${cards}</div></div>`;
 }
 
@@ -151,7 +169,7 @@ function viewCompras(){
 }
 
 /* ----- RECEITAS ----- */
-function whereUsed(id){const out=[];WEEK.forEach(d=>SLOTS.forEach(s=>{if(d.slots[s[0]]===id)out.push(`${d.wd} ${d.d.slice(8)} (${s[1].split(' ')[0].toLowerCase()})`);}));return out.join(', ');}
+function whereUsed(id){const out=[];WEEK.forEach(d=>{const sl=slotsOf(d);SLOTS.forEach(s=>{if(sl[s[0]]===id)out.push(`${d.wd} ${d.d.slice(8)} (${s[1].split(' ')[0].toLowerCase()})`);});});return out.length?out.join(', '):'nenhum dia. Use o botão Trocar na aba Hoje para colocar no plano.';}
 function recCard(id){
   const m=MEALS[id]||BASES[id],open=!!V.open[id],r=RECIPES[id];
   const isMeal=!!MEALS[id];
@@ -163,7 +181,7 @@ function recCard(id){
     const cols=isMeal?`<div class="cols">${['L','P'].map(w=>{const n=nut(m[w]);return `<div class="col ${w}"><h4>${WHO[w]}</h4><ul>${m[w].map(it=>`<li>${fq(it[0],it[1])}</li>`).join('')}</ul><div class="tt">${R0(n.p)} g de proteína · ${R0(n.k)} kcal</div></div>`;}).join('')}</div>`:`<div class="note" style="margin-top:14px">${m.desc}</div>`;
     const steps=`<ol class="steps">${r.steps.map((s,i)=>{const k=`${id}|${i}`;return `<li class="${S.steps[k]?'done':''}" data-act="step" data-key="${k}"><span>${s}</span></li>`;}).join('')}</ol>`;
     const tips=r.tips.length?`<div class="note">${r.tips.map(t=>`<div>${t}</div>`).join('')}</div>`:'';
-    const wh=isMeal?`<div class="where">Aparece na semana: ${whereUsed(id)}</div>`:'';
+    const wh=isMeal?`<div class="where">Na semana: ${whereUsed(id)}</div>`:'';
     body=`<div class="rec-b">${cols}${steps}${tips}${wh}<div><button class="link" data-act="clearsteps" data-id="${id}">Limpar passos marcados</button></div></div>`;
   }
   return `<article class="rec">${head}${body}</article>`;
@@ -180,10 +198,8 @@ function viewReceitas(){
 /* ----- PREPARO ----- */
 function ceilTo(n,s){return Math.ceil(n/s-1e-9)*s;}
 function eggOf(list){const f=list.find(i=>i[0]==='ovo');return f?f[1]:0;}
-function boiledEggs(days){let n=0;days.forEach(dd=>{const d=dayOf(dd);if(!d)return;Object.values(d.slots).forEach(mid=>{
-  if(mid==='C2')n+=eggOf(MEALS.C2.L)+eggOf(MEALS.C2.P);
-  if(mid==='M5')n+=eggOf(MEALS.M5.L);
-  if(mid==='M1')n+=eggOf(MEALS.M1.P);});});return n;}
+function boiledEggs(days){let n=0;days.forEach(dd=>{const d=dayOf(dd);if(!d)return;Object.values(slotsOf(d)).forEach(mid=>{
+  const m=MEALS[mid];if(m.oc)n+=eggOf(m.L)+eggOf(m.P);});});return n;}
 function prepPlan(){
   const w1=['2026-11-16','2026-11-17','2026-11-18'],w2=['2026-11-19','2026-11-20','2026-11-21','2026-11-22'];
   const mk=(key,label,when,days,first)=>{
@@ -194,7 +210,7 @@ function prepPlan(){
     const tasks=[
       {id:`${key}-azeite`,n:'Azeite aromatizado',m:8,t:'100 ml de azeite com 2 dentes de alho amassados, fogo baixo por 5 min. Tire todo o alho. Geladeira, até 4 dias.'+(first?'':' Descarte o do domingo e faça este novo.')},
       {id:`${key}-frango`,n:`Frango assado: ${fr} g`,m:30,t:`Tempere com sal, páprica e limão. Forno a 200 °C por 22 a 25 min. Desfie metade e fatie o resto. Cobre ${first?'segunda a quarta':'quinta a domingo'}.`},
-      {id:`${key}-ovos`,n:`Ovos cozidos: ${ov} un`,m:12,t:'Água fria, ferva e conte 10 min. Passe em água gelada. Para mingau, purê e macarrão da Pri.'},
+      {id:`${key}-ovos`,n:`Ovos cozidos: ${ov} un`,m:12,t:'Água fria, ferva e conte 10 min. Passe em água gelada. A conta inclui as trocas feitas na aba Hoje.'},
       {id:`${key}-arroz`,n:`Arroz: ${ar} g crus`,m:20,t:`Refogue no azeite, 2,5 partes de água, 12 min tampado. Rende ~${ar*3} g cozidos. Só o Lucas come arroz.`}];
     if(first)tasks.push({id:`${key}-feijao`,n:`Feijão: ${fj} g secos`,m:35,t:`Pressão por 25 min. Rende ~${Math.round(fj*2.85/10)*10} g cozidos. Congele em porções de 150 g, uma por omelete da semana.`});
     else tasks.push({id:`${key}-feijao`,n:'Feijão: tirar 1 porção do congelador',m:2,t:'Passe uma porção de 150 g para a geladeira na véspera do omelete.'});
@@ -220,7 +236,7 @@ function viewAjustes(){
    ${numFld('Lucas: proteína (g)','Janela de 155 a 165 g','t.L.p',S.targets.L.p)}${numFld('Lucas: energia (kcal)','Superávit leve','t.L.k',S.targets.L.k,50)}
    ${numFld('Pri: proteína (g)','~1,9 g por kg, com 66 kg','t.P.p',S.targets.P.p)}${numFld('Pri: energia (kcal)','Déficit leve','t.P.k',S.targets.P.k,50)}</section>
   <section class="card"><div class="eyebrow">Valores de referência</div>
-   ${numFld('Proteína em 100 g de iogurte grego sem lactose (g)','Veja no rótulo do pote que comprar. Muda todos os totais.','r.iogurte100',S.ref.iogurte100,.5)}
+   ${numFld('Proteína em 100 g do iogurte (g)','Pense Zero natural: ~3,6 g. Se comprar grego, ~5 a 6 g. Muda todos os totais.','r.iog',S.ref.iog,.1)}
    ${numFld('Proteína de 1 dose de whey (g)','A sua referência: 24 g','r.whey',S.ref.whey,.5)}
    ${numFld('Limite da mochila (kg)','Alerta nas compras','maxkg',S.maxKg,.5)}</section>
   <section class="card stack"><div class="eyebrow">Como as contas são feitas</div>
@@ -267,11 +283,15 @@ document.addEventListener('click',e=>{
     case 'trip':V.trip=t.dataset.id;V.confirm=null;render(true);return;
     case 'stock':{const id=t.dataset.id;S.stock[id]=Math.max(0,(S.stock[id]||0)+Number(t.dataset.d));save();render(true);return;}
     case 'resetshop':{const k='shop:'+t.dataset.id;if(V.confirm===k){Object.keys(S.shop).forEach(x=>{if(x.indexOf(t.dataset.id+'|')===0)delete S.shop[x];});V.confirm=null;save();}else arm(k);render(true);return;}
-    case 'resetall':{if(V.confirm==='all'){S.checks={};S.extras={};S.shop={};S.pantry={};S.prep={};S.steps={};S.have={};V.confirm=null;save();}else arm('all');render(true);return;}
+    case 'resetall':{if(V.confirm==='all'){S.checks={};S.extras={};S.shop={};S.pantry={};S.prep={};S.steps={};S.have={};S.swap={};V.confirm=null;save();}else arm('all');render(true);return;}
     case 'exp':V.open[t.dataset.id]=!V.open[t.dataset.id];render(true);return;
     case 'step':S.steps[t.dataset.key]=!S.steps[t.dataset.key];save();render(true);return;
     case 'clearsteps':Object.keys(S.steps).forEach(x=>{if(x.indexOf(t.dataset.id+'|')===0)delete S.steps[x];});save();render(true);return;
     case 'filter':V.filter=t.dataset.f;render(true);return;
+    case 'swapopen':V.swap=V.swap===t.dataset.key?null:t.dataset.key;render(true);return;
+    case 'swap':{const k=t.dataset.key,id=t.dataset.id,d=dayOf(k.split('|')[0]);
+      if(id===d.slots[k.split('|')[1]])delete S.swap[k];else S.swap[k]=id;
+      delete S.checks[k+'|L'];delete S.checks[k+'|P'];V.swap=null;save();render(true);return;}
   }
 });
 document.addEventListener('change',e=>{

@@ -1,7 +1,7 @@
 /* ===== ESTADO E CÁLCULOS ===== */
 const KEY='cardapio-lucas-pri-v1';
 const DEF={checks:{},extras:{},shop:{},stock:{atum:4,sardinha:2},pantry:{},prep:{},steps:{},
-  targets:{L:{p:160,k:2800},P:{p:125,k:1750}},ref:{iogurte100:6,whey:24},maxKg:14,have:{}};
+  targets:{L:{p:160,k:2800},P:{p:125,k:1750}},ref:{iog:3.6,whey:24},maxKg:14,have:{},swap:{}};
 function clone(o){return JSON.parse(JSON.stringify(o));}
 function loadState(){
   const s=clone(DEF);
@@ -31,7 +31,7 @@ function fq(id,q){
   }
 }
 function pOf(id){
-  if(id==='iogurte') return S.ref.iogurte100/100;
+  if(id==='iogurte') return S.ref.iog/100;
   if(id==='whey') return S.ref.whey;
   return ING[id].p;
 }
@@ -39,15 +39,22 @@ function nut(items){let p=0,k=0;for(const it of items){p+=pOf(it[0])*it[1];k+=IN
 const EXTRAS=[
   {id:'whey',n:'1 dose de whey',it:[['whey',1]]},
   {id:'atum',n:'1 lata de atum',it:[['atum',1]]},
-  {id:'iogurte',n:'1 pote de iogurte (170 g)',it:[['iogurte',170]]},
+  {id:'iogurte',n:'1 copo de iogurte (200 g)',it:[['iogurte',200]]},
   {id:'ovo',n:'1 ovo cozido',it:[['ovo',1]]},
   {id:'leite',n:'1 copo de leite (200 ml)',it:[['leite',200]]},
   {id:'mussarela',n:'2 fatias de mussarela (30 g)',it:[['mussarela',30]]},
   {id:'amendoim',n:'1 colher de pasta de amendoim (15 g)',it:[['amendoim',15]]}
 ];
+/* Refeições do dia com as trocas feitas na aba Hoje. Tudo que é calculado (placar, compras, preparo) passa por aqui. */
+const KIND={cafe:'cafe',almoco:'ref',jantar:'ref',lanche:'lanche',ceia:'ceia'};
+function slotsOf(day){
+  const out={};
+  for(const k in day.slots){const sw=S.swap[`${day.d}|${k}`];out[k]=sw&&MEALS[sw]&&MEALS[sw].slot===KIND[k]?sw:day.slots[k];}
+  return out;
+}
 function dayStats(day,who){
   const plan={p:0,k:0},done={p:0,k:0};
-  for(const s of SLOTS){const mid=day.slots[s[0]];if(!mid)continue;const n=nut(MEALS[mid][who]);plan.p+=n.p;plan.k+=n.k;
+  const sl=slotsOf(day);for(const s of SLOTS){const mid=sl[s[0]];if(!mid)continue;const n=nut(MEALS[mid][who]);plan.p+=n.p;plan.k+=n.k;
     if(S.checks[`${day.d}|${s[0]}|${who}`]){done.p+=n.p;done.k+=n.k;}}
   const ex=S.extras[`${day.d}|${who}`]||{};const xt={p:0,k:0};
   for(const e of EXTRAS){const c=ex[e.id]||0;if(c){const n=nut(e.it);xt.p+=n.p*c;xt.k+=n.k*c;}}
@@ -55,12 +62,12 @@ function dayStats(day,who){
 }
 function suggest(gap){
   if(gap<=3)return '';
-  const pw=nut([['whey',1]]).p,py=nut([['iogurte',170]]).p,po=nut([['ovo',1]]).p;
+  const pw=nut([['whey',1]]).p,py=nut([['iogurte',200]]).p,po=nut([['ovo',1]]).p;
   const c={w:0,y:0,o:0};let g=gap;
   while(g>2&&c.w+c.y+c.o<6){if(g>=pw*.8){c.w++;g-=pw;}else if(g>=py*.8){c.y++;g-=py;}else{c.o++;g-=po;}}
   const out=[];
   if(c.w)out.push(`${c.w} ${c.w>1?'doses':'dose'} de whey`);
-  if(c.y)out.push(`${c.y} ${c.y>1?'potes':'pote'} de iogurte`);
+  if(c.y)out.push(`${c.y} ${c.y>1?'copos':'copo'} de iogurte`);
   if(c.o)out.push(`${c.o} ${c.o>1?'ovos cozidos':'ovo cozido'}`);
   return out.join(' + ');
 }
@@ -76,8 +83,8 @@ const BATCH1=['2026-11-15','2026-11-16','2026-11-17','2026-11-18'],BATCH2=['2026
 const ALL_DAYS=WEEK.map(d=>d.d);
 function needs(days,onlyMeals){
   const out={};
-  for(const dd of days){const day=WEEK.find(x=>x.d===dd);if(!day)continue;
-    for(const s of SLOTS){const mid=day.slots[s[0]];if(!mid)continue;
+  for(const dd of days){const day=WEEK.find(x=>x.d===dd);if(!day)continue;const sl=slotsOf(day);
+    for(const s of SLOTS){const mid=sl[s[0]];if(!mid)continue;
       for(const who of ['L','P']){for(const it of MEALS[mid][who]){
         const o=out[it[0]]||(out[it[0]]={tot:0,L:0,P:0,uses:[]});
         o.tot+=it[1];o[who]+=it[1];const sh=SHORT[mid];if(!o.uses.includes(sh))o.uses.push(sh);}}}}
