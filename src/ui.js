@@ -228,6 +228,8 @@ function viewPreparo(){
 }
 
 /* ----- AJUSTES ----- */
+const ICONS=[['verde','Verde'],['preto','Preto'],['rosa','Rosa'],['claro','Claro']];
+function applyIcon(){const l=document.getElementById('touch-icon');if(l&&ICONS.some(i=>i[0]===S.icon))l.href=`icons/${S.icon}-180.png`;}
 function numFld(label,hint,path,val,step){return `<div class="fld"><label for="n-${path}">${label}${hint?`<small>${hint}</small>`:''}</label><input id="n-${path}" type="number" inputmode="decimal" step="${step||1}" min="0" value="${val}" data-act="num" data-path="${path}"></div>`;}
 function viewAjustes(){
   const conf=V.confirm==='all';
@@ -239,6 +241,9 @@ function viewAjustes(){
    ${numFld('Proteína em 100 g do iogurte (g)','Pense Zero natural: ~3,6 g. Se comprar grego, ~5 a 6 g. Muda todos os totais.','r.iog',S.ref.iog,.1)}
    ${numFld('Proteína de 1 dose de whey (g)','A sua referência: 24 g','r.whey',S.ref.whey,.5)}
    ${numFld('Limite da mochila (kg)','Alerta nas compras','maxkg',S.maxKg,.5)}</section>
+  <section class="card stack"><div><div class="eyebrow">Ícone da tela inicial</div>
+   <div class="sub">Escolha antes de adicionar à Tela de Início: no Safari, Compartilhar e depois "Adicionar à Tela de Início". Já está na tela? Apague o ícone e adicione de novo para trocar.</div></div>
+   <div class="icons" role="radiogroup" aria-label="Ícone">${ICONS.map(i=>`<button class="icon-opt" role="radio" aria-checked="${S.icon===i[0]}" data-act="icon" data-id="${i[0]}"><img src="icons/${i[0]}-180.png" alt="" width="60" height="60"><span>${i[1]}</span></button>`).join('')}</div></section>
   <section class="card stack"><div class="eyebrow">Como as contas são feitas</div>
    <div class="note">Os totais são estimativas com valores médios de tabela (TACO e rótulos). A balança, na média da semana, é o ajuste real.</div>
    <div class="note"><b>Feijão:</b> a referência de 12 a 15 g por concha parece alta. Feijão cozido tem cerca de 5 g de proteína por 100 g, então uma concha (~140 g) rende ~7 g. Usei 5 g por 100 g. Se pesar e achar outro valor, é só avisar.</div></section>
@@ -288,6 +293,7 @@ document.addEventListener('click',e=>{
     case 'step':S.steps[t.dataset.key]=!S.steps[t.dataset.key];save();render(true);return;
     case 'clearsteps':Object.keys(S.steps).forEach(x=>{if(x.indexOf(t.dataset.id+'|')===0)delete S.steps[x];});save();render(true);return;
     case 'filter':V.filter=t.dataset.f;render(true);return;
+    case 'icon':S.icon=t.dataset.id;applyIcon();save();render(true);return;
     case 'swapopen':V.swap=V.swap===t.dataset.key?null:t.dataset.key;render(true);return;
     case 'swap':{const k=t.dataset.key,id=t.dataset.id,d=dayOf(k.split('|')[0]);
       if(id===d.slots[k.split('|')[1]])delete S.swap[k];else S.swap[k]=id;
@@ -307,5 +313,5 @@ window.addEventListener('hashchange',()=>go(location.hash.slice(1)));
 (function init(){
   document.getElementById('app').innerHTML=`<div class="wrap"><header class="hdr"><div><h1>Cardápio Lucas e Pri</h1><p>Semana de domingo 15 a domingo 22 de novembro</p></div>
    <div class="who-legend"><span><span class="dot L"></span>Lucas</span><span><span class="dot P"></span>Pri</span></div></header><main id="main"></main></div><nav class="nav" id="nav" aria-label="Seções"></nav>`;
-  const h=(location.hash||'').slice(1);V.view=VIEWS[h]?h:'hoje';render(false);
+  const h=(location.hash||'').slice(1);V.view=VIEWS[h]?h:'hoje';applyIcon();render(false);
 })();

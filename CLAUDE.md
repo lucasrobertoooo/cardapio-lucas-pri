@@ -20,9 +20,10 @@ src/styles.css  tokens de tema claro/escuro, componentes
 src/sw.js       service worker (modelo): cache do app e das fontes do Google, abre sem internet
 build.py        junta tudo em index.html (autocontido) e gera sw.js com a versão do build
 check.js        imprime proteína e kcal planejadas por dia e por pessoa
-manifest.webmanifest, icons/  PWA instalável (ícones em PNG, 180/192/512)
+manifest.webmanifest, icons/  PWA instalável (ícones em PNG)
 .github/workflows/pages.yml   publica no GitHub Pages a cada push na main
 ```
+- Ícones: `python3 icons/gerar.py` (Pillow) gera as variantes de 180 px (verde, preto, rosa, claro) e os 192/512 do manifest. A escolha em Ajustes troca o `apple-touch-icon`, que o iPhone lê na hora de adicionar à Tela de Início.
 - `index.html` e `sw.js` são saídas do build: editar só em `src/` e rodar `python3 build.py`. Cada build muda a versão do cache, então o celular pega a versão nova na abertura seguinte.
 - O painel de navegador do app Claude não registra service worker; testar o modo offline no Chrome.
 Regras que o código já segue (manter):

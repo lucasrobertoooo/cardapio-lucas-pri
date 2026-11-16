@@ -2,7 +2,7 @@
 // build.py troca __VERSION__ pelo hash do build; versão nova = cache novo, o antigo é apagado.
 const CACHE = 'cardapio-__VERSION__';
 const FONTS = 'cardapio-fontes';
-const SHELL = ['./', './index.html', './manifest.webmanifest', './icons/icon-180.png', './icons/icon-192.png', './icons/icon-512.png'];
+const SHELL = ['./', './index.html', './manifest.webmanifest', __ICONS__];
 const FONT_CSS = '__FONT_CSS__';
 
 // Baixa o CSS das fontes e os arquivos .woff2 que ele aponta. Melhor esforço: sem rede, segue sem fonte.

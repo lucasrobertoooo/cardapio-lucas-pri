@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Junta src/ em um único index.html autocontido e gera o sw.js (PWA offline)."""
-import hashlib, os
+import glob, hashlib, os
 root=os.path.dirname(os.path.abspath(__file__)); src=os.path.join(root,'src')
 r=lambda f:open(os.path.join(src,f),encoding='utf-8').read()
 w=lambda f,s:open(os.path.join(root,f),'w',encoding='utf-8').write(s)
@@ -13,7 +13,7 @@ html=f'''<!doctype html>
 <title>Cardápio Lucas e Pri</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon-192.png">
-<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="apple-touch-icon" id="touch-icon" href="icons/verde-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Cardápio">
 <meta name="theme-color" content="#F0F4EF" media="(prefers-color-scheme: light)">
@@ -29,7 +29,8 @@ if('serviceWorker' in navigator&&location.protocol!=='file:')navigator.serviceWo
 </script></body></html>
 '''
 w('index.html',html)
-assets=b''.join(open(os.path.join(root,f),'rb').read() for f in ['manifest.webmanifest','icons/icon-180.png','icons/icon-192.png','icons/icon-512.png'])
+icons=sorted(os.path.relpath(f,root) for f in glob.glob(os.path.join(root,'icons','*.png')))
+assets=b''.join(open(os.path.join(root,f),'rb').read() for f in ['manifest.webmanifest']+icons)
 ver=hashlib.sha256(html.encode()+assets).hexdigest()[:10]
-w('sw.js',r('sw.js').replace('__VERSION__',ver).replace('__FONT_CSS__',FONT_CSS))
+w('sw.js',r('sw.js').replace('__VERSION__',ver).replace('__FONT_CSS__',FONT_CSS).replace('__ICONS__',', '.join(f"'./{f}'" for f in icons)))
 print('index.html', len(html),'bytes · sw.js versão',ver)

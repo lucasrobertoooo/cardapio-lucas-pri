@@ -1,8 +1,8 @@
 // Service worker: o app abre sem internet (mercado com sinal ruim).
-// build.py troca c9b92c6748 pelo hash do build; versão nova = cache novo, o antigo é apagado.
-const CACHE = 'cardapio-c9b92c6748';
+// build.py troca 79e9206ddb pelo hash do build; versão nova = cache novo, o antigo é apagado.
+const CACHE = 'cardapio-79e9206ddb';
 const FONTS = 'cardapio-fontes';
-const SHELL = ['./', './index.html', './manifest.webmanifest', './icons/icon-180.png', './icons/icon-192.png', './icons/icon-512.png'];
+const SHELL = ['./', './index.html', './manifest.webmanifest', './icons/claro-180.png', './icons/icon-192.png', './icons/icon-512.png', './icons/preto-180.png', './icons/rosa-180.png', './icons/verde-180.png'];
 const FONT_CSS = 'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap';
 
 // Baixa o CSS das fontes e os arquivos .woff2 que ele aponta. Melhor esforço: sem rede, segue sem fonte.
