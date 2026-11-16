@@ -26,7 +26,7 @@
 html{-webkit-text-size-adjust:100%}
 body{background:var(--bg);color:var(--ink);font:400 15px/1.45 var(--f-body);margin:0;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
-  padding-block:0 96px;font-variant-numeric:tabular-nums}
+  padding-block:env(safe-area-inset-top,0px) calc(96px + env(safe-area-inset-bottom,0px));font-variant-numeric:tabular-nums}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
 .wrap{max-width:900px;margin:0 auto}
 button{font:inherit;color:inherit;cursor:pointer}
@@ -206,7 +206,7 @@ input:focus-visible + .box{outline:2px solid var(--leaf);outline-offset:2px}
 .fld:last-child{border-bottom:0}
 .fld label{font-size:14px}
 .fld small{display:block;color:var(--ink2);font-size:12px}
-input[type=number]{width:100%;font:inherit;font-weight:700;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);text-align:right}
+input[type=number]{width:100%;font:inherit;font-size:16px;font-weight:700;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);text-align:right}
 table.t{width:100%;border-collapse:collapse;font-size:13px}
 table.t th,table.t td{text-align:left;padding:8px 8px;border-bottom:1px solid var(--line);vertical-align:top}
 table.t th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink2)}
@@ -219,5 +219,11 @@ table.t th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:va
   .cols{grid-template-columns:1fr}
   .hdr h1{font-size:23px}
   .trips{gap:6px}.trip{padding:8px}
+}
+/* Desktop e tablet: Lucas e Pri lado a lado, alternativas em duas colunas */
+@media (min-width:760px){
+  .people{display:grid;grid-template-columns:1fr 1fr}
+  .alts{display:grid;grid-template-columns:1fr 1fr}
+  .alts .eyebrow{grid-column:1/-1}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
