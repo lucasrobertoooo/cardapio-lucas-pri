@@ -15,9 +15,18 @@ function loadState(){
 }
 let S=loadState();
 let saveT=null;
-function save(){clearTimeout(saveT);saveT=setTimeout(()=>{try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}if(typeof syPush==='function')syPush();},150);}
+let dirty=false;
+/* Só grava se houve toque desde a última gravação: uma aba antiga aberta não pode sobrescrever o que outra salvou. */
+function saveNow(){clearTimeout(saveT);if(!dirty)return;dirty=false;try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}if(typeof syPush==='function')syPush();}
+function save(){dirty=true;clearTimeout(saveT);saveT=setTimeout(saveNow,150);}
+/* Nada se perde ao fechar, trocar de app ou atualizar: grava o toque pendente na hora. */
+window.addEventListener('pagehide',saveNow);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')saveNow();});
 
 function fmt(n,d){return Number(n).toLocaleString('pt-BR',{maximumFractionDigits:d==null?1:d});}
+/* 0,75 -> ¾ ; 1,5 -> 1½ (medidas caseiras) */
+function frac(n){const w=Math.floor(n+1e-9),r=n-w,F=[[.25,'¼'],[.5,'½'],[.75,'¾']].find(f=>Math.abs(f[0]-r)<.03);
+  return r<.03?String(w):r>.97?String(w+1):F?(w?w+F[1]:F[1]):fmt(n,1);}
 const R0=n=>Math.round(n);
 function fq(id,q){
   switch(id){
@@ -29,7 +38,10 @@ function fq(id,q){
     case 'limao': return `${q===.5?'½':fmt(q)} limão`;
     case 'pao': return `${fmt(q)} ${q===1?'fatia':'fatias'} de pão`;
     case 'banana': return `${q===.5?'½':fmt(q)} banana${q>1?'s':''}`;
-    default:{const h=ING[id].hu;if(h){const n=q/h[2];return `${fmt(n)} ${n>1?h[1]:h[0]} de ${SN[id]} (${fmt(q,0)} g)`;}
+    case 'laranja': case 'kiwi': return `${q===.5?'½':fmt(q)} ${SN[id]}${q>1?'s':''}`;
+    default:{const h=ING[id].hu;if(h){const n=q/h[2],u=ING[id].u==='ml'?'ml':'g',w=n>1.01?h[1]:h[0];
+      /* "¾ tomate", não "¾ tomate de tomate" */
+      const same=h[0].split(/[ -]/)[0]===SN[id].split(/[ -]/)[0];return `${frac(n)} ${w}${same?'':' de '+SN[id]} (${fmt(q,0)} ${u})`;}
       return `${fmt(q)} ${ING[id].u==='ml'?'ml':'g'} de ${SN[id]}`;}
   }
 }

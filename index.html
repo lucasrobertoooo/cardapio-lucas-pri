@@ -314,87 +314,114 @@ const ING = {
   morango:  {n:'Morango', u:'g', p:.007, k:.32, pack:250, pk:['bandeja','bandejas'], size:'250 g', aisle:'hort'},
   mamao:    {n:'Mamão formosa', u:'g', p:.005, k:.4, pack:700, pk:['pedaço','pedaços'], size:'~700 g (½ mamão)', aisle:'hort'},
   uva:      {n:'Uva sem semente', u:'g', p:.007, k:.69, pack:500, pk:['cacho','cachos'], size:'~500 g', aisle:'hort'},
-  limao:    {n:'Limão', u:'un', p:0, k:0, pack:2, loose:true, wp:80, aisle:'hort'}
+  limao:    {n:'Limão', u:'un', p:0, k:0, pack:2, loose:true, wp:80, aisle:'hort'},
+  abobora:  {n:'Abóbora cabotiá', u:'g', p:.014, k:.48, pack:250, loose:true, aisle:'hort'},
+  alface:   {n:'Alface', u:'g', p:.013, k:.14, pack:250, pk:['pé','pés'], size:'~250 g', aisle:'hort'},
+  couve:    {n:'Couve-manteiga', u:'g', p:.029, k:.27, pack:200, pk:['maço','maços'], size:'~200 g', aisle:'hort'},
+  brocolis: {n:'Brócolis', u:'g', p:.021, k:.25, pack:300, pk:['bandeja','bandejas'], size:'~300 g', aisle:'hort'},
+  pimentao: {n:'Pimentão vermelho', u:'g', p:.01, k:.28, pack:150, loose:true, aisle:'hort'},
+  berinjela:{n:'Berinjela', u:'g', p:.01, k:.2, pack:250, loose:true, aisle:'hort'},
+  vagem:    {n:'Vagem', u:'g', p:.018, k:.3, pack:250, loose:true, aisle:'hort'},
+  batatadoce:{n:'Batata-doce', u:'g', p:.006, k:.77, pack:250, loose:true, aisle:'hort'},
+  mandioca: {n:'Mandioca (aipim)', u:'g', p:.006, k:1.25, pack:500, loose:true, aisle:'hort'},
+  laranja:  {n:'Laranja', u:'un', p:1.3, k:70, pack:1, loose:true, wp:180, aisle:'hort'},
+  kiwi:     {n:'Kiwi', u:'un', p:.8, k:42, pack:1, loose:true, wp:75, aisle:'hort'},
+  abacaxi:  {n:'Abacaxi', u:'g', p:.009, k:.48, pack:1000, pk:['abacaxi','abacaxis'], size:'~1 kg', aisle:'hort'},
+  camarao:  {n:'Camarão congelado (limpo)', u:'g', p:.24, k:1, pack:400, pk:['pacote','pacotes'], size:'400 g', aisle:'prot'},
+  grao:     {n:'Grão-de-bico cozido (lata)', u:'g', p:.07, k:1.2, pack:265, pk:['lata','latas'], size:'265 g escorrido', wp:1.5, aisle:'prot'},
+  quinoa:   {n:'Quinoa', u:'g cozido', p:.044, k:1.2, f:.36, pack:250, pk:['pacote','pacotes'], size:'250 g', aisle:'merc'}
 };
-/* Editor de refeição: st = passo do + e −, hu = medida caseira [singular, plural, g por medida],
-   pri = máximo por refeição para a Pri ficar no FODMAP baixo (0 = evitar). */
+/* Editor de refeição: st = passo do + e −, hu = medida caseira [singular, plural, g ou ml por medida],
+   pri = máximo por refeição para a Pri ficar no FODMAP baixo (0 = evitar).
+   Regra: sempre medida caseira (colher, concha, copo, xícara, unidade) quando der. Frango, peixe, camarão e macarrão ficam em gramas. */
 const ADJ = {
-  ovo:{st:1}, atum:{st:.5}, sardinha:{st:.5}, peixe:{st:20}, frango:{st:20},
+  ovo:{st:1}, atum:{st:.5}, sardinha:{st:.5}, peixe:{st:20}, frango:{st:20}, camarao:{st:20},
+  grao:{st:25, hu:['colher de servir','colheres de servir',50], pri:0},
   cottage:{st:20, hu:['colher','colheres',20], pri:40}, mussarela:{st:15, hu:['fatia','fatias',15]}, parmesao:{st:5, hu:['colher','colheres',5]},
-  iogurte:{st:50}, leite:{st:50}, whey:{st:.5}, azeite:{st:.25}, pao:{st:1, pri:1},
-  arroz:{st:50}, feijao:{st:50, pri:0}, macarrao:{st:10}, aveia:{st:10, hu:['colher','colheres',10], pri:40},
-  amendoim:{st:15, hu:['colher','colheres',15], pri:30}, passata:{st:50},
-  batata:{st:50}, cenoura:{st:20}, abobrinha:{st:25, pri:75}, pepino:{st:20}, tomate:{st:20}, espinafre:{st:10},
-  banana:{st:.5, pri:1}, morango:{st:50}, mamao:{st:50}, uva:{st:25, pri:150}, limao:{st:.5}
+  iogurte:{st:50, hu:['copo','copos',200]}, leite:{st:50, hu:['copo','copos',200]}, whey:{st:.5}, azeite:{st:.25}, pao:{st:1, pri:1},
+  arroz:{st:25, hu:['colher de servir','colheres de servir',50]}, feijao:{st:70, hu:['concha','conchas',140], pri:0},
+  quinoa:{st:25, hu:['colher de servir','colheres de servir',50]}, macarrao:{st:10},
+  aveia:{st:10, hu:['colher','colheres',10], pri:40}, amendoim:{st:15, hu:['colher','colheres',15], pri:30},
+  passata:{st:50, hu:['copo','copos',200]},
+  batata:{st:75, hu:['batata média','batatas médias',150]}, batatadoce:{st:75, hu:['batata-doce média','batatas-doces médias',150], pri:75},
+  mandioca:{st:50, hu:['pedaço','pedaços',100]},
+  cenoura:{st:30, hu:['cenoura','cenouras',120]}, abobrinha:{st:25, hu:['xícara','xícaras',100], pri:75},
+  abobora:{st:30, hu:['xícara','xícaras',120], pri:75}, brocolis:{st:20, hu:['xícara','xícaras',80], pri:75},
+  berinjela:{st:20, hu:['xícara','xícaras',80], pri:75}, vagem:{st:25, hu:['xícara','xícaras',100], pri:75},
+  couve:{st:20, hu:['xícara','xícaras',40]}, espinafre:{st:15, hu:['xícara','xícaras',30]}, alface:{st:10, hu:['folha','folhas',10]},
+  pimentao:{st:37.5, hu:['pimentão','pimentões',150]}, pepino:{st:50, hu:['pepino','pepinos',200]}, tomate:{st:25, hu:['tomate','tomates',100]},
+  banana:{st:.5, pri:1}, laranja:{st:1}, kiwi:{st:1},
+  morango:{st:12, hu:['morango','morangos',12]}, mamao:{st:75, hu:['fatia','fatias',150]}, uva:{st:25, hu:['punhado','punhados',50], pri:150},
+  abacaxi:{st:40, hu:['fatia','fatias',80], pri:140}, limao:{st:.5}
 };
 for (const id in ADJ) Object.assign(ING[id], ADJ[id]);
 const MEALS = {
  C1:{slot:'cafe', n:'Pão com cottage e ovos mexidos, iogurte e fruta', t:8,
   L:[['pao',3],['ovo',3],['cottage',60],['iogurte',100],['banana',1]],
-  P:[['pao',1],['ovo',2],['cottage',40],['iogurte',100],['morango',100]]},
+  P:[['pao',1],['ovo',2],['cottage',40],['iogurte',100],['morango',96]]},
  C2:{slot:'cafe', n:'Mingau de aveia com ovos cozidos', t:10, oc:1,
   L:[['aveia',50],['leite',250],['banana',1],['amendoim',15],['ovo',2]],
-  P:[['aveia',35],['leite',150],['morango',100],['ovo',2]]},
+  P:[['aveia',40],['leite',150],['morango',96],['ovo',2]]},
  C3:{slot:'cafe', n:'Panqueca de banana e aveia com iogurte', t:10,
-  L:[['ovo',3],['aveia',40],['banana',1],['iogurte',200],['amendoim',10]],
-  P:[['ovo',2],['aveia',25],['banana',1],['iogurte',150]]},
+  L:[['ovo',3],['aveia',40],['banana',1],['iogurte',200],['amendoim',15]],
+  P:[['ovo',2],['aveia',20],['banana',1],['iogurte',150]]},
  C4:{slot:'cafe', n:'Queijo quente com ovo e café com leite', t:8,
   L:[['pao',3],['ovo',3],['mussarela',30],['leite',300],['mamao',150]],
-  P:[['pao',1],['ovo',2],['mussarela',20],['leite',200],['mamao',150]]},
+  P:[['pao',1],['ovo',2],['mussarela',15],['leite',200],['mamao',150]]},
  C5:{slot:'cafe', n:'Iogurte com aveia, fruta e ovos cozidos', t:3, oc:1,
   L:[['iogurte',250],['aveia',40],['banana',1],['amendoim',15],['ovo',3]],
-  P:[['iogurte',170],['aveia',25],['morango',100],['ovo',2]]},
+  P:[['iogurte',150],['aveia',20],['morango',96],['ovo',2]]},
  L1:{slot:'lanche', n:'Vitamina de whey', t:3,
-  L:[['leite',250],['whey',1],['banana',1],['aveia',25],['amendoim',10]],
-  P:[['leite',200],['whey',1],['morango',100],['aveia',10]]},
+  L:[['leite',250],['whey',1],['banana',1],['aveia',20],['amendoim',15]],
+  P:[['leite',200],['whey',1],['morango',96],['aveia',10]]},
  L2:{slot:'lanche', n:'Iogurte batido com whey e fruta', t:3,
-  L:[['iogurte',250],['whey',1],['banana',1],['aveia',30],['amendoim',10]],
-  P:[['iogurte',200],['whey',1],['morango',100],['aveia',10]]},
+  L:[['iogurte',250],['whey',1],['banana',1],['aveia',30],['amendoim',15]],
+  P:[['iogurte',200],['whey',1],['morango',96],['aveia',10]]},
  L3:{slot:'lanche', n:'Sanduíche de atum com mussarela', t:5,
   L:[['pao',3],['atum',1],['mussarela',30],['tomate',50],['leite',200]],
   P:[['pao',1],['atum',1],['mussarela',15],['tomate',50]]},
  L4:{slot:'lanche', n:'Ovos cozidos com leite e fruta', t:2, oc:1,
-  L:[['ovo',3],['leite',300],['banana',1],['amendoim',20]],
-  P:[['ovo',2],['leite',250],['mussarela',20],['uva',100]]},
+  L:[['ovo',3],['leite',300],['banana',1],['amendoim',15]],
+  P:[['ovo',2],['leite',250],['mussarela',15],['uva',100]]},
  E1:{slot:'ceia', n:'Tigela de iogurte com aveia e mamão', t:1,
   L:[['iogurte',250],['aveia',10],['mamao',150]],
-  P:[['iogurte',170],['mamao',140]]},
+  P:[['iogurte',150],['mamao',150]]},
  E2:{slot:'ceia', n:'Tigela de iogurte com aveia e uva', t:1,
-  L:[['iogurte',250],['aveia',10],['uva',120]],
-  P:[['iogurte',170],['uva',100]]},
+  L:[['iogurte',250],['aveia',10],['uva',125]],
+  P:[['iogurte',150],['uva',100]]},
  E3:{slot:'ceia', n:'Leite quente com whey e aveia', t:3,
   L:[['leite',250],['whey',1],['aveia',20]],
   P:[['leite',200],['whey',.5]]},
  E4:{slot:'ceia', n:'Ovos mexidos com mussarela', t:5,
-  L:[['ovo',2],['mussarela',20],['tomate',50]],
+  L:[['ovo',2],['mussarela',15],['tomate',50]],
   P:[['ovo',2],['mussarela',15]]},
  M1:{slot:'ref', n:'Macarrão ao molho de tomate com atum', t:20, oc:1,
-  L:[['macarrao',100],['passata',200],['atum',1],['azeite',1],['parmesao',15],['espinafre',40]],
-  P:[['macarrao',55],['passata',150],['atum',.5],['azeite',.5],['parmesao',10],['espinafre',40],['ovo',1]]},
+  L:[['macarrao',100],['passata',200],['atum',1],['azeite',1],['parmesao',15],['espinafre',45]],
+  P:[['macarrao',55],['passata',150],['atum',.5],['azeite',.5],['parmesao',10],['espinafre',45],['ovo',1]]},
  M2:{slot:'ref', n:'Omelete com batata assada e salada', t:20,
-  L:[['ovo',3],['mussarela',30],['espinafre',30],['batata',200],['arroz',100],['feijao',150],['azeite',.5],['tomate',80],['pepino',60]],
-  P:[['ovo',2],['mussarela',20],['espinafre',30],['frango',50],['batata',170],['azeite',.25],['tomate',80],['pepino',60]]},
+  L:[['ovo',3],['mussarela',30],['espinafre',30],['batata',225],['arroz',100],['feijao',140],['azeite',.5],['tomate',75],['pepino',50]],
+  P:[['ovo',2],['mussarela',15],['espinafre',30],['frango',50],['batata',150],['azeite',.25],['tomate',75],['pepino',50]]},
  M3:{slot:'ref', n:'Peixe na airfryer com batata e legumes', t:25,
-  L:[['peixe',180],['batata',250],['arroz',100],['cenoura',80],['abobrinha',100],['azeite',1],['limao',.5]],
-  P:[['peixe',140],['batata',170],['cenoura',80],['abobrinha',100],['azeite',.25],['limao',.5]]},
+  L:[['peixe',180],['batata',225],['arroz',100],['cenoura',90],['abobrinha',100],['azeite',1],['limao',.5]],
+  P:[['peixe',140],['batata',150],['cenoura',90],['abobrinha',100],['azeite',.25],['limao',.5]]},
  M4:{slot:'ref', n:'Crepe de espinafre recheado', t:20,
-  L:[['ovo',2],['aveia',30],['espinafre',40],['atum',1],['mussarela',20],['batata',250],['azeite',.5]],
-  P:[['ovo',2],['aveia',20],['espinafre',40],['frango',50],['tomate',50],['mussarela',20],['batata',130],['azeite',.25]]},
+  L:[['ovo',2],['aveia',30],['espinafre',45],['atum',1],['mussarela',15],['batata',225],['azeite',.5]],
+  P:[['ovo',2],['aveia',20],['espinafre',45],['frango',50],['tomate',50],['mussarela',15],['batata',150],['azeite',.25]]},
  M5:{slot:'ref', n:'Sardinha ou frango com purê e legumes', t:25, oc:1,
-  L:[['sardinha',1],['ovo',2],['batata',250],['leite',50],['azeite',.5],['cenoura',80],['tomate',60]],
-  P:[['frango',110],['batata',170],['leite',40],['azeite',.25],['cenoura',80],['abobrinha',100]]},
+  L:[['sardinha',1],['ovo',2],['batata',225],['leite',50],['azeite',.5],['cenoura',90],['tomate',50]],
+  P:[['frango',110],['batata',150],['leite',50],['azeite',.25],['cenoura',90],['abobrinha',100]]},
  M6:{slot:'ref', n:'Salada morna de batata com ovo e atum', t:20, oc:1,
-  L:[['batata',300],['ovo',2],['atum',1],['tomate',80],['pepino',60],['azeite',1],['feijao',150]],
-  P:[['batata',200],['ovo',2],['atum',.5],['tomate',80],['pepino',60],['azeite',.5]]},
+  L:[['batata',300],['ovo',2],['atum',1],['tomate',75],['pepino',50],['azeite',1],['feijao',140]],
+  P:[['batata',225],['ovo',2],['atum',.5],['tomate',75],['pepino',50],['azeite',.5]]},
  M7:{slot:'ref', n:'Macarrão de arroz com abobrinha e parmesão', t:20,
-  L:[['macarrao',100],['atum',1],['abobrinha',150],['tomate',60],['azeite',1],['parmesao',15]],
-  P:[['macarrao',55],['frango',100],['abobrinha',75],['tomate',60],['azeite',.5],['parmesao',10]]},
+  L:[['macarrao',100],['atum',1],['abobrinha',150],['tomate',50],['azeite',1],['parmesao',15]],
+  P:[['macarrao',55],['frango',100],['abobrinha',75],['tomate',50],['azeite',.5],['parmesao',10]]},
  M8:{slot:'ref', n:'Peixe ao molho de tomate com espinafre', t:25,
-  L:[['peixe',180],['passata',150],['espinafre',40],['azeite',.5],['arroz',150],['feijao',150]],
-  P:[['peixe',150],['passata',150],['espinafre',40],['azeite',.25],['batata',200]]},
+  L:[['peixe',180],['passata',150],['espinafre',45],['azeite',.5],['arroz',150],['feijao',140]],
+  P:[['peixe',150],['passata',150],['espinafre',45],['azeite',.25],['batata',225]]},
  M9:{slot:'ref', n:'Sanduíche quente de atum ou frango com batata', t:20,
-  L:[['pao',4],['ovo',2],['atum',1],['mussarela',30],['tomate',60],['espinafre',30]],
-  P:[['pao',1],['frango',100],['mussarela',20],['tomate',60],['espinafre',30],['batata',150]]}
+  L:[['pao',4],['ovo',2],['atum',1],['mussarela',30],['tomate',50],['espinafre',30]],
+  P:[['pao',1],['frango',100],['mussarela',15],['tomate',50],['espinafre',30],['batata',150]]}
 };
 const WEEK = [
  {d:'2026-11-15', wd:'Dom', slots:{lanche:'L1', jantar:'M1', ceia:'E1'}},
@@ -410,7 +437,7 @@ const WEEK = [
 /* ===== RECEITAS E FOTOS ===== */
 const SLOTS=[['cafe','Café da manhã'],['almoco','Almoço'],['lanche','Lanche'],['jantar','Jantar'],['ceia','Ceia']];
 const SHORT={C1:'Pão com cottage',C2:'Mingau',L1:'Vitamina',E1:'Iogurte',E2:'Iogurte',M1:'Macarrão',M2:'Omelete',M3:'Peixe',M4:'Crepe',M5:'Purê',C3:'Panqueca',C4:'Queijo quente',C5:'Iogurte e ovos',L2:'Iogurte batido',L3:'Sanduíche de atum',L4:'Ovos e leite',E3:'Leite com whey',E4:'Ovos mexidos',M6:'Salada morna',M7:'Macarrão e abobrinha',M8:'Peixe ao molho',M9:'Sanduíche quente'};
-const SN={ovo:'ovo',atum:'atum',sardinha:'sardinha',peixe:'filé de peixe',frango:'frango',cottage:'cottage',mussarela:'mussarela',parmesao:'parmesão',iogurte:'iogurte',leite:'leite sem lactose',whey:'whey',azeite:'azeite',pao:'pão',arroz:'arroz cozido',feijao:'feijão cozido',macarrao:'macarrão de arroz',aveia:'aveia',amendoim:'pasta de amendoim',passata:'molho de tomate',batata:'batata',cenoura:'cenoura',abobrinha:'abobrinha',pepino:'pepino',tomate:'tomate',espinafre:'espinafre',banana:'banana',morango:'morango',mamao:'mamão',uva:'uva',limao:'limão'};
+const SN={ovo:'ovo',atum:'atum',sardinha:'sardinha',peixe:'filé de peixe',frango:'frango',cottage:'cottage',mussarela:'mussarela',parmesao:'parmesão',iogurte:'iogurte',leite:'leite sem lactose',whey:'whey',azeite:'azeite',pao:'pão',arroz:'arroz cozido',feijao:'feijão cozido',macarrao:'macarrão de arroz',aveia:'aveia',amendoim:'pasta de amendoim',passata:'molho de tomate',batata:'batata',cenoura:'cenoura',abobrinha:'abobrinha',pepino:'pepino',tomate:'tomate',espinafre:'espinafre',banana:'banana',morango:'morango',mamao:'mamão',uva:'uva',limao:'limão',abobora:'abóbora',alface:'alface',couve:'couve',brocolis:'brócolis',pimentao:'pimentão vermelho',berinjela:'berinjela',vagem:'vagem',batatadoce:'batata-doce',mandioca:'mandioca',laranja:'laranja',kiwi:'kiwi',abacaxi:'abacaxi',camarao:'camarão',grao:'grão-de-bico',quinoa:'quinoa cozida'};
 
 const RECIPES={
  C1:{steps:[
@@ -575,9 +602,18 @@ function loadState(){
 }
 let S=loadState();
 let saveT=null;
-function save(){clearTimeout(saveT);saveT=setTimeout(()=>{try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}if(typeof syPush==='function')syPush();},150);}
+let dirty=false;
+/* Só grava se houve toque desde a última gravação: uma aba antiga aberta não pode sobrescrever o que outra salvou. */
+function saveNow(){clearTimeout(saveT);if(!dirty)return;dirty=false;try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}if(typeof syPush==='function')syPush();}
+function save(){dirty=true;clearTimeout(saveT);saveT=setTimeout(saveNow,150);}
+/* Nada se perde ao fechar, trocar de app ou atualizar: grava o toque pendente na hora. */
+window.addEventListener('pagehide',saveNow);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')saveNow();});
 
 function fmt(n,d){return Number(n).toLocaleString('pt-BR',{maximumFractionDigits:d==null?1:d});}
+/* 0,75 -> ¾ ; 1,5 -> 1½ (medidas caseiras) */
+function frac(n){const w=Math.floor(n+1e-9),r=n-w,F=[[.25,'¼'],[.5,'½'],[.75,'¾']].find(f=>Math.abs(f[0]-r)<.03);
+  return r<.03?String(w):r>.97?String(w+1):F?(w?w+F[1]:F[1]):fmt(n,1);}
 const R0=n=>Math.round(n);
 function fq(id,q){
   switch(id){
@@ -589,7 +625,10 @@ function fq(id,q){
     case 'limao': return `${q===.5?'½':fmt(q)} limão`;
     case 'pao': return `${fmt(q)} ${q===1?'fatia':'fatias'} de pão`;
     case 'banana': return `${q===.5?'½':fmt(q)} banana${q>1?'s':''}`;
-    default:{const h=ING[id].hu;if(h){const n=q/h[2];return `${fmt(n)} ${n>1?h[1]:h[0]} de ${SN[id]} (${fmt(q,0)} g)`;}
+    case 'laranja': case 'kiwi': return `${q===.5?'½':fmt(q)} ${SN[id]}${q>1?'s':''}`;
+    default:{const h=ING[id].hu;if(h){const n=q/h[2],u=ING[id].u==='ml'?'ml':'g',w=n>1.01?h[1]:h[0];
+      /* "¾ tomate", não "¾ tomate de tomate" */
+      const same=h[0].split(/[ -]/)[0]===SN[id].split(/[ -]/)[0];return `${frac(n)} ${w}${same?'':' de '+SN[id]} (${fmt(q,0)} ${u})`;}
       return `${fmt(q)} ${ING[id].u==='ml'?'ml':'g'} de ${SN[id]}`;}
   }
 }
@@ -709,10 +748,10 @@ function shopping(){
    O código de sincronização é o endereço completo da casa no banco (…/casas/<código>) e fica só no aparelho. */
 const SHARED=['swap','shop','stock','have','pantry','prep','targets','ref','maxKg','custom'];
 const SYK='cardapio-sync';
-const SY={url:'',pend:{},state:'off',es:null,base:{},remote:null,sending:false,retry:null};
+const SY={merge:false,url:'',pend:{},state:'off',es:null,base:{},remote:null,sending:false,retry:null};
 
-function syLoad(){try{const o=JSON.parse(localStorage.getItem(SYK)||'{}');SY.url=o.url||'';SY.pend=o.pend||{};}catch(e){}}
-function syStore(){try{localStorage.setItem(SYK,JSON.stringify({url:SY.url,pend:SY.pend}));}catch(e){}}
+function syLoad(){try{const o=JSON.parse(localStorage.getItem(SYK)||'{}');SY.url=o.url||'';SY.pend=o.pend||{};SY.merge=!!o.merge;}catch(e){}}
+function syStore(){try{localStorage.setItem(SYK,JSON.stringify({url:SY.url,pend:SY.pend,merge:SY.merge}));}catch(e){}}
 function sharedOf(s){const o={};SHARED.forEach(f=>{if(s[f]!==undefined)o[f]=s[f];});return o;}
 /* {shop:{'T1|ovo':true}} -> {'shop/T1|ovo':true}; objetos vazios somem, como no Firebase */
 function flat(o,pre,out){out=out||{};
@@ -785,6 +824,13 @@ function syListen(){
     if(first&&!Object.keys(SY.remote).length){
       /* casa nova e vazia: este aparelho manda o que tem */
       SY.pend=Object.assign(flat(sharedOf(S)),SY.pend);syStore();SY.base=flat(sharedOf(S));
+    }else if(first&&SY.merge){
+      /* entrando numa casa que já tem dados: nada deste aparelho se perde. O que só existe aqui sobe;
+         onde os dois têm (mesma troca, mesmo item, mesma refeição ajustada), vale o que já está no banco. */
+      const grp=k=>{const p=k.split('/');return p.slice(0,p[0]==='custom'?3:2).join('/');};
+      const rg=new Set(Object.keys(flat(SY.remote)).map(grp)),mine=flat(sharedOf(S));
+      for(const k in mine)if(!rg.has(grp(k)))SY.pend[k]=mine[k];
+      SY.merge=false;syStore();
     }
     syApply();syFlush();};
   es.addEventListener('put',onEv('put'));
@@ -806,7 +852,7 @@ function syJoin(code){
   code=(code||'').trim().replace(/\/+$/,'');
   const m=code.match(/^(.*)\/casas\/([a-z0-9]{20,})$/);
   if(!m||!syValidBase(m[1]))return 'Código inválido. Copie de novo no outro celular, em Ajustes.';
-  SY.url=code;SY.pend={};syStore();syListen();return '';
+  SY.url=code;SY.pend={};SY.merge=true;syStore();syListen();return '';
 }
 function syLeave(){if(SY.es)SY.es.close();SY.es=null;SY.url='';SY.pend={};SY.remote=null;syStore();sySet('off');}
 
@@ -876,13 +922,13 @@ function altsBlock(day,k,mid){
 }
 /* ----- Editor de ingredientes: vale para a refeição em todos os dias ----- */
 function amtOf(id,q){const g=ING[id],h=g.hu;
-  if(h){const n=q/h[2];return {big:fmt(n),small:`${n>1?h[1]:h[0]} · ${fmt(q,0)} g`};}
+  if(h){const n=q/h[2];return {big:frac(n),small:`${n>1.01?h[1]:h[0]} · ${fmt(q,0)} ${g.u==='ml'?'ml':'g'}`};}
   if(g.u==='g'||g.u==='ml'||g.u==='g cozido')return {big:fmt(q,0),small:g.u==='ml'?'ml':g.u};
-  const t=fq(id,q);return {big:fmt(q),small:t.replace(/^[\d,½¼]+\s*/,'').replace(/ de .*/,'')};}
+  const t=fq(id,q);return {big:frac(q),small:t.replace(/^[\d,½¼¾]+\s*/,'').replace(/ de .*/,'')};}
 function editPane(mid,w){
   const its=itemsOf(mid,w),n=nut(its);
   const rows=its.map(([id,q])=>{const a=amtOf(id,q),g=ING[id];
-    const warn=w==='P'&&g.pri!=null&&q>g.pri?`<span class="ed-warn">${g.pri===0?'A Pri evita (FODMAP)':`FODMAP: para a Pri, até ${fq(id,g.pri).replace(/ de .*?( \(|$)/,'$1')}`}</span>`:'';
+    const warn=w==='P'&&g.pri!=null&&q>g.pri?`<span class="ed-warn">${g.pri===0?'A Pri evita (FODMAP)':`FODMAP: para a Pri, até ${g.hu||g.u==='g'||g.u==='g cozido'?fmt(g.pri,0)+' g':fq(id,g.pri)}`}</span>`:'';
     return `<div class="ed-row"><div class="ed-n"><b>${SN[id][0].toUpperCase()+SN[id].slice(1)}</b>${warn}</div>
       <div class="ed-step"><button data-act="edqty" data-mid="${mid}" data-who="${w}" data-id="${id}" data-d="-1" aria-label="Menos ${SN[id]}">${q-(g.st||1)<=0?'×':'−'}</button>
       <span class="ed-q"><b>${a.big}</b><small>${a.small}</small></span>
@@ -1105,11 +1151,11 @@ function viewAjustes(){
    <div class="note"><b>Feijão:</b> a referência de 12 a 15 g por concha parece alta. Feijão cozido tem cerca de 5 g de proteína por 100 g, então uma concha (~140 g) rende ~7 g. Usei 5 g por 100 g. Se pesar e achar outro valor, é só avisar.</div></section>
   <section class="card stack"><div class="eyebrow">Pri: o que pode e o que evitar (FODMAP)</div>
    <div class="scroll-x"><table class="t"><thead><tr><th>Pode</th><th>Evitar</th></tr></thead><tbody>
-    <tr><td class="ok-t">Frango, ovo, peixe, atum, sardinha</td><td class="no-t">Feijão, lentilha, grão-de-bico, soja</td></tr>
+    <tr><td class="ok-t">Frango, ovo, peixe, camarão, atum, sardinha</td><td class="no-t">Feijão, lentilha, grão-de-bico, soja</td></tr>
     <tr><td class="ok-t">Leite e iogurte sem lactose, mussarela, parmesão, cottage até 2 colheres (40 g)</td><td class="no-t">Leite comum, ricota, requeijão</td></tr>
-    <tr><td class="ok-t">Batata, arroz, aveia (até 40 g), macarrão de arroz, pão de trigo até 1 fatia (½ pão francês) por vez</td><td class="no-t">Pão e macarrão de trigo em quantidade</td></tr>
-    <tr><td class="ok-t">Cenoura, abobrinha, tomate, pepino, espinafre</td><td class="no-t">Cebola, alho, cogumelo, couve-flor, beterraba</td></tr>
-    <tr><td class="ok-t">Morango, uva, mamão, banana firme, laranja</td><td class="no-t">Manga, maçã, pera, abacate, banana muito madura</td></tr></tbody></table></div>
+    <tr><td class="ok-t">Batata, arroz, quinoa, mandioca, aveia (até 40 g), batata-doce (até ½ unidade), macarrão de arroz, pão de trigo até 1 fatia (½ pão francês) por vez</td><td class="no-t">Pão e macarrão de trigo em quantidade</td></tr>
+    <tr><td class="ok-t">Cenoura, tomate, pepino, espinafre, alface, couve, pimentão vermelho; abobrinha, abóbora cabotiá, brócolis, berinjela e vagem até ¾ xícara</td><td class="no-t">Cebola, alho, cogumelo, couve-flor, beterraba, grão-de-bico</td></tr>
+    <tr><td class="ok-t">Morango, uva, mamão, banana firme, laranja, kiwi, abacaxi</td><td class="no-t">Manga, maçã, pera, abacate, banana muito madura</td></tr></tbody></table></div>
    <div class="sub">Tolerância varia de pessoa para pessoa e por porção. Se a Pri acompanha com nutricionista, vale alinhar esta lista com ela.</div></section>
   ${syncBlock()}
   <section class="card stack"><div class="eyebrow">Dados</div><div class="sub">Tudo fica salvo neste aparelho e funciona sem internet. Com a sincronização ligada, trocas, compras, estoque, preparo e metas também vão para o outro celular. O que cada um comeu fica só no aparelho de cada um.</div>${SY.url?'<div class="sub"><b>Atenção:</b> com a sincronização ligada, zerar tudo também zera as compras, trocas e o preparo no outro celular.</div>':''}
@@ -1169,7 +1215,9 @@ document.addEventListener('change',e=>{
   const t=e.target.closest('[data-act]');if(!t)return;const a=t.dataset.act;
   if(a==='chk'){S.checks[t.dataset.key]=t.checked;save();render(true);}
   else if(a==='edadd'){const id=t.value;if(!id||!ING[id])return;const g=ING[id],st=g.st||1;
-    const q=g.hu?g.hu[2]*2:(g.u==='g'||g.u==='ml'||g.u==='g cozido')?Math.max(st,Math.round(50/st)*st):Math.max(st,g.u==='cs'?.5:1);
+    let q=g.hu?g.hu[2]:(g.u==='g'||g.u==='ml'||g.u==='g cozido')?Math.max(st,Math.round(50/st)*st):Math.max(st,g.u==='cs'?.5:1);
+    /* para a Pri, começa dentro do limite FODMAP */
+    if(t.dataset.who==='P'&&g.pri>0&&q>g.pri)q=Math.max(st,Math.floor(g.pri/st)*st);
     customOf(t.dataset.mid,t.dataset.who)[id]=q;save();render(true);}
   else if(a==='shop'){S.shop[t.dataset.key]=t.checked;save();render(true);}
   else if(a==='pantry'){S.pantry[t.dataset.key]=t.checked;save();render(true);}
@@ -1187,7 +1235,7 @@ window.addEventListener('hashchange',()=>go(location.hash.slice(1)));
 /* Atualização: o app abre do cache (funciona sem sinal) e, se houver versão nova publicada, recarrega sozinho uma vez. */
 if('serviceWorker' in navigator&&location.protocol!=='file:'){
   const had=!!navigator.serviceWorker.controller;let reloaded=false;
-  navigator.serviceWorker.addEventListener('controllerchange',()=>{if(had&&!reloaded){reloaded=true;location.reload();}});
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{if(had&&!reloaded){reloaded=true;if(typeof saveNow==='function')saveNow();location.reload();}});
   navigator.serviceWorker.register('sw.js').then(reg=>{
     reg.update().catch(()=>{});
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')reg.update().catch(()=>{});});

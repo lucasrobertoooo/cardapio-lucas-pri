@@ -29,7 +29,7 @@ html=f'''<!doctype html>
 /* Atualização: o app abre do cache (funciona sem sinal) e, se houver versão nova publicada, recarrega sozinho uma vez. */
 if('serviceWorker' in navigator&&location.protocol!=='file:'){{
   const had=!!navigator.serviceWorker.controller;let reloaded=false;
-  navigator.serviceWorker.addEventListener('controllerchange',()=>{{if(had&&!reloaded){{reloaded=true;location.reload();}}}});
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{{if(had&&!reloaded){{reloaded=true;if(typeof saveNow==='function')saveNow();location.reload();}}}});
   navigator.serviceWorker.register('sw.js').then(reg=>{{
     reg.update().catch(()=>{{}});
     document.addEventListener('visibilitychange',()=>{{if(document.visibilityState==='visible')reg.update().catch(()=>{{}});}});

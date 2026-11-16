@@ -5,10 +5,10 @@
    O código de sincronização é o endereço completo da casa no banco (…/casas/<código>) e fica só no aparelho. */
 const SHARED=['swap','shop','stock','have','pantry','prep','targets','ref','maxKg','custom'];
 const SYK='cardapio-sync';
-const SY={url:'',pend:{},state:'off',es:null,base:{},remote:null,sending:false,retry:null};
+const SY={merge:false,url:'',pend:{},state:'off',es:null,base:{},remote:null,sending:false,retry:null};
 
-function syLoad(){try{const o=JSON.parse(localStorage.getItem(SYK)||'{}');SY.url=o.url||'';SY.pend=o.pend||{};}catch(e){}}
-function syStore(){try{localStorage.setItem(SYK,JSON.stringify({url:SY.url,pend:SY.pend}));}catch(e){}}
+function syLoad(){try{const o=JSON.parse(localStorage.getItem(SYK)||'{}');SY.url=o.url||'';SY.pend=o.pend||{};SY.merge=!!o.merge;}catch(e){}}
+function syStore(){try{localStorage.setItem(SYK,JSON.stringify({url:SY.url,pend:SY.pend,merge:SY.merge}));}catch(e){}}
 function sharedOf(s){const o={};SHARED.forEach(f=>{if(s[f]!==undefined)o[f]=s[f];});return o;}
 /* {shop:{'T1|ovo':true}} -> {'shop/T1|ovo':true}; objetos vazios somem, como no Firebase */
 function flat(o,pre,out){out=out||{};
@@ -81,6 +81,13 @@ function syListen(){
     if(first&&!Object.keys(SY.remote).length){
       /* casa nova e vazia: este aparelho manda o que tem */
       SY.pend=Object.assign(flat(sharedOf(S)),SY.pend);syStore();SY.base=flat(sharedOf(S));
+    }else if(first&&SY.merge){
+      /* entrando numa casa que já tem dados: nada deste aparelho se perde. O que só existe aqui sobe;
+         onde os dois têm (mesma troca, mesmo item, mesma refeição ajustada), vale o que já está no banco. */
+      const grp=k=>{const p=k.split('/');return p.slice(0,p[0]==='custom'?3:2).join('/');};
+      const rg=new Set(Object.keys(flat(SY.remote)).map(grp)),mine=flat(sharedOf(S));
+      for(const k in mine)if(!rg.has(grp(k)))SY.pend[k]=mine[k];
+      SY.merge=false;syStore();
     }
     syApply();syFlush();};
   es.addEventListener('put',onEv('put'));
@@ -102,7 +109,7 @@ function syJoin(code){
   code=(code||'').trim().replace(/\/+$/,'');
   const m=code.match(/^(.*)\/casas\/([a-z0-9]{20,})$/);
   if(!m||!syValidBase(m[1]))return 'Código inválido. Copie de novo no outro celular, em Ajustes.';
-  SY.url=code;SY.pend={};syStore();syListen();return '';
+  SY.url=code;SY.pend={};SY.merge=true;syStore();syListen();return '';
 }
 function syLeave(){if(SY.es)SY.es.close();SY.es=null;SY.url='';SY.pend={};SY.remote=null;syStore();sySet('off');}
 
