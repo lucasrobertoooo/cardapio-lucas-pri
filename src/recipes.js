@@ -1,13 +1,13 @@
 /* ===== RECEITAS E ILUSTRAÇÕES ===== */
 const SLOTS=[['cafe','Café da manhã'],['almoco','Almoço'],['lanche','Lanche'],['jantar','Jantar'],['ceia','Ceia']];
-const SHORT={C1:'Pão com ovos',C2:'Mingau',L1:'Vitamina',E1:'Iogurte',E2:'Iogurte',M1:'Macarrão',M2:'Omelete',M3:'Peixe',M4:'Crepe',M5:'Purê',C3:'Panqueca',C4:'Queijo quente',C5:'Iogurte e ovos',L2:'Iogurte batido',L3:'Sanduíche de atum',L4:'Ovos e leite',E3:'Leite com whey',E4:'Ovos mexidos',M6:'Salada morna',M7:'Macarrão e abobrinha',M8:'Peixe ao molho',M9:'Sanduíche quente'};
-const SN={ovo:'ovo',atum:'atum',sardinha:'sardinha',peixe:'filé de peixe',frango:'frango',mussarela:'mussarela',parmesao:'parmesão',iogurte:'iogurte',leite:'leite sem lactose',whey:'whey',azeite:'azeite',pao:'pão',arroz:'arroz cozido',feijao:'feijão cozido',macarrao:'macarrão de arroz',aveia:'aveia',amendoim:'pasta de amendoim',passata:'molho de tomate',batata:'batata',cenoura:'cenoura',abobrinha:'abobrinha',pepino:'pepino',tomate:'tomate',espinafre:'espinafre',banana:'banana',morango:'morango',mamao:'mamão',uva:'uva',limao:'limão'};
+const SHORT={C1:'Pão com cottage',C2:'Mingau',L1:'Vitamina',E1:'Iogurte',E2:'Iogurte',M1:'Macarrão',M2:'Omelete',M3:'Peixe',M4:'Crepe',M5:'Purê',C3:'Panqueca',C4:'Queijo quente',C5:'Iogurte e ovos',L2:'Iogurte batido',L3:'Sanduíche de atum',L4:'Ovos e leite',E3:'Leite com whey',E4:'Ovos mexidos',M6:'Salada morna',M7:'Macarrão e abobrinha',M8:'Peixe ao molho',M9:'Sanduíche quente'};
+const SN={ovo:'ovo',atum:'atum',sardinha:'sardinha',peixe:'filé de peixe',frango:'frango',cottage:'cottage',mussarela:'mussarela',parmesao:'parmesão',iogurte:'iogurte',leite:'leite sem lactose',whey:'whey',azeite:'azeite',pao:'pão',arroz:'arroz cozido',feijao:'feijão cozido',macarrao:'macarrão de arroz',aveia:'aveia',amendoim:'pasta de amendoim',passata:'molho de tomate',batata:'batata',cenoura:'cenoura',abobrinha:'abobrinha',pepino:'pepino',tomate:'tomate',espinafre:'espinafre',banana:'banana',morango:'morango',mamao:'mamão',uva:'uva',limao:'limão'};
 
 const RECIPES={
  C1:{steps:[
   'Torre o pão na frigideira ou na torradeira (Lucas 3 fatias, Pri 1).',
-  'Mexa os ovos com sal e um fio de azeite por 2 min em fogo médio. Desligue e misture a mussarela.',
-  'Coloque os ovos sobre o pão.',
+  'Mexa os ovos com sal e um fio de azeite por 2 min em fogo médio.',
+  'Passe o cottage no pão (Lucas 3 colheres, Pri 2) e coloque os ovos por cima.',
   'Sirva com o iogurte e a fruta: banana para o Lucas, morango para a Pri.'],
   tips:['Pão francês serve igual: 1 pão equivale a 2 fatias. A Pri fica com meio pão.','Pri: 1 fatia de pão de trigo por refeição fica dentro do FODMAP baixo. Mais que isso pode incomodar.']},
  C2:{steps:[
@@ -176,4 +176,6 @@ const SCENES={
  B3:'<ellipse cx="60" cy="68" rx="44" ry="5" fill="rgba(0,0,0,.1)"/>'+'<ellipse cx="38" cy="46" rx="14" ry="18" fill="#FBF8F0" stroke="#D9D3C2" stroke-width="1.5"/><ellipse cx="62" cy="48" rx="14" ry="18" fill="#FBF8F0" stroke="#D9D3C2" stroke-width="1.5"/><ellipse cx="85" cy="46" rx="14" ry="18" fill="#FBF8F0" stroke="#D9D3C2" stroke-width="1.5"/>'+cc(62,50,6,'#F2B632'),
  B4:'<ellipse cx="60" cy="70" rx="30" ry="4" fill="rgba(0,0,0,.1)"/><path d="M50 18h20v8q10 6 10 18v22q0 6-6 6H46q-6 0-6-6V44q0-12 10-18z" fill="#C9D78A" stroke="#98A95A" stroke-width="1.5"/><rect x="54" y="8" width="12" height="12" rx="3" fill="#6B7A3A"/>'+cc(60,52,8,'#FBF3D0')+'<path d="M56 48l8 8" stroke="#D8CFA0" stroke-width="1.5"/>'
 };
-function ill(id){return `<svg viewBox="0 0 120 80" role="img" aria-label="${(MEALS[id]?MEALS[id].n:(BASES[id]||{n:''}).n)}" preserveAspectRatio="xMidYMid slice">${SCENES[id]||''}</svg>`;}
+function ill(id){
+  if(typeof PHOTOS!=='undefined'&&PHOTOS.includes(id))return `<img src="img/${id}.jpg" alt="${(MEALS[id]||BASES[id]||{n:''}).n}" loading="lazy" decoding="async">`;
+  return `<svg viewBox="0 0 120 80" role="img" aria-label="${(MEALS[id]?MEALS[id].n:(BASES[id]||{n:''}).n)}" preserveAspectRatio="xMidYMid slice">${SCENES[id]||''}</svg>`;}

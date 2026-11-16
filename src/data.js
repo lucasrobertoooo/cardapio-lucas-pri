@@ -13,6 +13,7 @@ const ING = {
   sardinha: {n:'Sardinha em lata', u:'lata', p:22, k:190, pack:1, pk:['lata','latas'], wp:125, aisle:'prot'},
   peixe:    {n:'Filé de peixe congelado (tilápia ou merluza)', u:'g', p:.20, k:.98, pack:500, pk:['pacote','pacotes'], size:'500 g', aisle:'prot'},
   frango:   {n:'Peito de frango', u:'g', p:.23, k:1.1, pack:500, pk:['bandeja','bandejas'], size:'500 g', aisle:'prot'},
+  cottage:  {n:'Queijo cottage', u:'g', p:.11, k:.98, pack:200, pk:['pote','potes'], size:'200 g', aisle:'lat'},
   mussarela:{n:'Mussarela fatiada', u:'g', p:.22, k:2.8, pack:150, pk:['pacote','pacotes'], size:'150 g', aisle:'lat'},
   parmesao: {n:'Parmesão ralado', u:'g', p:.36, k:4, pack:50, pk:['pacote','pacotes'], size:'50 g', aisle:'lat'},
   iogurte:  {n:'Iogurte natural desnatado sem lactose (Pense Zero)', u:'g', p:.036, k:.4, pack:1150, pk:['garrafa','garrafas'], size:'1,15 kg', aisle:'lat'},
@@ -38,10 +39,22 @@ const ING = {
   uva:      {n:'Uva sem semente', u:'g', p:.007, k:.69, pack:500, pk:['cacho','cachos'], size:'~500 g', aisle:'hort'},
   limao:    {n:'Limão', u:'un', p:0, k:0, pack:2, loose:true, wp:80, aisle:'hort'}
 };
+/* Editor de refeição: st = passo do + e −, hu = medida caseira [singular, plural, g por medida],
+   pri = máximo por refeição para a Pri ficar no FODMAP baixo (0 = evitar). */
+const ADJ = {
+  ovo:{st:1}, atum:{st:.5}, sardinha:{st:.5}, peixe:{st:20}, frango:{st:20},
+  cottage:{st:20, hu:['colher','colheres',20], pri:40}, mussarela:{st:15, hu:['fatia','fatias',15]}, parmesao:{st:5, hu:['colher','colheres',5]},
+  iogurte:{st:50}, leite:{st:50}, whey:{st:.5}, azeite:{st:.25}, pao:{st:1, pri:1},
+  arroz:{st:50}, feijao:{st:50, pri:0}, macarrao:{st:10}, aveia:{st:10, hu:['colher','colheres',10], pri:40},
+  amendoim:{st:15, hu:['colher','colheres',15], pri:30}, passata:{st:50},
+  batata:{st:50}, cenoura:{st:20}, abobrinha:{st:25, pri:75}, pepino:{st:20}, tomate:{st:20}, espinafre:{st:10},
+  banana:{st:.5, pri:1}, morango:{st:50}, mamao:{st:50}, uva:{st:25, pri:150}, limao:{st:.5}
+};
+for (const id in ADJ) Object.assign(ING[id], ADJ[id]);
 const MEALS = {
- C1:{slot:'cafe', n:'Pão com ovos mexidos, iogurte e fruta', t:8,
-  L:[['pao',3],['ovo',3],['mussarela',30],['iogurte',100],['banana',1]],
-  P:[['pao',1],['ovo',2],['mussarela',20],['iogurte',100],['morango',100]]},
+ C1:{slot:'cafe', n:'Pão com cottage e ovos mexidos, iogurte e fruta', t:8,
+  L:[['pao',3],['ovo',3],['cottage',60],['iogurte',100],['banana',1]],
+  P:[['pao',1],['ovo',2],['cottage',40],['iogurte',100],['morango',100]]},
  C2:{slot:'cafe', n:'Mingau de aveia com ovos cozidos', t:10, oc:1,
   L:[['aveia',50],['leite',250],['banana',1],['amendoim',15],['ovo',2]],
   P:[['aveia',35],['leite',150],['morango',100],['ovo',2]]},

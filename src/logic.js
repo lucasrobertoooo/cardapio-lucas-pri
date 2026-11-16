@@ -1,7 +1,7 @@
 /* ===== ESTADO E CÁLCULOS ===== */
 const KEY='cardapio-lucas-pri-v1';
 const DEF={checks:{},extras:{},shop:{},stock:{atum:4,sardinha:2},pantry:{},prep:{},steps:{},
-  targets:{L:{p:160,k:2800},P:{p:125,k:1750}},ref:{iog:3.6,whey:24},maxKg:14,have:{},swap:{},icon:'verde'};
+  targets:{L:{p:160,k:2800},P:{p:125,k:1750}},ref:{iog:3.6,whey:24},maxKg:14,have:{},swap:{},icon:'verde',custom:{}};
 function clone(o){return JSON.parse(JSON.stringify(o));}
 function loadState(){
   const s=clone(DEF);
@@ -28,9 +28,25 @@ function fq(id,q){
     case 'banana': return `${fmt(q)} banana${q>1?'s':''}`;
     case 'limao': return `${q===.5?'½':fmt(q)} limão`;
     case 'pao': return `${fmt(q)} ${q===1?'fatia':'fatias'} de pão`;
-    default: return `${fmt(q)} ${ING[id].u==='ml'?'ml':'g'} de ${SN[id]}`;
+    case 'banana': return `${q===.5?'½':fmt(q)} banana${q>1?'s':''}`;
+    default:{const h=ING[id].hu;if(h){const n=q/h[2];return `${fmt(n)} ${n>1?h[1]:h[0]} de ${SN[id]} (${fmt(q,0)} g)`;}
+      return `${fmt(q)} ${ING[id].u==='ml'?'ml':'g'} de ${SN[id]}`;}
   }
 }
+/* Ingredientes de uma refeição para uma pessoa, já com os ajustes feitos no editor (valem para todos os dias). */
+const ING_IDS=Object.keys(ING);
+function itemsOf(mid,who){
+  const c=S.custom[mid]&&S.custom[mid][who];if(!c)return MEALS[mid][who];
+  const base=MEALS[mid][who].map(i=>i[0]),pos=id=>{const i=base.indexOf(id);return i<0?100+ING_IDS.indexOf(id):i;};
+  return Object.keys(c).filter(id=>ING[id]&&c[id]>0).sort((a,b)=>pos(a)-pos(b)).map(id=>[id,c[id]]);
+}
+function customOf(mid,who){
+  S.custom[mid]=S.custom[mid]||{};
+  if(!S.custom[mid][who]){const o={};MEALS[mid][who].forEach(i=>{o[i[0]]=i[1];});S.custom[mid][who]=o;}
+  return S.custom[mid][who];
+}
+function isCustom(mid){const c=S.custom[mid];if(!c)return false;
+  return ['L','P'].some(w=>c[w]&&JSON.stringify(itemsOf(mid,w))!==JSON.stringify(MEALS[mid][w]));}
 function pOf(id){
   if(id==='iogurte') return S.ref.iog/100;
   if(id==='whey') return S.ref.whey;
@@ -55,7 +71,7 @@ function slotsOf(day){
 }
 function dayStats(day,who){
   const plan={p:0,k:0},done={p:0,k:0};
-  const sl=slotsOf(day);for(const s of SLOTS){const mid=sl[s[0]];if(!mid)continue;const n=nut(MEALS[mid][who]);plan.p+=n.p;plan.k+=n.k;
+  const sl=slotsOf(day);for(const s of SLOTS){const mid=sl[s[0]];if(!mid)continue;const n=nut(itemsOf(mid,who));plan.p+=n.p;plan.k+=n.k;
     if(S.checks[`${day.d}|${s[0]}|${who}`]){done.p+=n.p;done.k+=n.k;}}
   const ex=S.extras[`${day.d}|${who}`]||{};const xt={p:0,k:0};
   for(const e of EXTRAS){const c=ex[e.id]||0;if(c){const n=nut(e.it);xt.p+=n.p*c;xt.k+=n.k*c;}}
@@ -86,7 +102,7 @@ function needs(days,onlyMeals){
   const out={};
   for(const dd of days){const day=WEEK.find(x=>x.d===dd);if(!day)continue;const sl=slotsOf(day);
     for(const s of SLOTS){const mid=sl[s[0]];if(!mid)continue;
-      for(const who of ['L','P']){for(const it of MEALS[mid][who]){
+      for(const who of ['L','P']){for(const it of itemsOf(mid,who)){
         const o=out[it[0]]||(out[it[0]]={tot:0,L:0,P:0,uses:[]});
         o.tot+=it[1];o[who]+=it[1];const sh=SHORT[mid];if(!o.uses.includes(sh))o.uses.push(sh);}}}}
   return out;

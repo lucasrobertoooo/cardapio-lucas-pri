@@ -12,7 +12,7 @@ const NAV=[
 function pad(n){return String(n).padStart(2,'0');}
 function todayStr(){const d=new Date();return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;}
 const TODAY=todayStr();
-const V={swap:null,view:'hoje',day:ALL_DAYS.includes(TODAY)?TODAY:ALL_DAYS[0],trip:'T1',open:{},filter:'all',confirm:null,extraWho:'L'};
+const V={swap:null,edit:null,view:'hoje',day:ALL_DAYS.includes(TODAY)?TODAY:ALL_DAYS[0],trip:'T1',open:{},filter:'all',confirm:null,extraWho:'L'};
 const CHECK='<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 const CHEV='<svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>';
 const WHO={L:'Lucas',P:'Pri'};
@@ -45,34 +45,60 @@ function advice(day){
   return `<div class="tip">${out.join('<br>')}</div>`;
 }
 /* Ingredientes que já entram no plano base da semana: alternativa que usa só eles não pede compra nova. */
-const BASE_ING=new Set();WEEK.forEach(d=>Object.values(d.slots).forEach(mid=>['L','P'].forEach(w=>MEALS[mid][w].forEach(it=>BASE_ING.add(it[0])))));
+function baseIng(){const s=new Set();WEEK.forEach(d=>Object.values(d.slots).forEach(mid=>['L','P'].forEach(w=>itemsOf(mid,w).forEach(it=>s.add(it[0])))));return s;}
 function sgn(n){n=R0(n);return n>0?`+${n}`:n<0?`−${-n}`:'='; }
 function altsBlock(day,k,mid){
-  const key=`${day.d}|${k}`,cur={L:nut(MEALS[mid].L).p,P:nut(MEALS[mid].P).p};
+  const key=`${day.d}|${k}`,cur={L:nut(itemsOf(mid,'L')).p,P:nut(itemsOf(mid,'P')).p},have=baseIng();
   const ids=Object.keys(MEALS).filter(id=>MEALS[id].slot===KIND[k]&&id!==mid);
-  const rows=ids.map(id=>{const m=MEALS[id],l=nut(m.L).p,p=nut(m.P).p;
-    const extra=[...new Set(m.L.concat(m.P).map(it=>it[0]))].filter(i=>!BASE_ING.has(i)).map(i=>SN[i]);
+  const rows=ids.map(id=>{const m=MEALS[id],iL=itemsOf(id,'L'),iP=itemsOf(id,'P'),l=nut(iL).p,p=nut(iP).p;
+    const extra=[...new Set(iL.concat(iP).map(it=>it[0]))].filter(i=>!have.has(i)).map(i=>SN[i]);
     return `<div class="alt"><div class="mini">${ill(id)}</div><div class="alt-tx"><b>${m.n}</b>
       <span class="sub">${m.t} min · <span class="L">Lucas ${R0(l)} g (${sgn(l-cur.L)})</span> · <span class="P">Pri ${R0(p)} g (${sgn(p-cur.P)})</span></span>
       <span class="sub">${extra.length?`Compra a mais: ${extra.join(', ')}`:'Só com o que já está na lista'}</span></div>
       <button class="btn small primary" data-act="swap" data-key="${key}" data-id="${id}">Usar</button></div>`;}).join('');
   return `<div class="alts"><div class="eyebrow">Trocar por</div>${rows}</div>`;
 }
+/* ----- Editor de ingredientes: vale para a refeição em todos os dias ----- */
+function amtOf(id,q){const g=ING[id],h=g.hu;
+  if(h){const n=q/h[2];return {big:fmt(n),small:`${n>1?h[1]:h[0]} · ${fmt(q,0)} g`};}
+  if(g.u==='g'||g.u==='ml'||g.u==='g cozido')return {big:fmt(q,0),small:g.u==='ml'?'ml':g.u};
+  const t=fq(id,q);return {big:fmt(q),small:t.replace(/^[\d,½¼]+\s*/,'').replace(/ de .*/,'')};}
+function editPane(mid,w){
+  const its=itemsOf(mid,w),n=nut(its);
+  const rows=its.map(([id,q])=>{const a=amtOf(id,q),g=ING[id];
+    const warn=w==='P'&&g.pri!=null&&q>g.pri?`<span class="ed-warn">${g.pri===0?'A Pri evita (FODMAP)':`FODMAP: para a Pri, até ${fq(id,g.pri).replace(/ de .*?( \(|$)/,'$1')}`}</span>`:'';
+    return `<div class="ed-row"><div class="ed-n"><b>${SN[id][0].toUpperCase()+SN[id].slice(1)}</b>${warn}</div>
+      <div class="ed-step"><button data-act="edqty" data-mid="${mid}" data-who="${w}" data-id="${id}" data-d="-1" aria-label="Menos ${SN[id]}">${q-(g.st||1)<=0?'×':'−'}</button>
+      <span class="ed-q"><b>${a.big}</b><small>${a.small}</small></span>
+      <button data-act="edqty" data-mid="${mid}" data-who="${w}" data-id="${id}" data-d="1" aria-label="Mais ${SN[id]}">+</button></div></div>`;}).join('');
+  const present=new Set(its.map(i=>i[0]));
+  const groups=Object.keys(AISLES).map(a=>{const ids=ING_IDS.filter(id=>ING[id].aisle===a&&!present.has(id));
+    return ids.length?`<optgroup label="${AISLES[a].split(' (')[0]}">${ids.map(id=>`<option value="${id}">${ING[id].n.split(' (')[0]}${w==='P'&&ING[id].pri===0?' (a Pri evita)':''}</option>`).join('')}</optgroup>`:'';}).join('');
+  return `<div class="ed ${w}"><div class="ed-h"><b>${WHO[w]}</b><span>${R0(n.p)} g · ${R0(n.k)} kcal</span></div>${rows||'<div class="sub">Nenhum ingrediente.</div>'}
+    <label class="ed-add"><span>+ Adicionar ingrediente</span><select data-act="edadd" data-mid="${mid}" data-who="${w}" aria-label="Adicionar ingrediente para ${WHO[w]}"><option value="">Escolher…</option>${groups}</select></label></div>`;
+}
+function editBlock(mid){
+  return `<div class="editor"><div class="ed-top"><div class="eyebrow">Ajustar ${MEALS[mid].n.toLowerCase()}</div>
+    <div class="sub">Vale para todos os dias com esta refeição. Compras, preparo e placar se recalculam.</div></div>
+    <div class="ed-cols">${editPane(mid,'L')}${editPane(mid,'P')}</div>
+    <div class="row wrap">${isCustom(mid)?`<button class="btn" data-act="edreset" data-mid="${mid}">Voltar ao original</button>`:''}<button class="btn primary" data-act="editopen" data-key="">Pronto</button></div></div>`;
+}
 function slotCard(day,k,label){
-  const base=day.slots[k],mid=slotsOf(day)[k],m=MEALS[mid],key=`${day.d}|${k}`,open=V.swap===key;
+  const base=day.slots[k],mid=slotsOf(day)[k],m=MEALS[mid],key=`${day.d}|${k}`,open=V.swap===key,ed=V.edit===key;
   const people=['L','P'].map(w=>{
-    const key=`${day.d}|${k}|${w}`,n=nut(m[w]),on=!!S.checks[key];
+    const key=`${day.d}|${k}|${w}`,its=itemsOf(mid,w),n=nut(its),on=!!S.checks[key];
     return `<label class="person ${w}${on?' done':''}"><input type="checkbox" data-act="chk" data-key="${key}"${on?' checked':''}><span class="box">${CHECK}</span>
-      <span class="who">${WHO[w]}</span><span class="nums">${R0(n.p)} g · ${R0(n.k)} kcal</span><span class="desc">${itemsText(m[w])}</span></label>`;
+      <span class="who">${WHO[w]}</span><span class="nums">${R0(n.p)} g · ${R0(n.k)} kcal</span><span class="desc">${itemsText(its)}</span></label>`;
   }).join('');
   const both=S.checks[`${day.d}|${k}|L`]&&S.checks[`${day.d}|${k}|P`];
   return `<article class="slot"><div class="ill">${ill(mid)}</div>
-   <div><div class="slot-top"><span class="tag">${label}</span><span class="sub">${m.t} min${mid!==base?' · trocado':''}</span></div><h3>${m.n}</h3>
+   <div><div class="slot-top"><span class="tag">${label}</span><span class="sub">${m.t} min${mid!==base?' · trocado':''}${isCustom(mid)?' · ajustado':''}</span></div><h3>${m.n}</h3>
    <div class="slot-actions"><button class="link" data-act="recipe" data-id="${mid}">Ver receita</button>
    <button class="link" data-act="both" data-day="${day.d}" data-slot="${k}">${both?'Desmarcar os dois':'Os dois comeram'}</button>
+   <button class="link" data-act="editopen" data-key="${key}" aria-expanded="${ed}">${ed?'Fechar ajuste':'Ajustar'}</button>
    <button class="link" data-act="swapopen" data-key="${key}" aria-expanded="${open}">${open?'Fechar trocas':'Trocar'}</button>
    ${mid!==base?`<button class="link" data-act="swap" data-key="${key}" data-id="${base}">Voltar ao plano</button>`:''}</div></div>
-   ${open?altsBlock(day,k,mid):''}<div class="people">${people}</div></article>`;
+   ${open?altsBlock(day,k,mid):''}${ed?editBlock(mid):''}<div class="people">${people}</div></article>`;
 }
 function extrasBlock(day){
   const w=V.extraWho,key=`${day.d}|${w}`,ex=S.extras[key]||{};
@@ -175,10 +201,10 @@ function recCard(id){
   const isMeal=!!MEALS[id];
   const head=`<button class="rec-h" data-act="exp" data-id="${id}" aria-expanded="${open}" id="rec-${id}"><div class="ill">${ill(id)}</div>
    <div><span class="tag">${isMeal?(m.slot==='cafe'?'Café':m.slot==='ref'?'Almoço ou jantar':m.slot==='lanche'?'Lanche':'Ceia'):'Preparo base'}</span><h3>${m.n}</h3>
-   <div class="sub">${m.t} min${isMeal?` · Lucas ${R0(nut(m.L).p)} g · Pri ${R0(nut(m.P).p)} g de proteína`:''}</div></div>${CHEV}</button>`;
+   <div class="sub">${m.t} min${isMeal?` · Lucas ${R0(nut(itemsOf(id,'L')).p)} g · Pri ${R0(nut(itemsOf(id,'P')).p)} g de proteína${isCustom(id)?' · ajustada por vocês':''}`:''}</div></div>${CHEV}</button>`;
   let body='';
   if(open){
-    const cols=isMeal?`<div class="cols">${['L','P'].map(w=>{const n=nut(m[w]);return `<div class="col ${w}"><h4>${WHO[w]}</h4><ul>${m[w].map(it=>`<li>${fq(it[0],it[1])}</li>`).join('')}</ul><div class="tt">${R0(n.p)} g de proteína · ${R0(n.k)} kcal</div></div>`;}).join('')}</div>`:`<div class="note" style="margin-top:14px">${m.desc}</div>`;
+    const cols=isMeal?`<div class="cols">${['L','P'].map(w=>{const its=itemsOf(id,w),n=nut(its);return `<div class="col ${w}"><h4>${WHO[w]}</h4><ul>${its.map(it=>`<li>${fq(it[0],it[1])}</li>`).join('')}</ul><div class="tt">${R0(n.p)} g de proteína · ${R0(n.k)} kcal</div></div>`;}).join('')}</div>`:`<div class="note" style="margin-top:14px">${m.desc}</div>`;
     const steps=`<ol class="steps">${r.steps.map((s,i)=>{const k=`${id}|${i}`;return `<li class="${S.steps[k]?'done':''}" data-act="step" data-key="${k}"><span>${s}</span></li>`;}).join('')}</ol>`;
     const tips=r.tips.length?`<div class="note">${r.tips.map(t=>`<div>${t}</div>`).join('')}</div>`:'';
     const wh=isMeal?`<div class="where">Na semana: ${whereUsed(id)}</div>`:'';
@@ -199,7 +225,7 @@ function viewReceitas(){
 function ceilTo(n,s){return Math.ceil(n/s-1e-9)*s;}
 function eggOf(list){const f=list.find(i=>i[0]==='ovo');return f?f[1]:0;}
 function boiledEggs(days){let n=0;days.forEach(dd=>{const d=dayOf(dd);if(!d)return;Object.values(slotsOf(d)).forEach(mid=>{
-  const m=MEALS[mid];if(m.oc)n+=eggOf(m.L)+eggOf(m.P);});});return n;}
+  if(MEALS[mid].oc)n+=eggOf(itemsOf(mid,'L'))+eggOf(itemsOf(mid,'P'));});});return n;}
 function prepPlan(){
   const w1=['2026-11-16','2026-11-17','2026-11-18'],w2=['2026-11-19','2026-11-20','2026-11-21','2026-11-22'];
   const mk=(key,label,when,days,first)=>{
@@ -264,7 +290,7 @@ function viewAjustes(){
   <section class="card stack"><div class="eyebrow">Pri: o que pode e o que evitar (FODMAP)</div>
    <div class="scroll-x"><table class="t"><thead><tr><th>Pode</th><th>Evitar</th></tr></thead><tbody>
     <tr><td class="ok-t">Frango, ovo, peixe, atum, sardinha</td><td class="no-t">Feijão, lentilha, grão-de-bico, soja</td></tr>
-    <tr><td class="ok-t">Leite e iogurte sem lactose, mussarela, parmesão</td><td class="no-t">Leite comum, cottage, ricota, requeijão</td></tr>
+    <tr><td class="ok-t">Leite e iogurte sem lactose, mussarela, parmesão, cottage até 2 colheres (40 g)</td><td class="no-t">Leite comum, ricota, requeijão</td></tr>
     <tr><td class="ok-t">Batata, arroz, aveia (até 40 g), macarrão de arroz, pão de trigo até 1 fatia (½ pão francês) por vez</td><td class="no-t">Pão e macarrão de trigo em quantidade</td></tr>
     <tr><td class="ok-t">Cenoura, abobrinha, tomate, pepino, espinafre</td><td class="no-t">Cebola, alho, cogumelo, couve-flor, beterraba</td></tr>
     <tr><td class="ok-t">Morango, uva, mamão, banana firme, laranja</td><td class="no-t">Manga, maçã, pera, abacate, banana muito madura</td></tr></tbody></table></div>
@@ -314,7 +340,10 @@ document.addEventListener('click',e=>{
       try{navigator.clipboard.writeText(SY.url).then(done,()=>{V.syMsg='Não deu para copiar. Código: '+SY.url;render(true);syStatus();});}catch(e){V.syMsg='Código: '+SY.url;render(true);syStatus();}return;}
     case 'syleave':if(V.confirm==='syleave'){syLeave();V.confirm=null;V.syMsg='';}else arm('syleave');render(true);syStatus();return;
     case 'icon':S.icon=t.dataset.id;applyIcon();save();render(true);return;
-    case 'swapopen':V.swap=V.swap===t.dataset.key?null:t.dataset.key;render(true);return;
+    case 'swapopen':V.swap=V.swap===t.dataset.key?null:t.dataset.key;V.edit=null;render(true);return;
+    case 'editopen':V.edit=t.dataset.key&&V.edit!==t.dataset.key?t.dataset.key:null;V.swap=null;render(true);return;
+    case 'edqty':{const d=t.dataset,c=customOf(d.mid,d.who),st=ING[d.id].st||1;c[d.id]=Math.max(0,Math.round(((c[d.id]||0)+Number(d.d)*st)*100)/100);save();render(true);return;}
+    case 'edreset':delete S.custom[t.dataset.mid];save();render(true);return;
     case 'swap':{const k=t.dataset.key,id=t.dataset.id,d=dayOf(k.split('|')[0]);
       if(id===d.slots[k.split('|')[1]])delete S.swap[k];else S.swap[k]=id;
       delete S.checks[k+'|L'];delete S.checks[k+'|P'];V.swap=null;save();render(true);return;}
@@ -323,6 +352,9 @@ document.addEventListener('click',e=>{
 document.addEventListener('change',e=>{
   const t=e.target.closest('[data-act]');if(!t)return;const a=t.dataset.act;
   if(a==='chk'){S.checks[t.dataset.key]=t.checked;save();render(true);}
+  else if(a==='edadd'){const id=t.value;if(!id||!ING[id])return;const g=ING[id],st=g.st||1;
+    const q=g.hu?g.hu[2]*2:(g.u==='g'||g.u==='ml'||g.u==='g cozido')?Math.max(st,Math.round(50/st)*st):Math.max(st,g.u==='cs'?.5:1);
+    customOf(t.dataset.mid,t.dataset.who)[id]=q;save();render(true);}
   else if(a==='shop'){S.shop[t.dataset.key]=t.checked;save();render(true);}
   else if(a==='pantry'){S.pantry[t.dataset.key]=t.checked;save();render(true);}
   else if(a==='prep'){S.prep[t.dataset.key]=t.checked;save();render(true);}

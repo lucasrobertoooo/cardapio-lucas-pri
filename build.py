@@ -6,7 +6,8 @@ r=lambda f:open(os.path.join(src,f),encoding='utf-8').read()
 w=lambda f,s:open(os.path.join(root,f),'w',encoding='utf-8').write(s)
 FONT_CSS='https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap'
 data=r('data.js').split("if (typeof module")[0]
-js="\n".join([data,r('recipes.js'),r('logic.js'),r('sync.js'),r('ui.js')])
+photos=sorted(os.path.splitext(os.path.basename(f))[0] for f in glob.glob(os.path.join(root,'img','*.jpg')))
+js="\n".join([f'const PHOTOS={photos!r};',data,r('recipes.js'),r('logic.js'),r('sync.js'),r('ui.js')])
 html=f'''<!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -37,7 +38,7 @@ if('serviceWorker' in navigator&&location.protocol!=='file:'){{
 </script></body></html>
 '''
 w('index.html',html)
-icons=sorted(os.path.relpath(f,root) for f in glob.glob(os.path.join(root,'icons','*.png')))
+icons=sorted(os.path.relpath(f,root) for f in glob.glob(os.path.join(root,'icons','*.png'))+glob.glob(os.path.join(root,'img','*.jpg')))
 assets=b''.join(open(os.path.join(root,f),'rb').read() for f in ['manifest.webmanifest']+icons)
 ver=hashlib.sha256(html.encode()+assets).hexdigest()[:10]
 w('sw.js',r('sw.js').replace('__VERSION__',ver).replace('__FONT_CSS__',FONT_CSS).replace('__ICONS__',', '.join(f"'./{f}'" for f in icons)))

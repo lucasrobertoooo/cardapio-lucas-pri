@@ -1,9 +1,9 @@
 /* ===== SINCRONIZAÇÃO ENTRE OS CELULARES =====
    Firebase Realtime Database pela API REST (sem biblioteca): PATCH para gravar, EventSource para ouvir.
-   Em comum: trocas de refeição, compras, estoque, despensa, preparo, metas e referências.
+   Em comum: trocas de refeição, ajustes de ingredientes, compras, estoque, despensa, preparo, metas e referências.
    De cada aparelho: o que cada um comeu (checks), extras, passos de receita e ícone.
    O código de sincronização é o endereço completo da casa no banco (…/casas/<código>) e fica só no aparelho. */
-const SHARED=['swap','shop','stock','have','pantry','prep','targets','ref','maxKg'];
+const SHARED=['swap','shop','stock','have','pantry','prep','targets','ref','maxKg','custom'];
 const SYK='cardapio-sync';
 const SY={url:'',pend:{},state:'off',es:null,base:{},remote:null,sending:false,retry:null};
 
@@ -35,13 +35,13 @@ function syStatus(){
 function sySet(st){SY.state=st;syStatus();}
 
 /* Chamado depois de cada save(): o que mudou nas partes compartilhadas vira PATCH */
-function syPush(){
-  if(!SY.url||SY.remote===null)return;
+function syCollect(){
   const now=flat(sharedOf(S));
   for(const k in now)if(now[k]!==SY.base[k])SY.pend[k]=now[k];
   for(const k in SY.base)if(!(k in now))SY.pend[k]=null;
-  SY.base=now;syStore();syFlush();
+  SY.base=now;syStore();
 }
+function syPush(){if(!SY.url||SY.remote===null)return;syCollect();syFlush();}
 async function syFlush(){
   if(!SY.url||SY.sending||!Object.keys(SY.pend).length){if(SY.url&&SY.state!=='erro'&&SY.remote!==null&&navigator.onLine!==false&&!Object.keys(SY.pend).length)sySet('ok');return;}
   SY.sending=true;const batch=Object.assign({},SY.pend);
@@ -56,7 +56,8 @@ async function syFlush(){
 }
 /* Estado do banco + mudanças locais ainda não enviadas -> S */
 function syApply(){
-  const merged=Object.assign(flat(SY.remote||{}),SY.pend);
+  const merged=flat(SY.remote||{});
+  for(const k in SY.pend){if(SY.pend[k]===null){for(const m in merged)if(m===k||m.indexOf(k+'/')===0)delete merged[m];}else merged[k]=SY.pend[k];}
   const sh=unflat(merged);
   for(const f of SHARED){
     if(f==='targets'){const t=sh.targets||{};S.targets={L:Object.assign({},DEF.targets.L,t.L),P:Object.assign({},DEF.targets.P,t.P)};}
@@ -74,7 +75,7 @@ function syListen(){
   const es=SY.es=new EventSource(SY.url+'/s.json');
   const onEv=type=>e=>{let d;try{d=JSON.parse(e.data);}catch(x){return;}
     const first=SY.remote===null;
-    if(first)SY.remote={};
+    if(first)SY.remote={};else syCollect(); /* toque recente ainda não salvo não pode ser atropelado */
     if(type==='put')SY.remote=setPath(SY.remote,d.path,d.data);
     else for(const k in (d.data||{}))SY.remote=setPath(SY.remote,(d.path==='/'?'':d.path)+'/'+k,d.data[k]);
     if(first&&!Object.keys(SY.remote).length){
