@@ -1,0 +1,826 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Cardápio Lucas e Pri</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap">
+<style>
+/* Layout: coluna única de até 900px, placar fixo no topo da aba Hoje, navegação fixa embaixo (uso com uma mão, no celular, no mercado).
+   Identidade: mercado + panela. Espinafre = ação concluída, cobalto = Lucas, framboesa = Pri. */
+:root{
+  --bg:#F0F4EF; --surface:#FFFFFF; --surface2:#E6EDE5; --ink:#14231B; --ink2:#4F6358; --line:#D2DED3;
+  --leaf:#1E7B4E; --leaf-ink:#FFFFFF; --leaf-soft:#D9EEE2;
+  --lucas:#2A55D6; --lucas-soft:#E1E8FB; --pri:#BC2B6A; --pri-soft:#F8DEEA;
+  --warn:#9A5B07; --warn-soft:#FBEBCF; --ill:#E7EEE4;
+  --f-display:'Bricolage Grotesque',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --f-body:'DM Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --r:14px; --shadow:0 1px 2px rgba(20,35,27,.06),0 8px 24px rgba(20,35,27,.06);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0E1612; --surface:#16211B; --surface2:#1E2C24; --ink:#E7F0E9; --ink2:#9CB1A3; --line:#2A3B31;
+  --leaf:#4DC78C; --leaf-ink:#07140D; --leaf-soft:#1B3A2A;
+  --lucas:#86A6FF; --lucas-soft:#1C2745; --pri:#F58AB8; --pri-soft:#3E1D2E;
+  --warn:#F0B35A; --warn-soft:#3A2B10; --ill:#1C2A22; --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.3);
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1612; --surface:#16211B; --surface2:#1E2C24; --ink:#E7F0E9; --ink2:#9CB1A3; --line:#2A3B31;
+  --leaf:#4DC78C; --leaf-ink:#07140D; --leaf-soft:#1B3A2A;
+  --lucas:#86A6FF; --lucas-soft:#1C2745; --pri:#F58AB8; --pri-soft:#3E1D2E;
+  --warn:#F0B35A; --warn-soft:#3A2B10; --ill:#1C2A22; --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.3);
+  color-scheme:dark}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);font:400 15px/1.45 var(--f-body);margin:0;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:0 96px;font-variant-numeric:tabular-nums}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
+.wrap{max-width:900px;margin:0 auto}
+button{font:inherit;color:inherit;cursor:pointer}
+h1,h2,h3{font-family:var(--f-display);margin:0;text-wrap:balance;letter-spacing:-.01em}
+:focus-visible{outline:2px solid var(--leaf);outline-offset:2px}
+.hdr{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;padding:18px 0 10px;flex-wrap:wrap}
+.hdr h1{font-size:26px;line-height:1.05;font-weight:700}
+.hdr p{margin:4px 0 0;color:var(--ink2);font-size:13px}
+.who-legend{display:flex;gap:12px;font-size:12px;color:var(--ink2);flex-wrap:wrap;align-items:center}
+.who-legend>span{white-space:nowrap}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:baseline}
+.dot.L{background:var(--lucas)}.dot.P{background:var(--pri)}
+
+/* navegação */
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--surface);border-top:1px solid var(--line);
+  display:flex;justify-content:center;padding:6px max(6px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(6px,env(safe-area-inset-left,0px))}
+.nav-in{display:flex;width:100%;max-width:900px;gap:2px}
+.nav button{flex:1;min-width:0;border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;border-radius:10px;color:var(--ink2);font-size:11px;font-weight:500}
+.nav button svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.nav button[aria-current="page"]{color:var(--leaf);background:var(--leaf-soft)}
+
+/* componentes */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;box-shadow:var(--shadow)}
+.stack{display:flex;flex-direction:column;gap:12px}
+.row{display:flex;gap:10px;align-items:center}
+.sub{color:var(--ink2);font-size:13px}
+.eyebrow{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink2)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 8px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 13px;font-size:13px;font-weight:500;white-space:nowrap}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip.today::after{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--leaf);margin-left:6px;vertical-align:middle}
+.day-chip{display:flex;flex-direction:column;align-items:center;min-width:56px;padding:7px 10px;line-height:1.15;gap:1px}
+.day-chip b{font-size:15px}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:9px 14px;font-weight:600;font-size:13px}
+.btn.primary{background:var(--leaf);color:var(--leaf-ink);border-color:var(--leaf)}
+.btn.warn{background:var(--warn-soft);color:var(--warn);border-color:var(--warn)}
+.btn.small{padding:6px 10px;font-size:12px}
+.link{border:0;background:none;color:var(--leaf);font-weight:600;padding:0;font-size:13px;text-decoration:underline;text-underline-offset:3px}
+
+/* placar */
+.score{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.sc{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:10px 12px;box-shadow:var(--shadow);min-width:0}
+.sc .nm{font-size:12px;font-weight:700;display:flex;align-items:center}
+.sc .big{font-family:var(--f-display);font-size:26px;font-weight:700;line-height:1.1}
+.sc .big small{font-size:13px;font-weight:500;color:var(--ink2);font-family:var(--f-body)}
+.bar{height:8px;border-radius:99px;background:var(--surface2);position:relative;overflow:hidden;margin:6px 0 4px}
+.bar i{position:absolute;inset:0 auto 0 0;border-radius:99px;display:block}
+.bar .plan{background:color-mix(in srgb,var(--c) 28%,transparent)}
+.bar .done{background:var(--c)}
+.bar.thin{height:5px;margin:3px 0 2px}
+.sc.L{--c:var(--lucas)}.sc.P{--c:var(--pri)}
+.sc .st{font-size:12px;color:var(--ink2)}
+.sc .st.ok{color:var(--leaf);font-weight:700}
+.tip{background:var(--warn-soft);color:var(--warn);border-radius:12px;padding:10px 12px;font-size:13px;font-weight:500}
+.tip.ok{background:var(--leaf-soft);color:var(--leaf)}
+
+/* cartão de refeição */
+.slot{display:grid;grid-template-columns:104px 1fr;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px;box-shadow:var(--shadow)}
+.ill{background:var(--ill);border-radius:12px;aspect-ratio:3/2;align-self:start;overflow:hidden}
+.ill svg{display:block;width:100%;height:100%}
+.slot-top{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tag{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--leaf)}
+.slot h3{font-size:17px;margin:2px 0 4px;line-height:1.2}
+.people{grid-column:1/-1;display:flex;flex-direction:column;gap:8px}
+.person{display:grid;grid-template-columns:auto 1fr auto;gap:4px 12px;align-items:start;padding:10px;border-radius:12px;border:1px solid transparent;cursor:pointer;min-height:48px}
+.person.L{background:var(--lucas-soft)}.person.P{background:var(--pri-soft)}
+.person input{position:absolute;opacity:0;pointer-events:none}
+.box{width:26px;height:26px;border-radius:8px;border:2px solid var(--ink2);display:grid;place-items:center;background:var(--surface);flex:0 0 auto;margin-top:1px}
+.box svg{width:16px;height:16px;stroke:var(--leaf-ink);fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;opacity:0}
+input:checked + .box{background:var(--leaf);border-color:var(--leaf)}
+input:checked + .box svg{opacity:1}
+input:focus-visible + .box{outline:2px solid var(--leaf);outline-offset:2px}
+.person .who{font-weight:700;font-size:13px}
+.person.L .who{color:var(--lucas)}.person.P .who{color:var(--pri)}
+.person .desc{font-size:13px;color:var(--ink);grid-column:2}
+.person .nums{font-size:12px;color:var(--ink2);text-align:right;white-space:nowrap}
+.person.done .desc{opacity:.55;text-decoration:line-through}
+.slot-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+
+/* extras */
+.pills{display:flex;flex-wrap:wrap;gap:8px}
+.pill{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 6px 6px 12px;font-size:13px}
+.pill b{font-weight:700}
+.pill .pm{border:0;width:26px;height:26px;border-radius:50%;background:var(--surface2);font-weight:700;line-height:1}
+.pill .pm.add{background:var(--leaf);color:var(--leaf-ink)}
+.pill .ct{min-width:14px;text-align:center;font-weight:700}
+
+/* semana */
+.week{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.dayc{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px;display:flex;flex-direction:column;gap:8px;text-align:left;box-shadow:var(--shadow)}
+.dayc .top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.dayc h3{font-size:18px}
+.dayc ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.dayc li{display:flex;gap:8px;align-items:center;font-size:13px}
+.dayc li .sl{width:62px;flex:0 0 auto;font-size:11px;font-weight:700;color:var(--ink2);text-transform:uppercase;letter-spacing:.05em}
+.dayc li .mini{width:34px;height:22px;border-radius:6px;overflow:hidden;background:var(--ill);flex:0 0 auto}
+.dayc li .mini svg{width:100%;height:100%;display:block}
+.tots{display:flex;gap:6px;flex-wrap:wrap}
+.tot{font-size:12px;font-weight:700;border-radius:999px;padding:2px 9px}
+.tot.L{background:var(--lucas-soft);color:var(--lucas)}.tot.P{background:var(--pri-soft);color:var(--pri)}
+.chart{overflow-x:auto}
+.chart svg{display:block;width:100%;height:auto}
+.chart text{fill:var(--ink2);font:500 11px var(--f-body)}
+.chart .grid{stroke:var(--line);stroke-width:1}
+.chart .goal{stroke:var(--ink2);stroke-width:1;stroke-dasharray:4 3}
+.chart .bL{fill:var(--lucas)}.chart .bP{fill:var(--pri)}
+
+/* compras */
+.trips{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.trip{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:10px;text-align:left;display:flex;flex-direction:column;gap:2px}
+.trip b{font-family:var(--f-display);font-size:16px}
+.trip[aria-pressed="true"]{border-color:var(--leaf);background:var(--leaf-soft);box-shadow:inset 0 0 0 1px var(--leaf)}
+.trip .sub{font-size:12px}
+.meter{height:10px;border-radius:99px;background:var(--surface2);position:relative;overflow:hidden;margin:8px 0 4px}
+.meter i{position:absolute;inset:0 auto 0 0;background:var(--leaf);border-radius:99px}
+.meter.over i{background:var(--warn)}
+.meter u{position:absolute;top:0;bottom:0;width:2px;background:var(--ink);opacity:.6}
+.aisle h3{font-size:15px;margin:6px 0 6px;display:flex;justify-content:space-between;align-items:baseline}
+.item{display:grid;grid-template-columns:auto 1fr auto;gap:2px 12px;align-items:start;padding:11px 12px;border-bottom:1px solid var(--line);cursor:pointer;min-height:54px}
+.item:last-child{border-bottom:0}
+.item input{position:absolute;opacity:0;pointer-events:none}
+.item .nm{font-weight:600;font-size:15px}
+.item .qt{font-weight:700;text-align:right;font-size:14px;white-space:nowrap}
+.item .meta{grid-column:2/4;font-size:12px;color:var(--ink2);display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.item.done .nm,.item.done .qt{text-decoration:line-through;opacity:.5}
+.mini-tag{font-size:10px;font-weight:700;border-radius:6px;padding:1px 6px}
+.mini-tag.L{background:var(--lucas-soft);color:var(--lucas)}.mini-tag.P{background:var(--pri-soft);color:var(--pri)}
+.list{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.stock{display:flex;gap:16px;flex-wrap:wrap}
+.stepper{display:inline-flex;align-items:center;gap:8px}
+.stepper button{width:32px;height:32px;border-radius:50%;border:1px solid var(--line);background:var(--surface2);font-weight:700}
+.stepper span{min-width:20px;text-align:center;font-weight:700}
+
+/* receitas */
+.rec{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+.rec-h{display:grid;grid-template-columns:96px 1fr auto;gap:12px;align-items:center;width:100%;border:0;background:none;padding:12px;text-align:left}
+.rec-h h3{font-size:17px;line-height:1.2;margin:2px 0}
+.rec-h .chev{width:20px;height:20px;stroke:var(--ink2);fill:none;stroke-width:2;transition:transform .15s}
+.rec-h[aria-expanded="true"] .chev{transform:rotate(180deg)}
+.rec-b{padding:0 14px 14px;display:flex;flex-direction:column;gap:14px;border-top:1px solid var(--line)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.col{border-radius:12px;padding:10px 12px}
+.col.L{background:var(--lucas-soft)}.col.P{background:var(--pri-soft)}
+.col h4{margin:0 0 6px;font:700 13px var(--f-display)}
+.col.L h4{color:var(--lucas)}.col.P h4{color:var(--pri)}
+.col ul{margin:0;padding-left:16px;font-size:13px}
+.col .tt{margin-top:8px;font-size:12px;font-weight:700}
+.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;counter-reset:s}
+.steps li{display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:start;padding:8px 10px;border-radius:10px;background:var(--surface2);cursor:pointer;counter-increment:s}
+.steps li::before{content:counter(s);width:26px;height:26px;border-radius:50%;background:var(--ink);color:var(--bg);display:grid;place-items:center;font-weight:700;font-size:13px}
+.steps li.done{opacity:.5}.steps li.done span{text-decoration:line-through}
+.steps li.done::before{background:var(--leaf);color:var(--leaf-ink)}
+.note{background:var(--surface2);border-radius:12px;padding:10px 12px;font-size:13px}
+.note b{font-weight:700}
+.where{font-size:12px;color:var(--ink2)}
+
+/* preparo */
+.task{display:grid;grid-template-columns:auto 1fr auto;gap:2px 12px;padding:12px;border-bottom:1px solid var(--line);cursor:pointer}
+.task:last-child{border-bottom:0}
+.task input{position:absolute;opacity:0;pointer-events:none}
+.task .nm{font-weight:700}
+.task .tx{grid-column:2/4;font-size:13px;color:var(--ink2)}
+.task.done .nm{text-decoration:line-through;opacity:.5}
+.task .mn{font-size:12px;color:var(--ink2);white-space:nowrap}
+
+/* ajustes */
+.fld{display:grid;grid-template-columns:1fr 110px;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.fld:last-child{border-bottom:0}
+.fld label{font-size:14px}
+.fld small{display:block;color:var(--ink2);font-size:12px}
+input[type=number]{width:100%;font:inherit;font-weight:700;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);text-align:right}
+table.t{width:100%;border-collapse:collapse;font-size:13px}
+table.t th,table.t td{text-align:left;padding:8px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+table.t th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink2)}
+.ok-t{color:var(--leaf);font-weight:600}.no-t{color:var(--pri);font-weight:600}
+.scroll-x{overflow-x:auto}
+
+@media (max-width:560px){
+  .slot{grid-template-columns:88px 1fr}
+  .rec-h{grid-template-columns:78px 1fr auto}
+  .cols{grid-template-columns:1fr}
+  .hdr h1{font-size:23px}
+  .trips{gap:6px}.trip{padding:8px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+</style></head><body>
+<div id="app"></div>
+<script>
+/* ===== DADOS: ingredientes, refeições, semana ===== */
+const AISLES = {
+  hort:'Hortifruti', prot:'Peixe, frango e enlatados', lat:'Ovos e laticínios',
+  merc:'Mercearia', desp:'Despensa (confira em casa)'
+};
+// p = g de proteína por unidade, k = kcal por unidade, f = fator receita->compra,
+// pack = tamanho da embalagem (unidade de compra), wp = g por unidade de compra
+const ING = {
+  ovo:      {n:'Ovo', u:'un', p:6.2, k:75, pack:12, pk:['dúzia','dúzias'], wp:60, aisle:'lat'},
+  atum:     {n:'Atum em lata (natural)', u:'lata', p:27, k:125, pack:1, pk:['lata','latas'], wp:170, aisle:'prot'},
+  sardinha: {n:'Sardinha em lata', u:'lata', p:22, k:190, pack:1, pk:['lata','latas'], wp:125, aisle:'prot'},
+  peixe:    {n:'Filé de peixe congelado (tilápia ou merluza)', u:'g', p:.20, k:.98, pack:500, pk:['pacote','pacotes'], size:'500 g', aisle:'prot'},
+  frango:   {n:'Peito de frango', u:'g', p:.23, k:1.1, pack:500, pk:['bandeja','bandejas'], size:'500 g', aisle:'prot'},
+  mussarela:{n:'Mussarela fatiada', u:'g', p:.22, k:2.8, pack:150, pk:['pacote','pacotes'], size:'150 g', aisle:'lat'},
+  parmesao: {n:'Parmesão ralado', u:'g', p:.36, k:4, pack:50, pk:['pacote','pacotes'], size:'50 g', aisle:'lat'},
+  iogurte:  {n:'Iogurte grego sem lactose', u:'g', p:.06, k:.7, pack:500, pk:['pote','potes'], size:'500 g', aisle:'lat'},
+  leite:    {n:'Leite sem lactose', u:'ml', p:.032, k:.62, pack:1000, pk:['caixa','caixas'], size:'1 L', wp:1.03, aisle:'lat'},
+  whey:     {n:'Whey isolado', u:'dose', p:24, k:115, pack:33, pk:['pote','potes'], size:'1 kg', aisle:'desp', pantry:true},
+  azeite:   {n:'Azeite de oliva', u:'cs', p:0, k:120, pack:1, pk:['garrafa','garrafas'], aisle:'desp', pantry:true, mlPerUnit:15},
+  tapioca:  {n:'Goma de tapioca hidratada', u:'g', p:0, k:3.5, pack:500, pk:['pacote','pacotes'], size:'500 g', aisle:'merc'},
+  arroz:    {n:'Arroz', u:'g cozido', p:.025, k:1.3, f:.34, pack:1000, pk:['pacote','pacotes'], size:'1 kg', aisle:'merc'},
+  feijao:   {n:'Feijão', u:'g cozido', p:.05, k:.77, f:.35, pack:500, pk:['pacote','pacotes'], size:'500 g', aisle:'merc'},
+  macarrao: {n:'Macarrão de arroz ou milho', u:'g', p:.07, k:3.6, pack:500, pk:['pacote','pacotes'], size:'500 g', aisle:'merc'},
+  aveia:    {n:'Aveia em flocos', u:'g', p:.135, k:3.7, pack:500, pk:['pacote','pacotes'], size:'500 g', aisle:'merc'},
+  amendoim: {n:'Pasta de amendoim', u:'g', p:.25, k:5.9, pack:450, pk:['pote','potes'], size:'450 g', aisle:'merc'},
+  passata:  {n:'Tomate pelado ou passata (sem cebola e alho)', u:'g', p:.012, k:.3, pack:520, pk:['caixa','caixas'], size:'520 g', aisle:'merc'},
+  batata:   {n:'Batata inglesa', u:'g', p:.02, k:.77, pack:250, loose:true, aisle:'hort'},
+  cenoura:  {n:'Cenoura', u:'g', p:.009, k:.41, pack:250, loose:true, aisle:'hort'},
+  abobrinha:{n:'Abobrinha', u:'g', p:.012, k:.17, pack:250, loose:true, aisle:'hort'},
+  pepino:   {n:'Pepino', u:'g', p:.007, k:.15, pack:250, loose:true, aisle:'hort'},
+  tomate:   {n:'Tomate', u:'g', p:.009, k:.18, pack:250, loose:true, aisle:'hort'},
+  espinafre:{n:'Espinafre', u:'g', p:.029, k:.23, pack:150, pk:['maço','maços'], size:'~150 g', aisle:'hort'},
+  banana:   {n:'Banana nanica (firme)', u:'un', p:1.2, k:95, pack:6, pk:['penca','pencas'], size:'~6 un', wp:110, aisle:'hort'},
+  morango:  {n:'Morango', u:'g', p:.007, k:.32, pack:250, pk:['bandeja','bandejas'], size:'250 g', aisle:'hort'},
+  mamao:    {n:'Mamão formosa', u:'g', p:.005, k:.4, pack:700, pk:['pedaço','pedaços'], size:'~700 g (½ mamão)', aisle:'hort'},
+  uva:      {n:'Uva sem semente', u:'g', p:.007, k:.69, pack:500, pk:['cacho','cachos'], size:'~500 g', aisle:'hort'},
+  limao:    {n:'Limão', u:'un', p:0, k:0, pack:2, loose:true, wp:80, aisle:'hort'}
+};
+const MEALS = {
+ C1:{slot:'cafe', n:'Tapioca recheada com ovos e iogurte', t:8,
+  L:[['tapioca',40],['ovo',3],['mussarela',30],['iogurte',100],['banana',1]],
+  P:[['tapioca',30],['ovo',2],['mussarela',20],['iogurte',100],['morango',100]]},
+ C2:{slot:'cafe', n:'Mingau de aveia com ovos cozidos', t:10,
+  L:[['aveia',50],['leite',250],['banana',1],['amendoim',15],['ovo',2]],
+  P:[['aveia',35],['leite',150],['morango',100],['ovo',2]]},
+ L1:{slot:'lanche', n:'Vitamina de whey', t:3,
+  L:[['leite',250],['whey',1],['banana',1],['aveia',25],['amendoim',10]],
+  P:[['leite',200],['whey',1],['morango',100],['aveia',10]]},
+ E1:{slot:'ceia', n:'Tigela de iogurte com aveia e mamão', t:1,
+  L:[['iogurte',200],['aveia',10],['mamao',150]],
+  P:[['iogurte',120],['mamao',140]]},
+ E2:{slot:'ceia', n:'Tigela de iogurte com aveia e uva', t:1,
+  L:[['iogurte',200],['aveia',10],['uva',120]],
+  P:[['iogurte',120],['uva',100]]},
+ M1:{slot:'ref', n:'Macarrão ao molho de tomate com atum', t:20,
+  L:[['macarrao',100],['passata',200],['atum',1],['azeite',1],['parmesao',15],['espinafre',40]],
+  P:[['macarrao',55],['passata',150],['atum',.5],['azeite',.5],['parmesao',10],['espinafre',40],['ovo',1]]},
+ M2:{slot:'ref', n:'Omelete com batata assada e salada', t:20,
+  L:[['ovo',3],['mussarela',30],['espinafre',30],['batata',200],['arroz',100],['feijao',150],['azeite',.5],['tomate',80],['pepino',60]],
+  P:[['ovo',2],['mussarela',20],['espinafre',30],['frango',50],['batata',170],['azeite',.25],['tomate',80],['pepino',60]]},
+ M3:{slot:'ref', n:'Peixe na airfryer com batata e legumes', t:25,
+  L:[['peixe',180],['batata',250],['arroz',100],['cenoura',80],['abobrinha',100],['azeite',1],['limao',.5]],
+  P:[['peixe',140],['batata',170],['cenoura',80],['abobrinha',100],['azeite',.25],['limao',.5]]},
+ M4:{slot:'ref', n:'Crepe de espinafre recheado', t:20,
+  L:[['ovo',2],['aveia',30],['espinafre',40],['atum',1],['mussarela',20],['batata',250],['azeite',.5]],
+  P:[['ovo',2],['aveia',20],['espinafre',40],['frango',50],['tomate',50],['mussarela',20],['batata',130],['azeite',.25]]},
+ M5:{slot:'ref', n:'Sardinha ou frango com purê e legumes', t:25,
+  L:[['sardinha',1],['ovo',2],['batata',250],['leite',50],['azeite',.5],['cenoura',80],['tomate',60]],
+  P:[['frango',110],['batata',170],['leite',40],['azeite',.25],['cenoura',80],['abobrinha',100]]}
+};
+const WEEK = [
+ {d:'2026-11-15', wd:'Dom', slots:{lanche:'L1', jantar:'M1', ceia:'E1'}},
+ {d:'2026-11-16', wd:'Seg', slots:{cafe:'C1', almoco:'M2', lanche:'L1', jantar:'M3', ceia:'E2'}},
+ {d:'2026-11-17', wd:'Ter', slots:{cafe:'C2', almoco:'M5', lanche:'L1', jantar:'M4', ceia:'E1'}},
+ {d:'2026-11-18', wd:'Qua', slots:{cafe:'C1', almoco:'M1', lanche:'L1', jantar:'M2', ceia:'E2'}},
+ {d:'2026-11-19', wd:'Qui', slots:{cafe:'C2', almoco:'M3', lanche:'L1', jantar:'M5', ceia:'E1'}},
+ {d:'2026-11-20', wd:'Sex', slots:{cafe:'C1', almoco:'M4', lanche:'L1', jantar:'M1', ceia:'E2'}},
+ {d:'2026-11-21', wd:'Sáb', slots:{cafe:'C2', almoco:'M2', lanche:'L1', jantar:'M5', ceia:'E1'}},
+ {d:'2026-11-22', wd:'Dom', slots:{cafe:'C1', almoco:'M3'}}
+];
+
+/* ===== RECEITAS E ILUSTRAÇÕES ===== */
+const SLOTS=[['cafe','Café da manhã'],['almoco','Almoço'],['lanche','Lanche'],['jantar','Jantar'],['ceia','Ceia']];
+const SHORT={C1:'Tapioca',C2:'Mingau',L1:'Vitamina',E1:'Iogurte',E2:'Iogurte',M1:'Macarrão',M2:'Omelete',M3:'Peixe',M4:'Crepe',M5:'Purê'};
+const SN={ovo:'ovo',atum:'atum',sardinha:'sardinha',peixe:'filé de peixe',frango:'frango',mussarela:'mussarela',parmesao:'parmesão',iogurte:'iogurte grego',leite:'leite sem lactose',whey:'whey',azeite:'azeite',tapioca:'tapioca',arroz:'arroz cozido',feijao:'feijão cozido',macarrao:'macarrão de arroz',aveia:'aveia',amendoim:'pasta de amendoim',passata:'molho de tomate',batata:'batata',cenoura:'cenoura',abobrinha:'abobrinha',pepino:'pepino',tomate:'tomate',espinafre:'espinafre',banana:'banana',morango:'morango',mamao:'mamão',uva:'uva',limao:'limão'};
+
+const RECIPES={
+ C1:{steps:[
+  'Aqueça uma frigideira antiaderente em fogo médio, sem óleo.',
+  'Peneire a goma de tapioca em disco fino (40 g Lucas, 30 g Pri). Em cerca de 1 min ela se junta; vire e deixe mais 30 s.',
+  'Em outra frigideira, mexa os ovos com sal e um fio de azeite por 2 min. Desligue e misture a mussarela.',
+  'Recheie a tapioca com os ovos e dobre ao meio.',
+  'Sirva com o iogurte e a fruta: banana para o Lucas, morango para a Pri.'],
+  tips:['Use a goma já hidratada (a que vem pronta para peneirar). Se usar fécula seca, hidrate antes.','Pri: banana só se estiver firme. Banana muito madura pesa no FODMAP.']},
+ C2:{steps:[
+  'Leve a aveia e o leite sem lactose à panela em fogo médio, mexendo por 4 a 5 min até ficar cremoso.',
+  'Fora do fogo, junte a pasta de amendoim e a banana amassada (Lucas). Pri: coloque os morangos fatiados por cima.',
+  'Sirva com os ovos cozidos do lote (sem lote, 8 min em água fervendo).'],
+  tips:['Versão sem fogo: misture aveia e leite na noite anterior e deixe na geladeira.','Os ovos cozidos saem do lote de domingo e quarta, veja a aba Preparo.']},
+ L1:{steps:[
+  'Bata o leite, o whey, a fruta, a aveia e (só Lucas) a pasta de amendoim com 3 cubos de gelo por 40 s.',
+  'Divida em dois copos. O copo do Lucas sai maior, o da Pri menor.'],
+  tips:['Whey isolado tem pouquíssima lactose. Confira no rótulo se não traz sorbitol, manitol ou inulina, que incomodam quem faz FODMAP.','O mesmo liquidificador serve os dois: as quantidades de cada um estão no cartão.']},
+ E1:{steps:['Coloque o iogurte em uma tigela.','Junte a aveia (só Lucas) e o mamão picado.'],tips:['Dia sem fome à noite? É a refeição mais fácil de pular. Se pular, use um extra no placar: 1 pote de iogurte.']},
+ E2:{steps:['Coloque o iogurte em uma tigela.','Junte a aveia (só Lucas) e as uvas.'],tips:['Uva: até cerca de 150 g por vez fica dentro do limite FODMAP baixo para a Pri.']},
+ M1:{steps:[
+  'Ferva água com sal e cozinhe o macarrão de arroz pelo tempo do pacote (8 a 10 min). Escorra e passe um fio de azeite.',
+  'Na panela, aqueça o azeite aromatizado (receita base) e junte o molho de tomate. Cozinhe 8 min em fogo baixo com sal, orégano e pimenta.',
+  'Junte o espinafre picado nos últimos 2 min.',
+  'Misture o atum escorrido ao molho: 1 lata para o Lucas e meia lata para a Pri.',
+  'Sirva sobre o macarrão e finalize com o parmesão. Pri: 1 ovo cozido ao lado.'],
+  tips:['A meia lata que sobra vai no pão do lanche ou na salada do dia seguinte.','Sem alho nem cebola no molho: o sabor vem do azeite aromatizado.']},
+ M2:{steps:[
+  'Corte a batata em palitos e misture com azeite, sal e páprica. Airfryer a 200 °C por 18 min, mexendo na metade (forno: 220 °C por 25 min).',
+  'Bata os ovos com sal. Em frigideira antiaderente untada, cozinhe 2 min, coloque espinafre e mussarela no meio e dobre.',
+  'Pri: junte o frango desfiado do lote ao recheio.',
+  'Salada de tomate e pepino com limão e um fio de azeite.',
+  'Lucas: esquente o arroz e o feijão do lote.'],
+  tips:['A batata assada é a mesma base do peixe e do crepe, então dá para fazer a assadeira para os dois de uma vez.']},
+ M3:{steps:[
+  'Tempere o filé ainda congelado com sal, limão e páprica. Não precisa descongelar.',
+  'Misture batata em cubos e cenoura em rodelas com azeite e sal. A abobrinha entra mais tarde.',
+  'Airfryer a 200 °C: batata e cenoura por 10 min. Junte o peixe e a abobrinha e mais 14 a 16 min, virando o peixe na metade.',
+  'Está pronto quando o peixe fica opaco e solta lascas com o garfo.',
+  'Lucas: arroz do lote ao lado.'],
+  tips:['Filé grosso (mais de 2 cm) pede 2 a 3 min a mais.']},
+ M4:{steps:[
+  'Bata no liquidificador, para os dois: 2 ovos, espinafre, aveia e sal. A aveia é 30 g para o Lucas e 20 g para a Pri. Faça uma massa para cada um.',
+  'Frigideira antiaderente untada: despeje metade da massa e cozinhe 2 min de cada lado. Repita com o resto.',
+  'Recheio do Lucas: 1 lata de atum escorrido e 20 g de mussarela. Recheio da Pri: frango desfiado, tomate e 20 g de mussarela.',
+  'Enrole e sirva com a batata assada (mesma assadeira do dia, 250 g Lucas e 130 g Pri).'],
+  tips:['A massa fica mais firme se descansar 5 min antes de ir para a frigideira.']},
+ M5:{steps:[
+  'Cozinhe a batata em cubos por 15 min. Escorra e amasse com leite sem lactose, sal e azeite. Sem manteiga e sem alho.',
+  'Lucas: escorra a sardinha e aqueça em frigideira por 3 min com limão. Fatie 2 ovos cozidos do lote.',
+  'Pri: esquente o frango do lote.',
+  'Legumes: cenoura e abobrinha no vapor por 8 min (Pri). Cenoura ralada e tomate crus (Lucas).'],
+  tips:['Sardinha em lata já vem cozida, é só aquecer ou comer fria.']},
+ B1:{steps:[
+  'Tempere o peito de frango com sal, páprica, limão e um fio de azeite.',
+  'Forno a 200 °C por 22 a 25 min, até ficar branco por dentro e sem rosa.',
+  'Descanse 5 min. Desfie metade e fatie a outra metade.',
+  'Guarde em potes na geladeira por até 4 dias.'],tips:['Só a Pri usa o frango. As porções dela são de 50 a 110 g por refeição.']},
+ B2:{steps:[
+  'Arroz: lave 100 g de arroz, refogue em um fio de azeite, junte 250 ml de água e sal. Tampado, 12 min em fogo baixo.',
+  'Feijão: cubra 150 g de feijão (de molho por 8 h, se tiver) com água, panela de pressão por 25 min depois de pegar pressão.',
+  'Tempere o feijão com sal e louro. Sem cebola e alho se for dividir com a Pri.',
+  'Arroz na geladeira por 4 dias. Feijão em porções de 150 g no congelador.'],tips:['Só o Lucas come feijão. A Pri troca por batata.']},
+ B3:{steps:[
+  'Coloque os ovos em água fria e leve ao fogo.',
+  'Quando ferver, conte 10 min.',
+  'Passe em água gelada e guarde com casca na geladeira por até 5 dias.'],tips:[]},
+ B4:{steps:[
+  'Amasse 2 dentes de alho.',
+  'Aqueça 100 ml de azeite em fogo baixo com o alho por 5 min, sem deixar dourar.',
+  'Retire e descarte todo o alho. O azeite fica só com o sabor.',
+  'Guarde na geladeira e use em até 4 dias. Depois disso, faça outro.'],tips:['Por que tirar o alho: o frutano do alho não passa para o azeite, e a Pri pode usar sem sintoma.','Guardar alho em óleo por muito tempo, fora da geladeira, traz risco. Faça pouco e use rápido.']}
+};
+const BASES={
+ B1:{n:'Frango assado em lote',t:30,slot:'base',desc:'Só para a Pri: 50 a 110 g por refeição.'},
+ B2:{n:'Arroz e feijão em lote',t:35,slot:'base',desc:'Arroz para o Lucas, feijão congelado em porções.'},
+ B3:{n:'Ovos cozidos em lote',t:12,slot:'base',desc:'Mingau, purê e macarrão usam ovo cozido.'},
+ B4:{n:'Azeite aromatizado com alho',t:8,slot:'base',desc:'O sabor de alho do macarrão sem frutano.'}
+};
+
+/* ===== ILUSTRAÇÕES (SVG 120x80, cores próprias de comida) ===== */
+const PL='<ellipse cx="60" cy="69" rx="46" ry="5" fill="rgba(0,0,0,.10)"/><ellipse cx="60" cy="44" rx="49" ry="29" fill="#F8F6F1" stroke="#D6D1C6" stroke-width="1.5"/><ellipse cx="60" cy="44" rx="38" ry="21" fill="none" stroke="#E6E2D8"/>';
+const cc=(x,y,r,f,s)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${f}"${s?` stroke="${s}"`:''}/>`;
+const egg=(x,y,k)=>`<g transform="translate(${x} ${y}) scale(${k||1})"><ellipse rx="9" ry="6.5" fill="#fff" stroke="#E2DDD0"/>${cc(0,0,3.4,'#F2B632')}</g>`;
+const rc=(x,y,w,h,f,rot)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="2" fill="${f}"${rot?` transform="rotate(${rot} ${x+w/2} ${y+h/2})"`:''}/>`;
+const SCENES={
+ C1:PL+'<path d="M28 48 A32 22 0 0 1 92 48 Z" fill="#EBD6A4" stroke="#CDB57F"/>'+cc(50,38,5,'#F4C842')+cc(62,34,6,'#F8D552')+cc(73,39,5,'#F4C842')+cc(58,42,3.5,'#FBE9A0')+'<path d="M70 58q14 8 26-7q-11 13-26 7z" fill="#F4D35E" stroke="#C9A93A"/>'+'<rect x="18" y="50" width="16" height="13" rx="3" fill="#fff" stroke="#D6D1C6"/>'+cc(26,50,5,'#C0306F'),
+ C2:'<ellipse cx="60" cy="70" rx="40" ry="4" fill="rgba(0,0,0,.1)"/><path d="M20 36Q22 70 60 72Q98 70 100 36Z" fill="#EDE8DC" stroke="#D2CCBD" stroke-width="1.5"/><ellipse cx="60" cy="36" rx="40" ry="11" fill="#F8F6F1" stroke="#D2CCBD" stroke-width="1.5"/><ellipse cx="60" cy="37" rx="34" ry="8.5" fill="#E7D4AE"/>'+cc(48,36,5,'#F5DA6E','#D9B93F')+cc(60,39,5,'#F5DA6E','#D9B93F')+cc(72,36,5,'#F5DA6E','#D9B93F')+cc(56,34,3,'#C0306F')+egg(104,60,.8)+egg(14,62,.8),
+ L1:'<ellipse cx="58" cy="72" rx="26" ry="4" fill="rgba(0,0,0,.1)"/><path d="M40 10L78 10L72 68Q59 74 46 68Z" fill="#F3E6D4" stroke="#CFC3AE" stroke-width="1.5"/><path d="M42 20L76 20L74 30Q58 36 44 30Z" fill="#F7EEDF"/><rect x="62" y="0" width="5" height="40" rx="2" fill="#BC2B6A" transform="rotate(14 64 20)"/>'+'<path d="M84 56q16 6 26-8q-9 16-26 8z" fill="#F4D35E" stroke="#C9A93A"/>'+cc(24,58,6,'#C0306F')+cc(24,52,2,'#3C8B4B'),
+ E1:'<ellipse cx="60" cy="70" rx="40" ry="4" fill="rgba(0,0,0,.1)"/><path d="M20 36Q22 70 60 72Q98 70 100 36Z" fill="#EDE8DC" stroke="#D2CCBD" stroke-width="1.5"/><ellipse cx="60" cy="36" rx="40" ry="11" fill="#F8F6F1" stroke="#D2CCBD" stroke-width="1.5"/><ellipse cx="60" cy="37" rx="34" ry="8.5" fill="#FFFFFF"/>'+rc(44,30,9,7,'#F0922B',12)+rc(57,33,9,7,'#F49A3A',-8)+rc(69,30,9,7,'#F0922B',20)+cc(54,38,1.3,'#3A2A1A')+cc(64,31,1.3,'#3A2A1A'),
+ E2:'<ellipse cx="60" cy="70" rx="40" ry="4" fill="rgba(0,0,0,.1)"/><path d="M20 36Q22 70 60 72Q98 70 100 36Z" fill="#EDE8DC" stroke="#D2CCBD" stroke-width="1.5"/><ellipse cx="60" cy="36" rx="40" ry="11" fill="#F8F6F1" stroke="#D2CCBD" stroke-width="1.5"/><ellipse cx="60" cy="37" rx="34" ry="8.5" fill="#FFFFFF"/>'+cc(46,35,4.5,'#6B3FA0')+cc(55,38,4.5,'#7A4BB3')+cc(65,35,4.5,'#6B3FA0')+cc(74,38,4.5,'#7A4BB3')+cc(60,33,4.5,'#7A4BB3'),
+ M1:PL+'<ellipse cx="60" cy="44" rx="26" ry="14" fill="#EBCB6B"/><path d="M38 44q22-16 44 0M42 47q18-12 36 0M46 40q14-8 28 0" stroke="#D2AE45" stroke-width="2" fill="none"/><path d="M44 40q16-10 32 0q-6 12-16 12q-10 0-16-12z" fill="#D2452D" opacity=".92"/>'+cc(54,40,3.5,'#D9A68A')+cc(65,38,4,'#D9A68A')+cc(70,44,3,'#D9A68A')+cc(58,46,2.6,'#3C8B4B')+cc(50,45,2.2,'#3C8B4B')+cc(62,43,1.3,'#fff')+cc(55,37,1.3,'#fff'),
+ M2:PL+'<path d="M24 44A26 17 0 0 1 76 44Z" fill="#F4C842" stroke="#D6A92A"/><path d="M30 44A21 12 0 0 1 70 44" fill="none" stroke="#FBE08A" stroke-width="2"/>'+cc(46,38,2,'#3C8B4B')+cc(56,35,2,'#3C8B4B')+rc(76,40,18,4,'#E3B565',-20)+rc(80,46,18,4,'#E3B565',10)+rc(74,34,16,4,'#E9C37A',-45)+cc(40,56,5.5,'#D9382B','#B02A20')+cc(52,59,5.5,'#D9382B','#B02A20')+cc(64,57,5,'#9ACB6A','#6FA24A')+cc(74,58,5,'#9ACB6A','#6FA24A'),
+ M3:PL+'<path d="M24 44Q40 28 62 34Q80 38 84 46Q70 56 50 54Q32 54 24 44Z" fill="#E9EEF0" stroke="#BCC7CC" stroke-width="1.5"/><path d="M38 38l6 14M48 36l6 16M58 36l6 16M68 38l5 12" stroke="#B3BFC5" stroke-width="2"/>'+rc(84,32,9,9,'#E0B766',15)+rc(92,40,9,9,'#E5BF72',-10)+rc(80,45,9,9,'#E0B766',25)+cc(30,58,5,'#EE8A2A')+cc(40,60,5,'#EE8A2A')+cc(52,61,5,'#7CB35B','#5C9440')+cc(63,60,5,'#7CB35B','#5C9440')+'<path d="M92 56q8-8 14-2q-4 10-14 2z" fill="#F5DD4C" stroke="#D2B92A"/>',
+ M4:PL+'<path d="M26 40L82 32L88 50L32 58Z" fill="#86C26A" stroke="#5E9B45" stroke-width="1.5"/><ellipse cx="85" cy="41" rx="6" ry="9" fill="#9BD07E" stroke="#5E9B45" stroke-width="1.5"/>'+cc(85,41,3.5,'#D9A68A')+cc(83,38,1.6,'#FBE9A0')+'<path d="M30 46q28-4 54-9" stroke="#B2DE98" stroke-width="2" fill="none"/>'+rc(30,58,14,8,'#E3B565',-10)+rc(48,60,14,8,'#E9C37A',8)+rc(66,59,14,8,'#E3B565',-6),
+ M5:PL+'<path d="M26 52Q28 28 48 30Q66 28 68 52Z" fill="#F4E6B8" stroke="#DDCB92" stroke-width="1.5"/><path d="M34 40q8-8 18-4" stroke="#FFF6D6" stroke-width="3" fill="none"/>'+'<path d="M72 34q12-6 24 2q-12 8-24-2z" fill="#A9B7C0" stroke="#7F8E98"/>'+cc(76,35,1.2,'#27333B')+'<path d="M72 46q12-6 24 2q-12 8-24-2z" fill="#A9B7C0" stroke="#7F8E98"/>'+cc(76,47,1.2,'#27333B')+egg(84,60,.8)+rc(30,56,5,12,'#EE8A2A',20)+rc(40,58,5,12,'#EE8A2A',-10)+cc(58,60,4.5,'#D9382B'),
+ B1:PL+'<path d="M30 38Q44 28 58 36Q62 48 46 52Q30 52 30 38Z" fill="#E7B563" stroke="#C48E3B" stroke-width="1.5"/><path d="M62 34Q78 28 90 38Q88 50 72 52Q58 50 62 34Z" fill="#EBBC6D" stroke="#C48E3B" stroke-width="1.5"/>'+cc(45,41,1.3,'#F7DDA6')+cc(76,40,1.3,'#F7DDA6')+cc(40,60,4,'#7CB35B')+cc(52,62,4,'#7CB35B'),
+ B2:'<ellipse cx="60" cy="70" rx="40" ry="4" fill="rgba(0,0,0,.1)"/><path d="M18 34Q20 68 60 70Q100 68 102 34Z" fill="#E9E4D8" stroke="#D2CCBD" stroke-width="1.5"/><ellipse cx="60" cy="34" rx="42" ry="11" fill="#F8F6F1" stroke="#D2CCBD" stroke-width="1.5"/><path d="M24 34A18 8 0 0 1 60 34A18 8 0 0 1 24 34Z" fill="#FFFFFF"/><path d="M60 34A18 8 0 0 1 96 34A18 8 0 0 1 60 34Z" fill="#6B3E26"/>'+cc(42,33,1.3,'#E5E0D2')+cc(50,36,1.3,'#E5E0D2')+cc(72,32,2,'#8A5A3A')+cc(84,35,2,'#8A5A3A'),
+ B3:'<ellipse cx="60" cy="68" rx="44" ry="5" fill="rgba(0,0,0,.1)"/>'+'<ellipse cx="38" cy="46" rx="14" ry="18" fill="#FBF8F0" stroke="#D9D3C2" stroke-width="1.5"/><ellipse cx="62" cy="48" rx="14" ry="18" fill="#FBF8F0" stroke="#D9D3C2" stroke-width="1.5"/><ellipse cx="85" cy="46" rx="14" ry="18" fill="#FBF8F0" stroke="#D9D3C2" stroke-width="1.5"/>'+cc(62,50,6,'#F2B632'),
+ B4:'<ellipse cx="60" cy="70" rx="30" ry="4" fill="rgba(0,0,0,.1)"/><path d="M50 18h20v8q10 6 10 18v22q0 6-6 6H46q-6 0-6-6V44q0-12 10-18z" fill="#C9D78A" stroke="#98A95A" stroke-width="1.5"/><rect x="54" y="8" width="12" height="12" rx="3" fill="#6B7A3A"/>'+cc(60,52,8,'#FBF3D0')+'<path d="M56 48l8 8" stroke="#D8CFA0" stroke-width="1.5"/>'
+};
+function ill(id){return `<svg viewBox="0 0 120 80" role="img" aria-label="${(MEALS[id]?MEALS[id].n:(BASES[id]||{n:''}).n)}" preserveAspectRatio="xMidYMid slice">${SCENES[id]||''}</svg>`;}
+
+/* ===== ESTADO E CÁLCULOS ===== */
+const KEY='cardapio-lucas-pri-v1';
+const DEF={checks:{},extras:{},shop:{},stock:{atum:4,sardinha:2},pantry:{},prep:{},steps:{},
+  targets:{L:{p:160,k:2800},P:{p:125,k:1750}},ref:{iogurte100:6,whey:24},maxKg:14,have:{}};
+function clone(o){return JSON.parse(JSON.stringify(o));}
+function loadState(){
+  const s=clone(DEF);
+  try{const r=localStorage.getItem(KEY);if(r){const o=JSON.parse(r);
+    for(const k of Object.keys(DEF)){if(o[k]!==undefined){
+      if(DEF[k]&&typeof DEF[k]==='object'&&!Array.isArray(DEF[k])){
+        if(k==='targets'){for(const w of ['L','P'])s.targets[w]=Object.assign({},DEF.targets[w],(o.targets||{})[w]);}
+        else s[k]=Object.assign({},DEF[k],o[k]);
+      } else s[k]=o[k];}}}}catch(e){}
+  return s;
+}
+let S=loadState();
+let saveT=null;
+function save(){clearTimeout(saveT);saveT=setTimeout(()=>{try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}},150);}
+
+function fmt(n,d){return Number(n).toLocaleString('pt-BR',{maximumFractionDigits:d==null?1:d});}
+const R0=n=>Math.round(n);
+function fq(id,q){
+  switch(id){
+    case 'ovo': return `${fmt(q)} ${q===1?'ovo':'ovos'}`;
+    case 'atum': case 'sardinha': return q===.5?`½ lata de ${SN[id]}`:`${fmt(q)} ${q===1?'lata':'latas'} de ${SN[id]}`;
+    case 'whey': return `${fmt(q)} dose de whey`;
+    case 'azeite': return `${q===.25?'¼':q===.5?'½':fmt(q)} col. sopa de azeite`;
+    case 'banana': return `${fmt(q)} banana${q>1?'s':''}`;
+    case 'limao': return `${q===.5?'½':fmt(q)} limão`;
+    default: return `${fmt(q)} ${ING[id].u==='ml'?'ml':'g'} de ${SN[id]}`;
+  }
+}
+function pOf(id){
+  if(id==='iogurte') return S.ref.iogurte100/100;
+  if(id==='whey') return S.ref.whey;
+  return ING[id].p;
+}
+function nut(items){let p=0,k=0;for(const it of items){p+=pOf(it[0])*it[1];k+=ING[it[0]].k*it[1];}return{p,k};}
+const EXTRAS=[
+  {id:'whey',n:'1 dose de whey',it:[['whey',1]]},
+  {id:'atum',n:'1 lata de atum',it:[['atum',1]]},
+  {id:'iogurte',n:'1 pote de iogurte (170 g)',it:[['iogurte',170]]},
+  {id:'ovo',n:'1 ovo cozido',it:[['ovo',1]]},
+  {id:'leite',n:'1 copo de leite (200 ml)',it:[['leite',200]]},
+  {id:'mussarela',n:'2 fatias de mussarela (30 g)',it:[['mussarela',30]]},
+  {id:'amendoim',n:'1 colher de pasta de amendoim (15 g)',it:[['amendoim',15]]}
+];
+function dayStats(day,who){
+  const plan={p:0,k:0},done={p:0,k:0};
+  for(const s of SLOTS){const mid=day.slots[s[0]];if(!mid)continue;const n=nut(MEALS[mid][who]);plan.p+=n.p;plan.k+=n.k;
+    if(S.checks[`${day.d}|${s[0]}|${who}`]){done.p+=n.p;done.k+=n.k;}}
+  const ex=S.extras[`${day.d}|${who}`]||{};const xt={p:0,k:0};
+  for(const e of EXTRAS){const c=ex[e.id]||0;if(c){const n=nut(e.it);xt.p+=n.p*c;xt.k+=n.k*c;}}
+  return{plan,done:{p:done.p+xt.p,k:done.k+xt.k},projected:{p:plan.p+xt.p,k:plan.k+xt.k},extra:xt};
+}
+function suggest(gap){
+  if(gap<=3)return '';
+  const pw=nut([['whey',1]]).p,py=nut([['iogurte',170]]).p,po=nut([['ovo',1]]).p;
+  const c={w:0,y:0,o:0};let g=gap;
+  while(g>2&&c.w+c.y+c.o<6){if(g>=pw*.8){c.w++;g-=pw;}else if(g>=py*.8){c.y++;g-=py;}else{c.o++;g-=po;}}
+  const out=[];
+  if(c.w)out.push(`${c.w} ${c.w>1?'doses':'dose'} de whey`);
+  if(c.y)out.push(`${c.y} ${c.y>1?'potes':'pote'} de iogurte`);
+  if(c.o)out.push(`${c.o} ${c.o>1?'ovos cozidos':'ovo cozido'}`);
+  return out.join(' + ');
+}
+
+/* ===== COMPRAS: calculadas a partir do plano ===== */
+const TRIPS=[
+  {id:'T1',n:'Compra 1',when:'Dom 15',long:'Domingo 15',covers:'dom e seg, mais a despensa da semana',days:['2026-11-15','2026-11-16']},
+  {id:'T2',n:'Compra 2',when:'Ter 17',long:'Terça 17',covers:'ter a qui, mais o frango e o arroz da quarta',days:['2026-11-17','2026-11-18','2026-11-19']},
+  {id:'T3',n:'Compra 3',when:'Sex 20',long:'Sexta 20',covers:'sex a dom',days:['2026-11-20','2026-11-21','2026-11-22']}
+];
+/* O que é cozido em lote é comprado antes do dia de cozinhar: lote 1 no domingo (cobre seg a qua), lote 2 na quarta (cobre qui a dom). */
+const BATCH1=['2026-11-15','2026-11-16','2026-11-17','2026-11-18'],BATCH2=['2026-11-19','2026-11-20','2026-11-21','2026-11-22'];
+const ALL_DAYS=WEEK.map(d=>d.d);
+function needs(days,onlyMeals){
+  const out={};
+  for(const dd of days){const day=WEEK.find(x=>x.d===dd);if(!day)continue;
+    for(const s of SLOTS){const mid=day.slots[s[0]];if(!mid)continue;
+      for(const who of ['L','P']){for(const it of MEALS[mid][who]){
+        const o=out[it[0]]||(out[it[0]]={tot:0,L:0,P:0,uses:[]});
+        o.tot+=it[1];o[who]+=it[1];const sh=SHORT[mid];if(!o.uses.includes(sh))o.uses.push(sh);}}}}
+  return out;
+}
+function buyText(it){
+  const g=ING[it.id];
+  if(g.loose){if(g.u==='un')return `${it.qty} un`;return it.qty>=1000?`${fmt(it.qty/1000,2)} kg`:`${it.qty} g`;}
+  const n=it.packs;return `${n} ${n===1?g.pk[0]:g.pk[1]}${g.size?' de '+g.size:''}`;
+}
+function needText(id,q){
+  const u=ING[id].u;
+  if(u==='un')return `${fmt(q)} un`;if(u==='lata')return `${fmt(q)} ${q===1?'lata':'latas'}`;
+  if(u==='ml')return `${fmt(q,0)} ml`;if(u==='g cozido')return `${fmt(q,0)} g cozido`;return `${fmt(q,0)} g`;
+}
+const PANTRY_STATIC=[
+  {id:'sal',n:'Sal'},{id:'pimenta',n:'Pimenta-do-reino'},{id:'paprica',n:'Páprica'},
+  {id:'oregano',n:'Orégano'},{id:'alho',n:'Alho (1 cabeça, só para o azeite aromatizado)'}];
+function shopping(){
+  const left={};
+  for(const id in S.stock){if(ING[id])left[id]=(S.stock[id]||0)*(ING[id].f||1);}
+  return TRIPS.map(t=>{
+    const nd=needs(t.days);const items=[];let w=0;
+    for(const id of ['frango','arroz','feijao'])delete nd[id];
+    const bn=needs(t.id==='T1'?BATCH1:t.id==='T2'?BATCH2:[]);
+    for(const id of ['frango','arroz'])if(bn[id])nd[id]=bn[id];
+    if(t.id==='T1'){const fa=needs(ALL_DAYS).feijao;if(fa)nd.feijao=fa;}
+    for(const id in nd){const g=ING[id];if(g.pantry)continue;
+      const need=nd[id].tot*(g.f||1);const have=S.have[id]?Infinity:(left[id]||0);let packs=0;
+      if(have<need-1e-9)packs=Math.ceil((need-have)/g.pack-1e-9);
+      left[id]=isFinite(have)?have+packs*g.pack-need:0;
+      if(packs>0){const qty=packs*g.pack;const wt=qty*(g.wp||1);w+=wt;
+        items.push({id,packs,qty,need:nd[id].tot,who:{L:nd[id].L>0,P:nd[id].P>0},uses:nd[id].uses,wt});}
+      else if(nd[id].tot>0){/* coberto pelo estoque ou por sobra da compra anterior */}
+    }
+    items.sort((a,b)=>ING[a.id].n.localeCompare(ING[b.id].n,'pt-BR'));
+    return Object.assign({},t,{items,kg:w/1000});
+  });
+}
+
+/* ===== INTERFACE ===== */
+const $=(s,r)=>(r||document).querySelector(s);
+const WD_FULL={Dom:'Domingo',Seg:'Segunda',Ter:'Terça',Qua:'Quarta',Qui:'Quinta',Sex:'Sexta','Sáb':'Sábado'};
+const NAV=[
+ ['hoje','Hoje','<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M19 5l-1.5 1.5M6.5 17.5L5 19"/>'],
+ ['semana','Semana','<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/>'],
+ ['compras','Compras','<path d="M3 4h2l2.4 11.2a1 1 0 0 0 1 .8h8.8a1 1 0 0 0 1-.8L20 8H6"/><circle cx="9" cy="20" r="1.2"/><circle cx="17" cy="20" r="1.2"/>'],
+ ['receitas','Receitas','<path d="M4 11h16v2a7 7 0 0 1-7 7h-2a7 7 0 0 1-7-7v-2zM8 8c0-1.5 1-1.5 1-3M12 8c0-1.5 1-1.5 1-3M16 8c0-1.5 1-1.5 1-3"/>'],
+ ['preparo','Preparo','<circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/>'],
+ ['ajustes','Ajustes','<path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>']
+];
+function pad(n){return String(n).padStart(2,'0');}
+function todayStr(){const d=new Date();return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;}
+const TODAY=todayStr();
+const V={view:'hoje',day:ALL_DAYS.includes(TODAY)?TODAY:ALL_DAYS[0],trip:'T1',open:{},filter:'all',confirm:null,extraWho:'L'};
+const CHECK='<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+const CHEV='<svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>';
+const WHO={L:'Lucas',P:'Pri'};
+const dayOf=d=>WEEK.find(x=>x.d===d);
+
+function itemsText(items){return items.map(it=>fq(it[0],it[1])).join(', ');}
+
+/* ----- HOJE ----- */
+function scoreCard(day,who){
+  const st=dayStats(day,who),t=S.targets[who];
+  const pp=Math.min(100,st.projected.p/t.p*100),dp=Math.min(100,st.done.p/t.p*100);
+  const kp=Math.min(100,st.projected.k/t.k*100),dk=Math.min(100,st.done.k/t.k*100);
+  const left=t.p-st.done.p;
+  const msg=left<=0?`<span class="st ok">Meta batida</span>`:`<span class="st">faltam ${R0(left)} g</span>`;
+  return `<div class="sc ${who}"><div class="nm"><span class="dot ${who}"></span>${WHO[who]}</div>
+   <div class="big">${R0(st.done.p)}<small> / ${t.p} g</small></div>
+   <div class="bar" role="img" aria-label="Proteína ${R0(st.done.p)} de ${t.p} gramas"><i class="plan" style="width:${pp}%"></i><i class="done" style="width:${dp}%"></i></div>
+   ${msg}
+   <div class="bar thin" role="img" aria-label="Energia ${R0(st.done.k)} de ${t.k} kcal"><i class="plan" style="width:${kp}%"></i><i class="done" style="width:${dk}%"></i></div>
+   <div class="st">${R0(st.done.k)} / ${t.k} kcal</div></div>`;
+}
+function advice(day){
+  if(!day.slots.cafe||!day.slots.jantar)return '';
+  const out=[];
+  for(const w of ['L','P']){
+    const st=dayStats(day,w),t=S.targets[w];const gap=t.p-st.projected.p;
+    if(gap>5){const s=suggest(gap);out.push(`<b>${WHO[w]}:</b> o plano chega a ~${R0(st.projected.p)} g. Para fechar os ${t.p} g, adicione ${s}.`);}
+  }
+  if(!out.length)return `<div class="tip ok">O plano do dia fecha a meta dos dois. Se um dia escapar, sem drama: vale a média da semana.</div>`;
+  return `<div class="tip">${out.join('<br>')}</div>`;
+}
+function slotCard(day,k,label){
+  const mid=day.slots[k],m=MEALS[mid];
+  const people=['L','P'].map(w=>{
+    const key=`${day.d}|${k}|${w}`,n=nut(m[w]),on=!!S.checks[key];
+    return `<label class="person ${w}${on?' done':''}"><input type="checkbox" data-act="chk" data-key="${key}"${on?' checked':''}><span class="box">${CHECK}</span>
+      <span class="who">${WHO[w]}</span><span class="nums">${R0(n.p)} g · ${R0(n.k)} kcal</span><span class="desc">${itemsText(m[w])}</span></label>`;
+  }).join('');
+  const both=S.checks[`${day.d}|${k}|L`]&&S.checks[`${day.d}|${k}|P`];
+  return `<article class="slot"><div class="ill">${ill(mid)}</div>
+   <div><div class="slot-top"><span class="tag">${label}</span><span class="sub">${m.t} min</span></div><h3>${m.n}</h3>
+   <div class="slot-actions"><button class="link" data-act="recipe" data-id="${mid}">Ver receita</button>
+   <button class="link" data-act="both" data-day="${day.d}" data-slot="${k}">${both?'Desmarcar os dois':'Os dois comeram'}</button></div></div>
+   <div class="people">${people}</div></article>`;
+}
+function extrasBlock(day){
+  const w=V.extraWho,key=`${day.d}|${w}`,ex=S.extras[key]||{};
+  const tabs=['L','P'].map(x=>`<button class="chip" data-act="exwho" data-who="${x}" aria-pressed="${x===w}"><span class="dot ${x}"></span>${WHO[x]}</button>`).join('');
+  const pills=EXTRAS.map(e=>{const n=nut(e.it),c=ex[e.id]||0;
+    return `<span class="pill"><span>${e.n} <b>+${R0(n.p)} g</b></span>${c?`<button class="pm" data-act="exdel" data-id="${e.id}" aria-label="Tirar um">−</button><span class="ct">${c}</span>`:''}<button class="pm add" data-act="exadd" data-id="${e.id}" aria-label="Adicionar ${e.n}">+</button></span>`;}).join('');
+  return `<section class="card stack"><div><div class="eyebrow">Extras do dia</div><div class="sub">Comeu algo fora do plano ou quer fechar a proteína? Registre aqui e o placar atualiza.</div></div>
+   <div class="row">${tabs}</div><div class="pills">${pills}</div></section>`;
+}
+function viewHoje(){
+  const day=dayOf(V.day);
+  const chips=WEEK.map(x=>`<button class="chip day-chip${x.d===TODAY?' today':''}" data-act="day" data-day="${x.d}" aria-pressed="${x.d===V.day}"><span>${x.wd}</span><b>${x.d.slice(8)}</b></button>`).join('');
+  const partial=!day.slots.cafe?'Dia parcial: o café e o almoço já passaram.':(!day.slots.jantar?'Dia parcial: o jantar fica para a próxima semana.':'');
+  const slots=SLOTS.filter(s=>day.slots[s[0]]).map(s=>slotCard(day,s[0],s[1])).join('');
+  return `<div class="chips" role="group" aria-label="Escolha o dia">${chips}</div>
+   <div class="score">${scoreCard(day,'L')}${scoreCard(day,'P')}</div>
+   <div class="stack">${partial?`<div class="sub">${partial}</div>`:''}${advice(day)}${slots}${extrasBlock(day)}</div>`;
+}
+
+/* ----- SEMANA ----- */
+function chartSvg(){
+  const W=440,H=210,L=34,Rr=6,T=18,B=40,iw=W-L-Rr,ih=H-T-B,n=WEEK.length,slot=iw/n,bw=Math.min(18,slot/2-3);
+  const y=v=>T+ih-(Math.min(v,130)/130)*ih;
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Proteína planejada por dia, em porcentagem da meta de cada um">`;
+  for(const v of [0,50,100]){s+=`<line class="${v===100?'goal':'grid'}" x1="${L}" x2="${W-Rr}" y1="${y(v)}" y2="${y(v)}"/><text x="${L-6}" y="${y(v)+4}" text-anchor="end">${v}%</text>`;}
+  WEEK.forEach((d,i)=>{
+    const cx=L+slot*i+slot/2;
+    for(const e of [['L',-bw-1],['P',1]]){
+      const w=e[0],dx=e[1];
+      const pc=dayStats(d,w).plan.p/S.targets[w].p*100;const yy=y(pc);
+      s+=`<rect class="b${w}" x="${cx+dx}" y="${yy}" width="${bw}" height="${Math.max(0,y(0)-yy)}" rx="3"/><text x="${cx+dx+bw/2}" y="${yy-4}" text-anchor="middle">${R0(pc)}</text>`;}
+    s+=`<text x="${cx}" y="${H-22}" text-anchor="middle">${d.wd} ${d.d.slice(8)}</text>`;
+    if(!d.slots.cafe||!d.slots.jantar)s+=`<text x="${cx}" y="${H-9}" text-anchor="middle">parcial</text>`;
+  });
+  return s+'</svg>';
+}
+function viewSemana(){
+  const full=WEEK.filter(d=>d.slots.cafe&&d.slots.jantar);
+  const avg=w=>full.reduce((a,d)=>a+dayStats(d,w).plan.p,0)/full.length;
+  const cards=WEEK.map(d=>{
+    const rows=SLOTS.filter(s=>d.slots[s[0]]).map(s=>{const mid=d.slots[s[0]];
+      return `<li><span class="sl">${s[1].split(' ')[0]}</span><span class="mini">${ill(mid)}</span><span>${MEALS[mid].n}</span></li>`;}).join('');
+    const l=dayStats(d,'L').plan,p=dayStats(d,'P').plan;
+    return `<button class="dayc" data-act="day-go" data-day="${d.d}"><div class="top"><h3>${WD_FULL[d.wd]} ${d.d.slice(8)}</h3>${d.d===TODAY?'<span class="tag">hoje</span>':''}</div>
+      <div class="tots"><span class="tot L">Lucas ${R0(l.p)} g · ${R0(l.k)} kcal</span><span class="tot P">Pri ${R0(p.p)} g · ${R0(p.k)} kcal</span></div><ul>${rows}</ul></button>`;}).join('');
+  const counts={};WEEK.forEach(d=>Object.values(d.slots).forEach(m=>{if(MEALS[m].slot==='ref')counts[m]=(counts[m]||0)+1;}));
+  const rod=Object.keys(counts).sort().map(m=>`${SHORT[m]} ${counts[m]}×`).join(' · ');
+  return `<div class="stack"><section class="card stack"><div><div class="eyebrow">Plano da semana, domingo 15 a domingo 22</div>
+   <div class="sub">Média dos dias completos: Lucas ${R0(avg('L'))} g de proteína (meta ${S.targets.L.p}), Pri ${R0(avg('P'))} g (meta ${S.targets.P.p}). O plano já inclui uma folga para os dias em que algo escapar. As barras mostram a proteína planejada em % da meta de cada um.</div></div>
+   <div class="chart">${chartSvg()}</div><div class="who-legend"><span><span class="dot L"></span>Lucas</span><span><span class="dot P"></span>Pri</span></div>
+   <div class="sub">Almoço e jantar rodam em 5 pratos: ${rod}. Café, lanche e ceia são fixos, sem decisão.</div></section>
+   <div class="week">${cards}</div></div>`;
+}
+
+/* ----- COMPRAS ----- */
+function viewCompras(){
+  const trips=shopping();const t=trips.find(x=>x.id===V.trip);
+  const tabs=trips.map(x=>{const done=x.items.filter(i=>S.shop[`${x.id}|${i.id}`]).length;
+    return `<button class="trip" data-act="trip" data-id="${x.id}" aria-pressed="${x.id===V.trip}"><b>${x.n}</b><span class="sub">${x.long}</span><span class="sub">${done}/${x.items.length} itens · ${fmt(x.kg,1)} kg</span></button>`;}).join('');
+  const max=S.maxKg,scale=Math.max(max*1.4,t.kg*1.05),over=t.kg>max;
+  const groups={};t.items.forEach(i=>{(groups[ING[i.id].aisle]=groups[ING[i.id].aisle]||[]).push(i);});
+  const order=['hort','prot','lat','merc'];
+  const aisles=order.filter(a=>groups[a]).map(a=>{
+    const its=groups[a];const done=its.filter(i=>S.shop[`${t.id}|${i.id}`]).length;
+    const rows=its.map(i=>{const key=`${t.id}|${i.id}`,on=!!S.shop[key],g=ING[i.id];
+      return `<label class="item${on?' done':''}"><input type="checkbox" data-act="shop" data-key="${key}"${on?' checked':''}><span class="box">${CHECK}</span>
+       <span class="nm">${g.n}</span><span class="qt">${buyText(i)}</span>
+       <span class="meta">${i.who.L?'<span class="mini-tag L">L</span>':''}${i.who.P?'<span class="mini-tag P">P</span>':''}<span>precisa de ${needText(i.id,i.need)} · ${i.uses.join(', ')}</span></span></label>`;}).join('');
+    return `<section class="aisle"><h3>${AISLES[a]}<span class="sub">${done}/${its.length}</span></h3><div class="list">${rows}</div></section>`;}).join('');
+  let pantry='';
+  if(t.id==='T1'){
+    const pn=needs(ALL_DAYS);
+    const comp=Object.keys(pn).filter(id=>ING[id].pantry).map(id=>{const g=ING[id];
+      const txt=id==='whey'?`${fmt(pn[id].tot,0)} doses na semana (~${fmt(pn[id].tot*30/1000,2)} kg de pó)`:`~${fmt(pn[id].tot*g.mlPerUnit,0)} ml na semana`;
+      return {id,n:g.n,t:txt};});
+    const all=comp.concat(PANTRY_STATIC.map(p=>({id:p.id,n:p.n,t:''})));
+    const rows=all.map(p=>{const on=!!S.pantry[p.id];
+      return `<label class="item${on?' done':''}"><input type="checkbox" data-act="pantry" data-key="${p.id}"${on?' checked':''}><span class="box">${CHECK}</span><span class="nm">${p.n}</span><span class="qt">${on?'tenho':'conferir'}</span>${p.t?`<span class="meta"><span>${p.t}</span></span>`:''}</label>`;}).join('');
+    pantry=`<section class="aisle"><h3>${AISLES.desp}<span class="sub">marque o que já tem</span></h3><div class="list">${rows}</div></section>`;
+  }
+  const HAVE=['arroz','feijao','aveia','tapioca','macarrao','amendoim','passata'];
+  const havePills=HAVE.map(id=>`<button class="chip" data-act="have" data-id="${id}" aria-pressed="${!!S.have[id]}">${S.have[id]?'Tenho: ':'Já tenho '}${ING[id].n.split(' (')[0].toLowerCase()}</button>`).join('');
+  const stock=t.id==='T1'?`<section class="card stack"><div><div class="eyebrow">Estoque em casa</div><div class="sub">O que já tem entra na conta e some da lista de compras. Atum e sardinha em unidades, o resto é só marcar.</div></div><div class="pills">${havePills}</div><div class="stock">
+    ${['atum','sardinha'].map(id=>`<div class="stepper"><button data-act="stock" data-id="${id}" data-d="-1" aria-label="Menos ${ING[id].n}">−</button><span>${S.stock[id]||0}</span><button data-act="stock" data-id="${id}" data-d="1" aria-label="Mais ${ING[id].n}">+</button><span class="sub">${ING[id].n}</span></div>`).join('')}</div></section>`:'';
+  const conf=V.confirm==='shop:'+t.id;
+  return `<div class="stack"><div class="trips">${tabs}</div>
+   <section class="card"><div class="eyebrow">${t.n} · ${t.long}</div><div class="sub">Cobre ${t.covers}. Peso estimado na mochila: <b>${fmt(t.kg,1)} kg</b> (limite ${max} kg).</div>
+   <div class="meter${over?' over':''}" role="img" aria-label="${fmt(t.kg,1)} kg de ${max} kg"><i style="width:${Math.min(100,t.kg/scale*100)}%"></i><u style="left:${max/scale*100}%"></u></div>
+   ${over?'<div class="tip" style="margin-top:8px">Passou do limite da mochila. Se puder, marque em Estoque o que já tem em casa, ou aumente o limite em Ajustes.</div>':''}</section>
+   ${stock}${aisles}${pantry}
+   <div><button class="btn${conf?' warn':''}" data-act="resetshop" data-id="${t.id}">${conf?'Toque de novo para zerar':'Zerar marcações desta compra'}</button></div></div>`;
+}
+
+/* ----- RECEITAS ----- */
+function whereUsed(id){const out=[];WEEK.forEach(d=>SLOTS.forEach(s=>{if(d.slots[s[0]]===id)out.push(`${d.wd} ${d.d.slice(8)} (${s[1].split(' ')[0].toLowerCase()})`);}));return out.join(', ');}
+function recCard(id){
+  const m=MEALS[id]||BASES[id],open=!!V.open[id],r=RECIPES[id];
+  const isMeal=!!MEALS[id];
+  const head=`<button class="rec-h" data-act="exp" data-id="${id}" aria-expanded="${open}" id="rec-${id}"><div class="ill">${ill(id)}</div>
+   <div><span class="tag">${isMeal?(m.slot==='cafe'?'Café':m.slot==='ref'?'Almoço ou jantar':m.slot==='lanche'?'Lanche':'Ceia'):'Preparo base'}</span><h3>${m.n}</h3>
+   <div class="sub">${m.t} min${isMeal?` · Lucas ${R0(nut(m.L).p)} g · Pri ${R0(nut(m.P).p)} g de proteína`:''}</div></div>${CHEV}</button>`;
+  let body='';
+  if(open){
+    const cols=isMeal?`<div class="cols">${['L','P'].map(w=>{const n=nut(m[w]);return `<div class="col ${w}"><h4>${WHO[w]}</h4><ul>${m[w].map(it=>`<li>${fq(it[0],it[1])}</li>`).join('')}</ul><div class="tt">${R0(n.p)} g de proteína · ${R0(n.k)} kcal</div></div>`;}).join('')}</div>`:`<div class="note" style="margin-top:14px">${m.desc}</div>`;
+    const steps=`<ol class="steps">${r.steps.map((s,i)=>{const k=`${id}|${i}`;return `<li class="${S.steps[k]?'done':''}" data-act="step" data-key="${k}"><span>${s}</span></li>`;}).join('')}</ol>`;
+    const tips=r.tips.length?`<div class="note">${r.tips.map(t=>`<div>${t}</div>`).join('')}</div>`:'';
+    const wh=isMeal?`<div class="where">Aparece na semana: ${whereUsed(id)}</div>`:'';
+    body=`<div class="rec-b">${cols}${steps}${tips}${wh}<div><button class="link" data-act="clearsteps" data-id="${id}">Limpar passos marcados</button></div></div>`;
+  }
+  return `<article class="rec">${head}${body}</article>`;
+}
+function viewReceitas(){
+  const F=[['all','Todas'],['cafe','Café'],['ref','Almoço e jantar'],['lc','Lanche e ceia'],['base','Base']];
+  const chips=F.map(f=>`<button class="chip" data-act="filter" data-f="${f[0]}" aria-pressed="${V.filter===f[0]}">${f[1]}</button>`).join('');
+  const ids=Object.keys(MEALS).concat(Object.keys(BASES)).filter(id=>{
+    const sl=(MEALS[id]||BASES[id]).slot;
+    return V.filter==='all'||(V.filter==='lc'?(sl==='lanche'||sl==='ceia'):sl===V.filter);});
+  return `<div class="chips">${chips}</div><div class="stack">${ids.map(recCard).join('')}</div>`;
+}
+
+/* ----- PREPARO ----- */
+function ceilTo(n,s){return Math.ceil(n/s-1e-9)*s;}
+function eggOf(list){const f=list.find(i=>i[0]==='ovo');return f?f[1]:0;}
+function boiledEggs(days){let n=0;days.forEach(dd=>{const d=dayOf(dd);if(!d)return;Object.values(d.slots).forEach(mid=>{
+  if(mid==='C2')n+=eggOf(MEALS.C2.L)+eggOf(MEALS.C2.P);
+  if(mid==='M5')n+=eggOf(MEALS.M5.L);
+  if(mid==='M1')n+=eggOf(MEALS.M1.P);});});return n;}
+function prepPlan(){
+  const w1=['2026-11-16','2026-11-17','2026-11-18'],w2=['2026-11-19','2026-11-20','2026-11-21','2026-11-22'];
+  const mk=(key,label,when,days,first)=>{
+    const nd=needs(days);const fr=ceilTo(((nd.frango||{}).tot||0)*1.1,50);
+    const ar=nd.arroz?ceilTo(nd.arroz.tot*.34*1.1,10):0;
+    const feijAll=needs(ALL_DAYS).feijao;const fj=feijAll?ceilTo(feijAll.tot*.35*1.05,10):0;
+    const ov=boiledEggs(days);
+    const tasks=[
+      {id:`${key}-azeite`,n:'Azeite aromatizado',m:8,t:'100 ml de azeite com 2 dentes de alho amassados, fogo baixo por 5 min. Tire todo o alho. Geladeira, até 4 dias.'+(first?'':' Descarte o do domingo e faça este novo.')},
+      {id:`${key}-frango`,n:`Frango assado: ${fr} g`,m:30,t:`Tempere com sal, páprica e limão. Forno a 200 °C por 22 a 25 min. Desfie metade e fatie o resto. Cobre ${first?'segunda a quarta':'quinta a domingo'}.`},
+      {id:`${key}-ovos`,n:`Ovos cozidos: ${ov} un`,m:12,t:'Água fria, ferva e conte 10 min. Passe em água gelada. Para mingau, purê e macarrão da Pri.'},
+      {id:`${key}-arroz`,n:`Arroz: ${ar} g crus`,m:20,t:`Refogue no azeite, 2,5 partes de água, 12 min tampado. Rende ~${ar*3} g cozidos. Só o Lucas come arroz.`}];
+    if(first)tasks.push({id:`${key}-feijao`,n:`Feijão: ${fj} g secos`,m:35,t:`Pressão por 25 min. Rende ~${Math.round(fj*2.85/10)*10} g cozidos. Congele em porções de 150 g, uma por omelete da semana.`});
+    else tasks.push({id:`${key}-feijao`,n:'Feijão: tirar 1 porção do congelador',m:2,t:'Passe uma porção de 150 g para a geladeira na véspera do omelete.'});
+    return{key,label,when,total:tasks.reduce((a,t)=>a+t.m,0),tasks};};
+  return [mk('dom','Domingo 15','~1h15',w1,true),mk('qua','Quarta 18','~1h',w2,false)];
+}
+function viewPreparo(){
+  const plans=prepPlan();
+  return `<div class="stack"><div class="sub">Dois blocos de cozinha por semana. O resto do tempo é montar o prato. As quantidades saem do plano da semana.</div>
+  ${plans.map(p=>{const done=p.tasks.filter(t=>S.prep[t.id]).length;
+   return `<section class="stack"><div class="row" style="justify-content:space-between;flex-wrap:wrap"><h2 style="font-size:20px">${p.label}</h2><span class="sub">${done}/${p.tasks.length} feitos · panelas e forno ao mesmo tempo, ${p.when}</span></div>
+   <div class="list">${p.tasks.map(t=>{const on=!!S.prep[t.id];
+    return `<label class="task${on?' done':''}"><input type="checkbox" data-act="prep" data-key="${t.id}"${on?' checked':''}><span class="box">${CHECK}</span><span class="nm">${t.n}</span><span class="mn">${t.m} min</span><span class="tx">${t.t}</span></label>`;}).join('')}</div></section>`;}).join('')}
+  <div><button class="link" data-act="recipe" data-id="B4">Ver receita do azeite aromatizado</button></div></div>`;
+}
+
+/* ----- AJUSTES ----- */
+function numFld(label,hint,path,val,step){return `<div class="fld"><label for="n-${path}">${label}${hint?`<small>${hint}</small>`:''}</label><input id="n-${path}" type="number" inputmode="decimal" step="${step||1}" min="0" value="${val}" data-act="num" data-path="${path}"></div>`;}
+function viewAjustes(){
+  const conf=V.confirm==='all';
+  return `<div class="stack">
+  <section class="card"><div class="eyebrow">Metas diárias</div>
+   ${numFld('Lucas: proteína (g)','Janela de 155 a 165 g','t.L.p',S.targets.L.p)}${numFld('Lucas: energia (kcal)','Superávit leve','t.L.k',S.targets.L.k,50)}
+   ${numFld('Pri: proteína (g)','~1,9 g por kg, com 66 kg','t.P.p',S.targets.P.p)}${numFld('Pri: energia (kcal)','Déficit leve','t.P.k',S.targets.P.k,50)}</section>
+  <section class="card"><div class="eyebrow">Valores de referência</div>
+   ${numFld('Proteína em 100 g de iogurte grego sem lactose (g)','Veja no rótulo do pote que comprar. Muda todos os totais.','r.iogurte100',S.ref.iogurte100,.5)}
+   ${numFld('Proteína de 1 dose de whey (g)','A sua referência: 24 g','r.whey',S.ref.whey,.5)}
+   ${numFld('Limite da mochila (kg)','Alerta nas compras','maxkg',S.maxKg,.5)}</section>
+  <section class="card stack"><div class="eyebrow">Como as contas são feitas</div>
+   <div class="note">Os totais são estimativas com valores médios de tabela (TACO e rótulos). A balança, na média da semana, é o ajuste real.</div>
+   <div class="note"><b>Feijão:</b> a referência de 12 a 15 g por concha parece alta. Feijão cozido tem cerca de 5 g de proteína por 100 g, então uma concha (~140 g) rende ~7 g. Usei 5 g por 100 g. Se pesar e achar outro valor, é só avisar.</div></section>
+  <section class="card stack"><div class="eyebrow">Pri: o que pode e o que evitar (FODMAP)</div>
+   <div class="scroll-x"><table class="t"><thead><tr><th>Pode</th><th>Evitar</th></tr></thead><tbody>
+    <tr><td class="ok-t">Frango, ovo, peixe, atum, sardinha</td><td class="no-t">Feijão, lentilha, grão-de-bico, soja</td></tr>
+    <tr><td class="ok-t">Leite e iogurte sem lactose, mussarela, parmesão</td><td class="no-t">Leite comum, cottage, ricota, requeijão</td></tr>
+    <tr><td class="ok-t">Batata, arroz, tapioca, aveia (até 40 g), macarrão de arroz</td><td class="no-t">Pão e macarrão de trigo em quantidade</td></tr>
+    <tr><td class="ok-t">Cenoura, abobrinha, tomate, pepino, espinafre</td><td class="no-t">Cebola, alho, cogumelo, couve-flor, beterraba</td></tr>
+    <tr><td class="ok-t">Morango, uva, mamão, banana firme, laranja</td><td class="no-t">Manga, maçã, pera, abacate, banana muito madura</td></tr></tbody></table></div>
+   <div class="sub">Tolerância varia de pessoa para pessoa e por porção. Se a Pri acompanha com nutricionista, vale alinhar esta lista com ela.</div></section>
+  <section class="card stack"><div class="eyebrow">Dados</div><div class="sub">As marcações ficam salvas só neste aparelho e navegador. Quem abrir em outro celular começa do zero.</div>
+   <div><button class="btn${conf?' warn':''}" data-act="resetall">${conf?'Toque de novo para zerar tudo':'Zerar todas as marcações'}</button></div></section></div>`;
+}
+
+/* ----- ROTEAMENTO E EVENTOS ----- */
+const VIEWS={hoje:viewHoje,semana:viewSemana,compras:viewCompras,receitas:viewReceitas,preparo:viewPreparo,ajustes:viewAjustes};
+function navHtml(){return `<div class="nav-in">${NAV.map(n=>`<button data-act="nav" data-v="${n[0]}"${V.view===n[0]?' aria-current="page"':''}><svg viewBox="0 0 24 24" aria-hidden="true">${n[2]}</svg><span>${n[1]}</span></button>`).join('')}</div>`;}
+function render(keep){
+  const y=window.scrollY;
+  $('#main').innerHTML=VIEWS[V.view]();
+  $('#nav').innerHTML=navHtml();
+  if(keep)window.scrollTo(0,y);
+}
+function go(v){if(!VIEWS[v])v='hoje';V.view=v;V.confirm=null;render(false);window.scrollTo(0,0);}
+function setHash(v){try{if(location.hash.slice(1)===v){go(v);}else{location.hash=v;}}catch(e){go(v);}}
+let cT=null;
+function arm(k){V.confirm=k;clearTimeout(cT);cT=setTimeout(()=>{V.confirm=null;render(true);},4000);}
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-act]');if(!t)return;
+  const a=t.dataset.act;
+  if(['chk','shop','pantry','prep','num'].indexOf(a)>=0)return;
+  switch(a){
+    case 'nav':setHash(t.dataset.v);return;
+    case 'day':V.day=t.dataset.day;render(true);return;
+    case 'day-go':V.day=t.dataset.day;setHash('hoje');return;
+    case 'both':{const k=t.dataset;const a1=`${k.day}|${k.slot}|L`,a2=`${k.day}|${k.slot}|P`;const on=!(S.checks[a1]&&S.checks[a2]);S.checks[a1]=on;S.checks[a2]=on;save();render(true);return;}
+    case 'recipe':V.open[t.dataset.id]=true;V.filter='all';setHash('receitas');setTimeout(()=>{const el=document.getElementById('rec-'+t.dataset.id);if(el)el.scrollIntoView({block:'start'});},60);return;
+    case 'exwho':V.extraWho=t.dataset.who;render(true);return;
+    case 'exadd':case 'exdel':{const key=`${V.day}|${V.extraWho}`;const ex=S.extras[key]=S.extras[key]||{};const id=t.dataset.id;ex[id]=Math.max(0,(ex[id]||0)+(a==='exadd'?1:-1));save();render(true);return;}
+    case 'have':S.have[t.dataset.id]=!S.have[t.dataset.id];save();render(true);return;
+    case 'trip':V.trip=t.dataset.id;V.confirm=null;render(true);return;
+    case 'stock':{const id=t.dataset.id;S.stock[id]=Math.max(0,(S.stock[id]||0)+Number(t.dataset.d));save();render(true);return;}
+    case 'resetshop':{const k='shop:'+t.dataset.id;if(V.confirm===k){Object.keys(S.shop).forEach(x=>{if(x.indexOf(t.dataset.id+'|')===0)delete S.shop[x];});V.confirm=null;save();}else arm(k);render(true);return;}
+    case 'resetall':{if(V.confirm==='all'){S.checks={};S.extras={};S.shop={};S.pantry={};S.prep={};S.steps={};S.have={};V.confirm=null;save();}else arm('all');render(true);return;}
+    case 'exp':V.open[t.dataset.id]=!V.open[t.dataset.id];render(true);return;
+    case 'step':S.steps[t.dataset.key]=!S.steps[t.dataset.key];save();render(true);return;
+    case 'clearsteps':Object.keys(S.steps).forEach(x=>{if(x.indexOf(t.dataset.id+'|')===0)delete S.steps[x];});save();render(true);return;
+    case 'filter':V.filter=t.dataset.f;render(true);return;
+  }
+});
+document.addEventListener('change',e=>{
+  const t=e.target.closest('[data-act]');if(!t)return;const a=t.dataset.act;
+  if(a==='chk'){S.checks[t.dataset.key]=t.checked;save();render(true);}
+  else if(a==='shop'){S.shop[t.dataset.key]=t.checked;save();render(true);}
+  else if(a==='pantry'){S.pantry[t.dataset.key]=t.checked;save();render(true);}
+  else if(a==='prep'){S.prep[t.dataset.key]=t.checked;save();render(true);}
+  else if(a==='num'){const v=Number(t.value);if(!isFinite(v)||v<0)return;const p=t.dataset.path.split('.');
+    if(p[0]==='t')S.targets[p[1]][p[2]]=v;else if(p[0]==='r')S.ref[p[1]]=v;else if(p[0]==='maxkg')S.maxKg=v;save();render(true);}
+});
+window.addEventListener('hashchange',()=>go(location.hash.slice(1)));
+(function init(){
+  document.getElementById('app').innerHTML=`<div class="wrap"><header class="hdr"><div><h1>Cardápio Lucas e Pri</h1><p>Semana de domingo 15 a domingo 22 de novembro</p></div>
+   <div class="who-legend"><span><span class="dot L"></span>Lucas</span><span><span class="dot P"></span>Pri</span></div></header><main id="main"></main></div><nav class="nav" id="nav" aria-label="Seções"></nav>`;
+  const h=(location.hash||'').slice(1);V.view=VIEWS[h]?h:'hoje';render(false);
+})();
+
+</script></body></html>

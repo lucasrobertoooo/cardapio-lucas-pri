@@ -1,0 +1,106 @@
+/* ===== RECEITAS E ILUSTRAÇÕES ===== */
+const SLOTS=[['cafe','Café da manhã'],['almoco','Almoço'],['lanche','Lanche'],['jantar','Jantar'],['ceia','Ceia']];
+const SHORT={C1:'Tapioca',C2:'Mingau',L1:'Vitamina',E1:'Iogurte',E2:'Iogurte',M1:'Macarrão',M2:'Omelete',M3:'Peixe',M4:'Crepe',M5:'Purê'};
+const SN={ovo:'ovo',atum:'atum',sardinha:'sardinha',peixe:'filé de peixe',frango:'frango',mussarela:'mussarela',parmesao:'parmesão',iogurte:'iogurte grego',leite:'leite sem lactose',whey:'whey',azeite:'azeite',tapioca:'tapioca',arroz:'arroz cozido',feijao:'feijão cozido',macarrao:'macarrão de arroz',aveia:'aveia',amendoim:'pasta de amendoim',passata:'molho de tomate',batata:'batata',cenoura:'cenoura',abobrinha:'abobrinha',pepino:'pepino',tomate:'tomate',espinafre:'espinafre',banana:'banana',morango:'morango',mamao:'mamão',uva:'uva',limao:'limão'};
+
+const RECIPES={
+ C1:{steps:[
+  'Aqueça uma frigideira antiaderente em fogo médio, sem óleo.',
+  'Peneire a goma de tapioca em disco fino (40 g Lucas, 30 g Pri). Em cerca de 1 min ela se junta; vire e deixe mais 30 s.',
+  'Em outra frigideira, mexa os ovos com sal e um fio de azeite por 2 min. Desligue e misture a mussarela.',
+  'Recheie a tapioca com os ovos e dobre ao meio.',
+  'Sirva com o iogurte e a fruta: banana para o Lucas, morango para a Pri.'],
+  tips:['Use a goma já hidratada (a que vem pronta para peneirar). Se usar fécula seca, hidrate antes.','Pri: banana só se estiver firme. Banana muito madura pesa no FODMAP.']},
+ C2:{steps:[
+  'Leve a aveia e o leite sem lactose à panela em fogo médio, mexendo por 4 a 5 min até ficar cremoso.',
+  'Fora do fogo, junte a pasta de amendoim e a banana amassada (Lucas). Pri: coloque os morangos fatiados por cima.',
+  'Sirva com os ovos cozidos do lote (sem lote, 8 min em água fervendo).'],
+  tips:['Versão sem fogo: misture aveia e leite na noite anterior e deixe na geladeira.','Os ovos cozidos saem do lote de domingo e quarta, veja a aba Preparo.']},
+ L1:{steps:[
+  'Bata o leite, o whey, a fruta, a aveia e (só Lucas) a pasta de amendoim com 3 cubos de gelo por 40 s.',
+  'Divida em dois copos. O copo do Lucas sai maior, o da Pri menor.'],
+  tips:['Whey isolado tem pouquíssima lactose. Confira no rótulo se não traz sorbitol, manitol ou inulina, que incomodam quem faz FODMAP.','O mesmo liquidificador serve os dois: as quantidades de cada um estão no cartão.']},
+ E1:{steps:['Coloque o iogurte em uma tigela.','Junte a aveia (só Lucas) e o mamão picado.'],tips:['Dia sem fome à noite? É a refeição mais fácil de pular. Se pular, use um extra no placar: 1 pote de iogurte.']},
+ E2:{steps:['Coloque o iogurte em uma tigela.','Junte a aveia (só Lucas) e as uvas.'],tips:['Uva: até cerca de 150 g por vez fica dentro do limite FODMAP baixo para a Pri.']},
+ M1:{steps:[
+  'Ferva água com sal e cozinhe o macarrão de arroz pelo tempo do pacote (8 a 10 min). Escorra e passe um fio de azeite.',
+  'Na panela, aqueça o azeite aromatizado (receita base) e junte o molho de tomate. Cozinhe 8 min em fogo baixo com sal, orégano e pimenta.',
+  'Junte o espinafre picado nos últimos 2 min.',
+  'Misture o atum escorrido ao molho: 1 lata para o Lucas e meia lata para a Pri.',
+  'Sirva sobre o macarrão e finalize com o parmesão. Pri: 1 ovo cozido ao lado.'],
+  tips:['A meia lata que sobra vai no pão do lanche ou na salada do dia seguinte.','Sem alho nem cebola no molho: o sabor vem do azeite aromatizado.']},
+ M2:{steps:[
+  'Corte a batata em palitos e misture com azeite, sal e páprica. Airfryer a 200 °C por 18 min, mexendo na metade (forno: 220 °C por 25 min).',
+  'Bata os ovos com sal. Em frigideira antiaderente untada, cozinhe 2 min, coloque espinafre e mussarela no meio e dobre.',
+  'Pri: junte o frango desfiado do lote ao recheio.',
+  'Salada de tomate e pepino com limão e um fio de azeite.',
+  'Lucas: esquente o arroz e o feijão do lote.'],
+  tips:['A batata assada é a mesma base do peixe e do crepe, então dá para fazer a assadeira para os dois de uma vez.']},
+ M3:{steps:[
+  'Tempere o filé ainda congelado com sal, limão e páprica. Não precisa descongelar.',
+  'Misture batata em cubos e cenoura em rodelas com azeite e sal. A abobrinha entra mais tarde.',
+  'Airfryer a 200 °C: batata e cenoura por 10 min. Junte o peixe e a abobrinha e mais 14 a 16 min, virando o peixe na metade.',
+  'Está pronto quando o peixe fica opaco e solta lascas com o garfo.',
+  'Lucas: arroz do lote ao lado.'],
+  tips:['Filé grosso (mais de 2 cm) pede 2 a 3 min a mais.']},
+ M4:{steps:[
+  'Bata no liquidificador, para os dois: 2 ovos, espinafre, aveia e sal. A aveia é 30 g para o Lucas e 20 g para a Pri. Faça uma massa para cada um.',
+  'Frigideira antiaderente untada: despeje metade da massa e cozinhe 2 min de cada lado. Repita com o resto.',
+  'Recheio do Lucas: 1 lata de atum escorrido e 20 g de mussarela. Recheio da Pri: frango desfiado, tomate e 20 g de mussarela.',
+  'Enrole e sirva com a batata assada (mesma assadeira do dia, 250 g Lucas e 130 g Pri).'],
+  tips:['A massa fica mais firme se descansar 5 min antes de ir para a frigideira.']},
+ M5:{steps:[
+  'Cozinhe a batata em cubos por 15 min. Escorra e amasse com leite sem lactose, sal e azeite. Sem manteiga e sem alho.',
+  'Lucas: escorra a sardinha e aqueça em frigideira por 3 min com limão. Fatie 2 ovos cozidos do lote.',
+  'Pri: esquente o frango do lote.',
+  'Legumes: cenoura e abobrinha no vapor por 8 min (Pri). Cenoura ralada e tomate crus (Lucas).'],
+  tips:['Sardinha em lata já vem cozida, é só aquecer ou comer fria.']},
+ B1:{steps:[
+  'Tempere o peito de frango com sal, páprica, limão e um fio de azeite.',
+  'Forno a 200 °C por 22 a 25 min, até ficar branco por dentro e sem rosa.',
+  'Descanse 5 min. Desfie metade e fatie a outra metade.',
+  'Guarde em potes na geladeira por até 4 dias.'],tips:['Só a Pri usa o frango. As porções dela são de 50 a 110 g por refeição.']},
+ B2:{steps:[
+  'Arroz: lave 100 g de arroz, refogue em um fio de azeite, junte 250 ml de água e sal. Tampado, 12 min em fogo baixo.',
+  'Feijão: cubra 150 g de feijão (de molho por 8 h, se tiver) com água, panela de pressão por 25 min depois de pegar pressão.',
+  'Tempere o feijão com sal e louro. Sem cebola e alho se for dividir com a Pri.',
+  'Arroz na geladeira por 4 dias. Feijão em porções de 150 g no congelador.'],tips:['Só o Lucas come feijão. A Pri troca por batata.']},
+ B3:{steps:[
+  'Coloque os ovos em água fria e leve ao fogo.',
+  'Quando ferver, conte 10 min.',
+  'Passe em água gelada e guarde com casca na geladeira por até 5 dias.'],tips:[]},
+ B4:{steps:[
+  'Amasse 2 dentes de alho.',
+  'Aqueça 100 ml de azeite em fogo baixo com o alho por 5 min, sem deixar dourar.',
+  'Retire e descarte todo o alho. O azeite fica só com o sabor.',
+  'Guarde na geladeira e use em até 4 dias. Depois disso, faça outro.'],tips:['Por que tirar o alho: o frutano do alho não passa para o azeite, e a Pri pode usar sem sintoma.','Guardar alho em óleo por muito tempo, fora da geladeira, traz risco. Faça pouco e use rápido.']}
+};
+const BASES={
+ B1:{n:'Frango assado em lote',t:30,slot:'base',desc:'Só para a Pri: 50 a 110 g por refeição.'},
+ B2:{n:'Arroz e feijão em lote',t:35,slot:'base',desc:'Arroz para o Lucas, feijão congelado em porções.'},
+ B3:{n:'Ovos cozidos em lote',t:12,slot:'base',desc:'Mingau, purê e macarrão usam ovo cozido.'},
+ B4:{n:'Azeite aromatizado com alho',t:8,slot:'base',desc:'O sabor de alho do macarrão sem frutano.'}
+};
+
+/* ===== ILUSTRAÇÕES (SVG 120x80, cores próprias de comida) ===== */
+const PL='<ellipse cx="60" cy="69" rx="46" ry="5" fill="rgba(0,0,0,.10)"/><ellipse cx="60" cy="44" rx="49" ry="29" fill="#F8F6F1" stroke="#D6D1C6" stroke-width="1.5"/><ellipse cx="60" cy="44" rx="38" ry="21" fill="none" stroke="#E6E2D8"/>';
+const cc=(x,y,r,f,s)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${f}"${s?` stroke="${s}"`:''}/>`;
+const egg=(x,y,k)=>`<g transform="translate(${x} ${y}) scale(${k||1})"><ellipse rx="9" ry="6.5" fill="#fff" stroke="#E2DDD0"/>${cc(0,0,3.4,'#F2B632')}</g>`;
+const rc=(x,y,w,h,f,rot)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="2" fill="${f}"${rot?` transform="rotate(${rot} ${x+w/2} ${y+h/2})"`:''}/>`;
+const SCENES={
+ C1:PL+'<path d="M28 48 A32 22 0 0 1 92 48 Z" fill="#EBD6A4" stroke="#CDB57F"/>'+cc(50,38,5,'#F4C842')+cc(62,34,6,'#F8D552')+cc(73,39,5,'#F4C842')+cc(58,42,3.5,'#FBE9A0')+'<path d="M70 58q14 8 26-7q-11 13-26 7z" fill="#F4D35E" stroke="#C9A93A"/>'+'<rect x="18" y="50" width="16" height="13" rx="3" fill="#fff" stroke="#D6D1C6"/>'+cc(26,50,5,'#C0306F'),
+ C2:'<ellipse cx="60" cy="70" rx="40" ry="4" fill="rgba(0,0,0,.1)"/><path d="M20 36Q22 70 60 72Q98 70 100 36Z" fill="#EDE8DC" stroke="#D2CCBD" stroke-width="1.5"/><ellipse cx="60" cy="36" rx="40" ry="11" fill="#F8F6F1" stroke="#D2CCBD" stroke-width="1.5"/><ellipse cx="60" cy="37" rx="34" ry="8.5" fill="#E7D4AE"/>'+cc(48,36,5,'#F5DA6E','#D9B93F')+cc(60,39,5,'#F5DA6E','#D9B93F')+cc(72,36,5,'#F5DA6E','#D9B93F')+cc(56,34,3,'#C0306F')+egg(104,60,.8)+egg(14,62,.8),
+ L1:'<ellipse cx="58" cy="72" rx="26" ry="4" fill="rgba(0,0,0,.1)"/><path d="M40 10L78 10L72 68Q59 74 46 68Z" fill="#F3E6D4" stroke="#CFC3AE" stroke-width="1.5"/><path d="M42 20L76 20L74 30Q58 36 44 30Z" fill="#F7EEDF"/><rect x="62" y="0" width="5" height="40" rx="2" fill="#BC2B6A" transform="rotate(14 64 20)"/>'+'<path d="M84 56q16 6 26-8q-9 16-26 8z" fill="#F4D35E" stroke="#C9A93A"/>'+cc(24,58,6,'#C0306F')+cc(24,52,2,'#3C8B4B'),
+ E1:'<ellipse cx="60" cy="70" rx="40" ry="4" fill="rgba(0,0,0,.1)"/><path d="M20 36Q22 70 60 72Q98 70 100 36Z" fill="#EDE8DC" stroke="#D2CCBD" stroke-width="1.5"/><ellipse cx="60" cy="36" rx="40" ry="11" fill="#F8F6F1" stroke="#D2CCBD" stroke-width="1.5"/><ellipse cx="60" cy="37" rx="34" ry="8.5" fill="#FFFFFF"/>'+rc(44,30,9,7,'#F0922B',12)+rc(57,33,9,7,'#F49A3A',-8)+rc(69,30,9,7,'#F0922B',20)+cc(54,38,1.3,'#3A2A1A')+cc(64,31,1.3,'#3A2A1A'),
+ E2:'<ellipse cx="60" cy="70" rx="40" ry="4" fill="rgba(0,0,0,.1)"/><path d="M20 36Q22 70 60 72Q98 70 100 36Z" fill="#EDE8DC" stroke="#D2CCBD" stroke-width="1.5"/><ellipse cx="60" cy="36" rx="40" ry="11" fill="#F8F6F1" stroke="#D2CCBD" stroke-width="1.5"/><ellipse cx="60" cy="37" rx="34" ry="8.5" fill="#FFFFFF"/>'+cc(46,35,4.5,'#6B3FA0')+cc(55,38,4.5,'#7A4BB3')+cc(65,35,4.5,'#6B3FA0')+cc(74,38,4.5,'#7A4BB3')+cc(60,33,4.5,'#7A4BB3'),
+ M1:PL+'<ellipse cx="60" cy="44" rx="26" ry="14" fill="#EBCB6B"/><path d="M38 44q22-16 44 0M42 47q18-12 36 0M46 40q14-8 28 0" stroke="#D2AE45" stroke-width="2" fill="none"/><path d="M44 40q16-10 32 0q-6 12-16 12q-10 0-16-12z" fill="#D2452D" opacity=".92"/>'+cc(54,40,3.5,'#D9A68A')+cc(65,38,4,'#D9A68A')+cc(70,44,3,'#D9A68A')+cc(58,46,2.6,'#3C8B4B')+cc(50,45,2.2,'#3C8B4B')+cc(62,43,1.3,'#fff')+cc(55,37,1.3,'#fff'),
+ M2:PL+'<path d="M24 44A26 17 0 0 1 76 44Z" fill="#F4C842" stroke="#D6A92A"/><path d="M30 44A21 12 0 0 1 70 44" fill="none" stroke="#FBE08A" stroke-width="2"/>'+cc(46,38,2,'#3C8B4B')+cc(56,35,2,'#3C8B4B')+rc(76,40,18,4,'#E3B565',-20)+rc(80,46,18,4,'#E3B565',10)+rc(74,34,16,4,'#E9C37A',-45)+cc(40,56,5.5,'#D9382B','#B02A20')+cc(52,59,5.5,'#D9382B','#B02A20')+cc(64,57,5,'#9ACB6A','#6FA24A')+cc(74,58,5,'#9ACB6A','#6FA24A'),
+ M3:PL+'<path d="M24 44Q40 28 62 34Q80 38 84 46Q70 56 50 54Q32 54 24 44Z" fill="#E9EEF0" stroke="#BCC7CC" stroke-width="1.5"/><path d="M38 38l6 14M48 36l6 16M58 36l6 16M68 38l5 12" stroke="#B3BFC5" stroke-width="2"/>'+rc(84,32,9,9,'#E0B766',15)+rc(92,40,9,9,'#E5BF72',-10)+rc(80,45,9,9,'#E0B766',25)+cc(30,58,5,'#EE8A2A')+cc(40,60,5,'#EE8A2A')+cc(52,61,5,'#7CB35B','#5C9440')+cc(63,60,5,'#7CB35B','#5C9440')+'<path d="M92 56q8-8 14-2q-4 10-14 2z" fill="#F5DD4C" stroke="#D2B92A"/>',
+ M4:PL+'<path d="M26 40L82 32L88 50L32 58Z" fill="#86C26A" stroke="#5E9B45" stroke-width="1.5"/><ellipse cx="85" cy="41" rx="6" ry="9" fill="#9BD07E" stroke="#5E9B45" stroke-width="1.5"/>'+cc(85,41,3.5,'#D9A68A')+cc(83,38,1.6,'#FBE9A0')+'<path d="M30 46q28-4 54-9" stroke="#B2DE98" stroke-width="2" fill="none"/>'+rc(30,58,14,8,'#E3B565',-10)+rc(48,60,14,8,'#E9C37A',8)+rc(66,59,14,8,'#E3B565',-6),
+ M5:PL+'<path d="M26 52Q28 28 48 30Q66 28 68 52Z" fill="#F4E6B8" stroke="#DDCB92" stroke-width="1.5"/><path d="M34 40q8-8 18-4" stroke="#FFF6D6" stroke-width="3" fill="none"/>'+'<path d="M72 34q12-6 24 2q-12 8-24-2z" fill="#A9B7C0" stroke="#7F8E98"/>'+cc(76,35,1.2,'#27333B')+'<path d="M72 46q12-6 24 2q-12 8-24-2z" fill="#A9B7C0" stroke="#7F8E98"/>'+cc(76,47,1.2,'#27333B')+egg(84,60,.8)+rc(30,56,5,12,'#EE8A2A',20)+rc(40,58,5,12,'#EE8A2A',-10)+cc(58,60,4.5,'#D9382B'),
+ B1:PL+'<path d="M30 38Q44 28 58 36Q62 48 46 52Q30 52 30 38Z" fill="#E7B563" stroke="#C48E3B" stroke-width="1.5"/><path d="M62 34Q78 28 90 38Q88 50 72 52Q58 50 62 34Z" fill="#EBBC6D" stroke="#C48E3B" stroke-width="1.5"/>'+cc(45,41,1.3,'#F7DDA6')+cc(76,40,1.3,'#F7DDA6')+cc(40,60,4,'#7CB35B')+cc(52,62,4,'#7CB35B'),
+ B2:'<ellipse cx="60" cy="70" rx="40" ry="4" fill="rgba(0,0,0,.1)"/><path d="M18 34Q20 68 60 70Q100 68 102 34Z" fill="#E9E4D8" stroke="#D2CCBD" stroke-width="1.5"/><ellipse cx="60" cy="34" rx="42" ry="11" fill="#F8F6F1" stroke="#D2CCBD" stroke-width="1.5"/><path d="M24 34A18 8 0 0 1 60 34A18 8 0 0 1 24 34Z" fill="#FFFFFF"/><path d="M60 34A18 8 0 0 1 96 34A18 8 0 0 1 60 34Z" fill="#6B3E26"/>'+cc(42,33,1.3,'#E5E0D2')+cc(50,36,1.3,'#E5E0D2')+cc(72,32,2,'#8A5A3A')+cc(84,35,2,'#8A5A3A'),
+ B3:'<ellipse cx="60" cy="68" rx="44" ry="5" fill="rgba(0,0,0,.1)"/>'+'<ellipse cx="38" cy="46" rx="14" ry="18" fill="#FBF8F0" stroke="#D9D3C2" stroke-width="1.5"/><ellipse cx="62" cy="48" rx="14" ry="18" fill="#FBF8F0" stroke="#D9D3C2" stroke-width="1.5"/><ellipse cx="85" cy="46" rx="14" ry="18" fill="#FBF8F0" stroke="#D9D3C2" stroke-width="1.5"/>'+cc(62,50,6,'#F2B632'),
+ B4:'<ellipse cx="60" cy="70" rx="30" ry="4" fill="rgba(0,0,0,.1)"/><path d="M50 18h20v8q10 6 10 18v22q0 6-6 6H46q-6 0-6-6V44q0-12 10-18z" fill="#C9D78A" stroke="#98A95A" stroke-width="1.5"/><rect x="54" y="8" width="12" height="12" rx="3" fill="#6B7A3A"/>'+cc(60,52,8,'#FBF3D0')+'<path d="M56 48l8 8" stroke="#D8CFA0" stroke-width="1.5"/>'
+};
+function ill(id){return `<svg viewBox="0 0 120 80" role="img" aria-label="${(MEALS[id]?MEALS[id].n:(BASES[id]||{n:''}).n)}" preserveAspectRatio="xMidYMid slice">${SCENES[id]||''}</svg>`;}

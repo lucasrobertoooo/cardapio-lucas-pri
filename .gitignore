@@ -1,0 +1,16 @@
+# Dependências locais (Playwright etc.)
+node_modules/
+package-lock.json
+
+# Capturas de tela e saídas de teste
+screenshots/
+shots/
+test-results/
+playwright-report/
+screenshot*.png
+captura*.png
+*-390-*.png
+
+# Sistema e editor
+.DS_Store
+.claude/

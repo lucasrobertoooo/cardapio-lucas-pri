@@ -1,0 +1,81 @@
+/* ===== DADOS: ingredientes, refeições, semana ===== */
+const AISLES = {
+  hort:'Hortifruti', prot:'Peixe, frango e enlatados', lat:'Ovos e laticínios',
+  merc:'Mercearia', desp:'Despensa (confira em casa)'
+};
+// p = g de proteína por unidade, k = kcal por unidade, f = fator receita->compra,
+// pack = tamanho da embalagem (unidade de compra), wp = g por unidade de compra
+const ING = {
+  ovo:      {n:'Ovo', u:'un', p:6.2, k:75, pack:12, pk:['dúzia','dúzias'], wp:60, aisle:'lat'},
+  atum:     {n:'Atum em lata (natural)', u:'lata', p:27, k:125, pack:1, pk:['lata','latas'], wp:170, aisle:'prot'},
+  sardinha: {n:'Sardinha em lata', u:'lata', p:22, k:190, pack:1, pk:['lata','latas'], wp:125, aisle:'prot'},
+  peixe:    {n:'Filé de peixe congelado (tilápia ou merluza)', u:'g', p:.20, k:.98, pack:500, pk:['pacote','pacotes'], size:'500 g', aisle:'prot'},
+  frango:   {n:'Peito de frango', u:'g', p:.23, k:1.1, pack:500, pk:['bandeja','bandejas'], size:'500 g', aisle:'prot'},
+  mussarela:{n:'Mussarela fatiada', u:'g', p:.22, k:2.8, pack:150, pk:['pacote','pacotes'], size:'150 g', aisle:'lat'},
+  parmesao: {n:'Parmesão ralado', u:'g', p:.36, k:4, pack:50, pk:['pacote','pacotes'], size:'50 g', aisle:'lat'},
+  iogurte:  {n:'Iogurte grego sem lactose', u:'g', p:.06, k:.7, pack:500, pk:['pote','potes'], size:'500 g', aisle:'lat'},
+  leite:    {n:'Leite sem lactose', u:'ml', p:.032, k:.62, pack:1000, pk:['caixa','caixas'], size:'1 L', wp:1.03, aisle:'lat'},
+  whey:     {n:'Whey isolado', u:'dose', p:24, k:115, pack:33, pk:['pote','potes'], size:'1 kg', aisle:'desp', pantry:true},
+  azeite:   {n:'Azeite de oliva', u:'cs', p:0, k:120, pack:1, pk:['garrafa','garrafas'], aisle:'desp', pantry:true, mlPerUnit:15},
+  tapioca:  {n:'Goma de tapioca hidratada', u:'g', p:0, k:3.5, pack:500, pk:['pacote','pacotes'], size:'500 g', aisle:'merc'},
+  arroz:    {n:'Arroz', u:'g cozido', p:.025, k:1.3, f:.34, pack:1000, pk:['pacote','pacotes'], size:'1 kg', aisle:'merc'},
+  feijao:   {n:'Feijão', u:'g cozido', p:.05, k:.77, f:.35, pack:500, pk:['pacote','pacotes'], size:'500 g', aisle:'merc'},
+  macarrao: {n:'Macarrão de arroz ou milho', u:'g', p:.07, k:3.6, pack:500, pk:['pacote','pacotes'], size:'500 g', aisle:'merc'},
+  aveia:    {n:'Aveia em flocos', u:'g', p:.135, k:3.7, pack:500, pk:['pacote','pacotes'], size:'500 g', aisle:'merc'},
+  amendoim: {n:'Pasta de amendoim', u:'g', p:.25, k:5.9, pack:450, pk:['pote','potes'], size:'450 g', aisle:'merc'},
+  passata:  {n:'Tomate pelado ou passata (sem cebola e alho)', u:'g', p:.012, k:.3, pack:520, pk:['caixa','caixas'], size:'520 g', aisle:'merc'},
+  batata:   {n:'Batata inglesa', u:'g', p:.02, k:.77, pack:250, loose:true, aisle:'hort'},
+  cenoura:  {n:'Cenoura', u:'g', p:.009, k:.41, pack:250, loose:true, aisle:'hort'},
+  abobrinha:{n:'Abobrinha', u:'g', p:.012, k:.17, pack:250, loose:true, aisle:'hort'},
+  pepino:   {n:'Pepino', u:'g', p:.007, k:.15, pack:250, loose:true, aisle:'hort'},
+  tomate:   {n:'Tomate', u:'g', p:.009, k:.18, pack:250, loose:true, aisle:'hort'},
+  espinafre:{n:'Espinafre', u:'g', p:.029, k:.23, pack:150, pk:['maço','maços'], size:'~150 g', aisle:'hort'},
+  banana:   {n:'Banana nanica (firme)', u:'un', p:1.2, k:95, pack:6, pk:['penca','pencas'], size:'~6 un', wp:110, aisle:'hort'},
+  morango:  {n:'Morango', u:'g', p:.007, k:.32, pack:250, pk:['bandeja','bandejas'], size:'250 g', aisle:'hort'},
+  mamao:    {n:'Mamão formosa', u:'g', p:.005, k:.4, pack:700, pk:['pedaço','pedaços'], size:'~700 g (½ mamão)', aisle:'hort'},
+  uva:      {n:'Uva sem semente', u:'g', p:.007, k:.69, pack:500, pk:['cacho','cachos'], size:'~500 g', aisle:'hort'},
+  limao:    {n:'Limão', u:'un', p:0, k:0, pack:2, loose:true, wp:80, aisle:'hort'}
+};
+const MEALS = {
+ C1:{slot:'cafe', n:'Tapioca recheada com ovos e iogurte', t:8,
+  L:[['tapioca',40],['ovo',3],['mussarela',30],['iogurte',100],['banana',1]],
+  P:[['tapioca',30],['ovo',2],['mussarela',20],['iogurte',100],['morango',100]]},
+ C2:{slot:'cafe', n:'Mingau de aveia com ovos cozidos', t:10,
+  L:[['aveia',50],['leite',250],['banana',1],['amendoim',15],['ovo',2]],
+  P:[['aveia',35],['leite',150],['morango',100],['ovo',2]]},
+ L1:{slot:'lanche', n:'Vitamina de whey', t:3,
+  L:[['leite',250],['whey',1],['banana',1],['aveia',25],['amendoim',10]],
+  P:[['leite',200],['whey',1],['morango',100],['aveia',10]]},
+ E1:{slot:'ceia', n:'Tigela de iogurte com aveia e mamão', t:1,
+  L:[['iogurte',200],['aveia',10],['mamao',150]],
+  P:[['iogurte',120],['mamao',140]]},
+ E2:{slot:'ceia', n:'Tigela de iogurte com aveia e uva', t:1,
+  L:[['iogurte',200],['aveia',10],['uva',120]],
+  P:[['iogurte',120],['uva',100]]},
+ M1:{slot:'ref', n:'Macarrão ao molho de tomate com atum', t:20,
+  L:[['macarrao',100],['passata',200],['atum',1],['azeite',1],['parmesao',15],['espinafre',40]],
+  P:[['macarrao',55],['passata',150],['atum',.5],['azeite',.5],['parmesao',10],['espinafre',40],['ovo',1]]},
+ M2:{slot:'ref', n:'Omelete com batata assada e salada', t:20,
+  L:[['ovo',3],['mussarela',30],['espinafre',30],['batata',200],['arroz',100],['feijao',150],['azeite',.5],['tomate',80],['pepino',60]],
+  P:[['ovo',2],['mussarela',20],['espinafre',30],['frango',50],['batata',170],['azeite',.25],['tomate',80],['pepino',60]]},
+ M3:{slot:'ref', n:'Peixe na airfryer com batata e legumes', t:25,
+  L:[['peixe',180],['batata',250],['arroz',100],['cenoura',80],['abobrinha',100],['azeite',1],['limao',.5]],
+  P:[['peixe',140],['batata',170],['cenoura',80],['abobrinha',100],['azeite',.25],['limao',.5]]},
+ M4:{slot:'ref', n:'Crepe de espinafre recheado', t:20,
+  L:[['ovo',2],['aveia',30],['espinafre',40],['atum',1],['mussarela',20],['batata',250],['azeite',.5]],
+  P:[['ovo',2],['aveia',20],['espinafre',40],['frango',50],['tomate',50],['mussarela',20],['batata',130],['azeite',.25]]},
+ M5:{slot:'ref', n:'Sardinha ou frango com purê e legumes', t:25,
+  L:[['sardinha',1],['ovo',2],['batata',250],['leite',50],['azeite',.5],['cenoura',80],['tomate',60]],
+  P:[['frango',110],['batata',170],['leite',40],['azeite',.25],['cenoura',80],['abobrinha',100]]}
+};
+const WEEK = [
+ {d:'2026-11-15', wd:'Dom', slots:{lanche:'L1', jantar:'M1', ceia:'E1'}},
+ {d:'2026-11-16', wd:'Seg', slots:{cafe:'C1', almoco:'M2', lanche:'L1', jantar:'M3', ceia:'E2'}},
+ {d:'2026-11-17', wd:'Ter', slots:{cafe:'C2', almoco:'M5', lanche:'L1', jantar:'M4', ceia:'E1'}},
+ {d:'2026-11-18', wd:'Qua', slots:{cafe:'C1', almoco:'M1', lanche:'L1', jantar:'M2', ceia:'E2'}},
+ {d:'2026-11-19', wd:'Qui', slots:{cafe:'C2', almoco:'M3', lanche:'L1', jantar:'M5', ceia:'E1'}},
+ {d:'2026-11-20', wd:'Sex', slots:{cafe:'C1', almoco:'M4', lanche:'L1', jantar:'M1', ceia:'E2'}},
+ {d:'2026-11-21', wd:'Sáb', slots:{cafe:'C2', almoco:'M2', lanche:'L1', jantar:'M5', ceia:'E1'}},
+ {d:'2026-11-22', wd:'Dom', slots:{cafe:'C1', almoco:'M3'}}
+];
+if (typeof module!=='undefined') module.exports={ING,MEALS,WEEK,AISLES};
