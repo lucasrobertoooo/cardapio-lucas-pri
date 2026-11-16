@@ -29,22 +29,23 @@ function frac(n){const w=Math.floor(n+1e-9),r=n-w,F=[[.25,'¼'],[.5,'½'],[.75,'
   return r<.03?String(w):r>.97?String(w+1):F?(w?w+F[1]:F[1]):fmt(n,1);}
 const R0=n=>Math.round(n);
 function fq(id,q){
+  const n=frac(q),pl=q>1.01;
   switch(id){
-    case 'ovo': return `${fmt(q)} ${q===1?'ovo':'ovos'}`;
-    case 'atum': case 'sardinha': return q===.5?`½ lata de ${SN[id]}`:`${fmt(q)} ${q===1?'lata':'latas'} de ${SN[id]}`;
-    case 'whey': return `${fmt(q)} dose de whey`;
-    case 'azeite': return `${q===.25?'¼':q===.5?'½':fmt(q)} col. sopa de azeite`;
-    case 'banana': return `${fmt(q)} banana${q>1?'s':''}`;
-    case 'limao': return `${q===.5?'½':fmt(q)} limão`;
-    case 'pao': return `${fmt(q)} ${q===1?'fatia':'fatias'} de pão`;
-    case 'banana': return `${q===.5?'½':fmt(q)} banana${q>1?'s':''}`;
-    case 'laranja': case 'kiwi': return `${q===.5?'½':fmt(q)} ${SN[id]}${q>1?'s':''}`;
-    default:{const h=ING[id].hu;if(h){const n=q/h[2],u=ING[id].u==='ml'?'ml':'g',w=n>1.01?h[1]:h[0];
+    case 'ovo': return `${n} ${pl?'ovos':'ovo'}`;
+    case 'atum': case 'sardinha': return `${n} ${pl?'latas':'lata'} de ${SN[id]}`;
+    case 'whey': return `${n} ${pl?'doses':'dose'} de whey`;
+    case 'azeite': return `${n} col. sopa de azeite`;
+    case 'banana': return `${n} ${pl?'bananas':'banana'}`;
+    case 'limao': return `${n} ${pl?'limões':'limão'}`;
+    case 'pao': return `${n} ${pl?'fatias':'fatia'} de pão`;
+    case 'laranja': case 'kiwi': return `${n} ${SN[id]}${pl?'s':''}`;
+    default:{const h=ING[id].hu;if(h){const m=q/h[2],u=ING[id].u==='ml'?'ml':'g',w=m>1.01?h[1]:h[0];
       /* "¾ tomate", não "¾ tomate de tomate" */
-      const same=h[0].split(/[ -]/)[0]===SN[id].split(/[ -]/)[0];return `${frac(n)} ${w}${same?'':' de '+SN[id]} (${fmt(q,0)} ${u})`;}
+      const same=h[0].split(/[ -]/)[0]===SN[id].split(/[ -]/)[0];return `${frac(m)} ${w}${same?'':' de '+SN[id]} (${fmt(q,0)} ${u})`;}
       return `${fmt(q)} ${ING[id].u==='ml'?'ml':'g'} de ${SN[id]}`;}
   }
 }
+
 /* Ingredientes de uma refeição para uma pessoa, já com os ajustes feitos no editor (valem para todos os dias). */
 const ING_IDS=Object.keys(ING);
 function itemsOf(mid,who){

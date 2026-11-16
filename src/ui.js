@@ -47,16 +47,28 @@ function advice(day){
 /* Ingredientes que já entram no plano base da semana: alternativa que usa só eles não pede compra nova. */
 function baseIng(){const s=new Set();WEEK.forEach(d=>Object.values(d.slots).forEach(mid=>['L','P'].forEach(w=>itemsOf(mid,w).forEach(it=>s.add(it[0])))));return s;}
 function sgn(n){n=R0(n);return n>0?`+${n}`:n<0?`−${-n}`:'='; }
+/* Preparo único: soma o que vai junto (uma massa, uma vitamina, uma panela) e mostra quanto fica com cada um. */
+function juntoBlock(mid){
+  const m=MEALS[mid];if(!m.junto)return '';
+  const iL=itemsOf(mid,'L'),iP=itemsOf(mid,'P'),q=(its,id)=>(its.find(i=>i[0]===id)||[0,0])[1];
+  const ids=m.junto.filter(id=>q(iL,id)+q(iP,id)>0);if(!ids.length)return '';
+  const kL=ids.reduce((a,id)=>a+ING[id].k*q(iL,id),0),kP=ids.reduce((a,id)=>a+ING[id].k*q(iP,id),0);
+  const sL=Math.round(kL/(kL+kP||1)*20)*5;
+  return `<div class="junto"><b>${m.jn} para os dois, de uma vez:</b> ${ids.map(id=>fq(id,q(iL,id)+q(iP,id))).join(', ')}.
+    <span class="sub">Divida: <span class="L">Lucas ~${sL}%</span>, <span class="P">Pri ~${100-sL}%</span>.</span></div>`;
+}
 function altsBlock(day,k,mid){
   const key=`${day.d}|${k}`,cur={L:nut(itemsOf(mid,'L')).p,P:nut(itemsOf(mid,'P')).p},have=baseIng();
-  const ids=Object.keys(MEALS).filter(id=>MEALS[id].slot===KIND[k]&&id!==mid);
-  const rows=ids.map(id=>{const m=MEALS[id],iL=itemsOf(id,'L'),iP=itemsOf(id,'P'),l=nut(iL).p,p=nut(iP).p;
+  const all=Object.keys(MEALS).filter(id=>MEALS[id].slot===KIND[k]&&id!==mid);
+  const row=id=>{const m=MEALS[id],iL=itemsOf(id,'L'),iP=itemsOf(id,'P'),l=nut(iL).p,p=nut(iP).p;
     const extra=[...new Set(iL.concat(iP).map(it=>it[0]))].filter(i=>!have.has(i)).map(i=>SN[i]);
     return `<div class="alt"><div class="mini">${ill(id)}</div><div class="alt-tx"><b>${m.n}</b>
       <span class="sub">${m.t} min · <span class="L">Lucas ${R0(l)} g (${sgn(l-cur.L)})</span> · <span class="P">Pri ${R0(p)} g (${sgn(p-cur.P)})</span></span>
       <span class="sub">${extra.length?`Compra a mais: ${extra.join(', ')}`:'Só com o que já está na lista'}</span></div>
-      <button class="btn small primary" data-act="swap" data-key="${key}" data-id="${id}">Usar</button></div>`;}).join('');
-  return `<div class="alts"><div class="eyebrow">Trocar por</div>${rows}</div>`;
+      <button class="btn small primary" data-act="swap" data-key="${key}" data-id="${id}">Usar</button></div>`;};
+  const main=all.filter(id=>!MEALS[id].outros),out=all.filter(id=>MEALS[id].outros);
+  return `<div class="alts"><div class="eyebrow">Trocar por</div>${main.map(row).join('')}
+    ${out.length?`<div class="eyebrow alts-out">Outros · quando comprar peixe</div>${out.map(row).join('')}`:''}</div>`;
 }
 /* ----- Editor de ingredientes: vale para a refeição em todos os dias ----- */
 function amtOf(id,q){const g=ING[id],h=g.hu;
@@ -98,7 +110,7 @@ function slotCard(day,k,label){
    <button class="link" data-act="editopen" data-key="${key}" aria-expanded="${ed}">${ed?'Fechar ajuste':'Ajustar'}</button>
    <button class="link" data-act="swapopen" data-key="${key}" aria-expanded="${open}">${open?'Fechar trocas':'Trocar'}</button>
    ${mid!==base?`<button class="link" data-act="swap" data-key="${key}" data-id="${base}">Voltar ao plano</button>`:''}</div></div>
-   ${open?altsBlock(day,k,mid):''}${ed?editBlock(mid):''}<div class="people">${people}</div></article>`;
+   ${juntoBlock(mid)}${open?altsBlock(day,k,mid):''}${ed?editBlock(mid):''}<div class="people">${people}</div></article>`;
 }
 function extrasBlock(day){
   const w=V.extraWho,key=`${day.d}|${w}`,ex=S.extras[key]||{};
@@ -146,12 +158,12 @@ function viewSemana(){
     return `<button class="dayc" data-act="day-go" data-day="${d.d}"><div class="top"><h3>${WD_FULL[d.wd]} ${d.d.slice(8)}</h3>${d.d===TODAY?'<span class="tag">hoje</span>':''}</div>
       <div class="tots"><span class="tot L">Lucas ${R0(l.p)} g · ${R0(l.k)} kcal</span><span class="tot P">Pri ${R0(p.p)} g · ${R0(p.k)} kcal</span></div><ul>${rows}</ul></button>`;}).join('');
   const counts={};WEEK.forEach(d=>Object.values(slotsOf(d)).forEach(m=>{if(MEALS[m].slot==='ref')counts[m]=(counts[m]||0)+1;}));
-  const nAlt=k=>Object.keys(MEALS).filter(id=>MEALS[id].slot===k).length;
+  const nAlt=k=>Object.keys(MEALS).filter(id=>MEALS[id].slot===k&&!MEALS[id].outros).length;
   const rod=Object.keys(counts).sort().map(m=>`${SHORT[m]} ${counts[m]}×`).join(' · ');
   return `<div class="stack"><section class="card stack"><div><div class="eyebrow">Plano da semana, domingo 15 a domingo 22</div>
    <div class="sub">Média dos dias completos: Lucas ${R0(avg('L'))} g de proteína (meta ${S.targets.L.p}), Pri ${R0(avg('P'))} g (meta ${S.targets.P.p}). O plano já inclui uma folga para os dias em que algo escapar. As barras mostram a proteína planejada em % da meta de cada um.</div></div>
    <div class="chart">${chartSvg()}</div><div class="who-legend"><span><span class="dot L"></span>Lucas</span><span><span class="dot P"></span>Pri</span></div>
-   <div class="sub">Almoço e jantar desta semana: ${rod}. Não deu vontade ou faltou um ingrediente? Na aba Hoje, toque em Trocar em qualquer refeição: são ${nAlt('cafe')} cafés, ${nAlt('ref')} pratos, ${nAlt('lanche')} lanches e ${nAlt('ceia')} ceias, todos com o que costuma estar na lista. Compras e preparo se recalculam sozinhos.</div></section>
+   <div class="sub">Almoço e jantar desta semana: ${rod}. Não deu vontade ou faltou um ingrediente? Na aba Hoje, toque em Trocar em qualquer refeição: são ${nAlt('cafe')} cafés, ${nAlt('ref')} pratos, ${nAlt('lanche')} lanches e ${nAlt('ceia')} ceias, todos com o que costuma estar na lista. Os pratos com peixe ficam em Outros, para quando comprar. Compras e preparo se recalculam sozinhos.</div></section>
    <div class="week">${cards}</div></div>`;
 }
 
@@ -200,7 +212,7 @@ function recCard(id){
   const m=MEALS[id]||BASES[id],open=!!V.open[id],r=RECIPES[id];
   const isMeal=!!MEALS[id];
   const head=`<button class="rec-h" data-act="exp" data-id="${id}" aria-expanded="${open}" id="rec-${id}"><div class="ill">${ill(id)}</div>
-   <div><span class="tag">${isMeal?(m.slot==='cafe'?'Café':m.slot==='ref'?'Almoço ou jantar':m.slot==='lanche'?'Lanche':'Ceia'):'Preparo base'}</span><h3>${m.n}</h3>
+   <div><span class="tag">${isMeal?(m.outros?'Outros · almoço ou jantar':m.slot==='cafe'?'Café':m.slot==='ref'?'Almoço ou jantar':m.slot==='lanche'?'Lanche':'Ceia'):'Preparo base'}</span><h3>${m.n}</h3>
    <div class="sub">${m.t} min${isMeal?` · Lucas ${R0(nut(itemsOf(id,'L')).p)} g · Pri ${R0(nut(itemsOf(id,'P')).p)} g de proteína${isCustom(id)?' · ajustada por vocês':''}`:''}</div></div>${CHEV}</button>`;
   let body='';
   if(open){
@@ -208,16 +220,17 @@ function recCard(id){
     const steps=`<ol class="steps">${r.steps.map((s,i)=>{const k=`${id}|${i}`;return `<li class="${S.steps[k]?'done':''}" data-act="step" data-key="${k}"><span>${s}</span></li>`;}).join('')}</ol>`;
     const tips=r.tips.length?`<div class="note">${r.tips.map(t=>`<div>${t}</div>`).join('')}</div>`:'';
     const wh=isMeal?`<div class="where">Na semana: ${whereUsed(id)}</div>`:'';
-    body=`<div class="rec-b">${cols}${steps}${tips}${wh}<div><button class="link" data-act="clearsteps" data-id="${id}">Limpar passos marcados</button></div></div>`;
+    body=`<div class="rec-b">${isMeal?juntoBlock(id):''}${cols}${steps}${tips}${wh}<div><button class="link" data-act="clearsteps" data-id="${id}">Limpar passos marcados</button></div></div>`;
   }
   return `<article class="rec">${head}${body}</article>`;
 }
 function viewReceitas(){
-  const F=[['all','Todas'],['cafe','Café'],['ref','Almoço e jantar'],['lc','Lanche e ceia'],['base','Base']];
+  const F=[['all','Todas'],['cafe','Café'],['ref','Almoço e jantar'],['lc','Lanche e ceia'],['outros','Outros'],['base','Base']];
   const chips=F.map(f=>`<button class="chip" data-act="filter" data-f="${f[0]}" aria-pressed="${V.filter===f[0]}">${f[1]}</button>`).join('');
   const ids=Object.keys(MEALS).concat(Object.keys(BASES)).filter(id=>{
     const sl=(MEALS[id]||BASES[id]).slot;
-    return V.filter==='all'||(V.filter==='lc'?(sl==='lanche'||sl==='ceia'):sl===V.filter);});
+    const o=!!(MEALS[id]&&MEALS[id].outros);
+    return V.filter==='all'||(V.filter==='outros'?o:!o&&(V.filter==='lc'?(sl==='lanche'||sl==='ceia'):sl===V.filter));});
   return `<div class="chips">${chips}</div><div class="stack">${ids.map(recCard).join('')}</div>`;
 }
 

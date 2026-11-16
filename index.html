@@ -239,6 +239,10 @@ table.t th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:va
 .fld-col label{font-size:14px;font-weight:500}
 .in-text{width:100%;min-width:0;font:inherit;font-size:16px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink)}
 .row.wrap{flex-wrap:wrap}
+.junto{grid-column:1/-1;background:var(--leaf-soft);border-radius:12px;padding:10px 12px;font-size:14px;line-height:1.4}
+.junto .sub{display:block;margin-top:2px}.junto .L{color:var(--lucas);font-weight:600}.junto .P{color:var(--pri);font-weight:600}
+.rec-b .junto{margin-top:14px}
+.alts-out{margin-top:6px}
 .ill img,.mini img{width:100%;height:100%;object-fit:cover;display:block}
 /* Editor de ingredientes */
 .editor{grid-column:1/-1;display:flex;flex-direction:column;gap:12px;border-top:1px dashed var(--line);padding-top:12px}
@@ -283,6 +287,8 @@ const AISLES = {
 // p = g de proteína por unidade, k = kcal por unidade, f = fator receita->compra,
 // pack = tamanho da embalagem (unidade de compra), wp = g por unidade de compra
 // MEALS: slot = tipo (cafe, ref = almoço ou jantar, lanche, ceia); oc = os ovos da refeição são cozidos no lote.
+// junto = ingredientes feitos de uma vez para os dois (uma massa, uma vitamina, uma panela), jn = nome desse preparo.
+// outros = prato com ingrediente caro (peixe): fica fora do plano da semana, só aparece em Outros nas trocas.
 // Toda refeição do mesmo tipo é alternativa das outras na aba Hoje (botão Trocar).
 const ING = {
   ovo:      {n:'Ovo', u:'un', p:6.2, k:75, pack:12, pk:['dúzia','dúzias'], wp:60, aisle:'lat'},
@@ -356,27 +362,27 @@ const ADJ = {
 };
 for (const id in ADJ) Object.assign(ING[id], ADJ[id]);
 const MEALS = {
- C1:{slot:'cafe', n:'Pão com cottage e ovos mexidos, iogurte e fruta', t:8,
+ C1:{slot:'cafe', n:'Pão com cottage e ovos mexidos, iogurte e fruta', t:8, junto:['ovo'], jn:'Ovos mexidos',
   L:[['pao',3],['ovo',3],['cottage',60],['iogurte',100],['banana',1]],
   P:[['pao',1],['ovo',2],['cottage',40],['iogurte',100],['morango',96]]},
- C2:{slot:'cafe', n:'Mingau de aveia com ovos cozidos', t:10, oc:1,
+ C2:{slot:'cafe', n:'Mingau de aveia com ovos cozidos', t:10, oc:1, junto:['aveia','leite'], jn:'Mingau',
   L:[['aveia',50],['leite',250],['banana',1],['amendoim',15],['ovo',2]],
-  P:[['aveia',40],['leite',150],['morango',96],['ovo',2]]},
- C3:{slot:'cafe', n:'Panqueca de banana e aveia com iogurte', t:10,
+  P:[['aveia',40],['leite',200],['morango',96],['ovo',2]]},
+ C3:{slot:'cafe', n:'Panqueca de banana e aveia com iogurte', t:10, junto:['ovo','aveia','banana'], jn:'Massa',
   L:[['ovo',3],['aveia',40],['banana',1],['iogurte',200],['amendoim',15]],
-  P:[['ovo',2],['aveia',20],['banana',1],['iogurte',150]]},
+  P:[['ovo',2],['aveia',30],['banana',1],['iogurte',150]]},
  C4:{slot:'cafe', n:'Queijo quente com ovo e café com leite', t:8,
   L:[['pao',3],['ovo',3],['mussarela',30],['leite',300],['mamao',150]],
   P:[['pao',1],['ovo',2],['mussarela',15],['leite',200],['mamao',150]]},
  C5:{slot:'cafe', n:'Iogurte com aveia, fruta e ovos cozidos', t:3, oc:1,
   L:[['iogurte',250],['aveia',40],['banana',1],['amendoim',15],['ovo',3]],
   P:[['iogurte',150],['aveia',20],['morango',96],['ovo',2]]},
- L1:{slot:'lanche', n:'Vitamina de whey', t:3,
-  L:[['leite',250],['whey',1],['banana',1],['aveia',20],['amendoim',15]],
-  P:[['leite',200],['whey',1],['morango',96],['aveia',10]]},
- L2:{slot:'lanche', n:'Iogurte batido com whey e fruta', t:3,
-  L:[['iogurte',250],['whey',1],['banana',1],['aveia',30],['amendoim',15]],
-  P:[['iogurte',200],['whey',1],['morango',96],['aveia',10]]},
+ L1:{slot:'lanche', n:'Vitamina de whey com banana', t:3, junto:['leite','whey','banana','aveia'], jn:'Vitamina',
+  L:[['leite',300],['whey',1],['banana',1],['aveia',20],['amendoim',15]],
+  P:[['leite',200],['whey',1],['banana',.5],['aveia',10]]},
+ L2:{slot:'lanche', n:'Iogurte batido com whey e morango', t:3, junto:['iogurte','whey','morango','aveia'], jn:'Batido',
+  L:[['iogurte',250],['whey',1],['morango',96],['aveia',30],['amendoim',15]],
+  P:[['iogurte',200],['whey',1],['morango',96],['aveia',20]]},
  L3:{slot:'lanche', n:'Sanduíche de atum com mussarela', t:5,
   L:[['pao',3],['atum',1],['mussarela',30],['tomate',50],['leite',200]],
   P:[['pao',1],['atum',1],['mussarela',15],['tomate',50]]},
@@ -392,31 +398,31 @@ const MEALS = {
  E3:{slot:'ceia', n:'Leite quente com whey e aveia', t:3,
   L:[['leite',250],['whey',1],['aveia',20]],
   P:[['leite',200],['whey',.5]]},
- E4:{slot:'ceia', n:'Ovos mexidos com mussarela', t:5,
+ E4:{slot:'ceia', n:'Ovos mexidos com mussarela', t:5, junto:['ovo','mussarela'], jn:'Ovos mexidos',
   L:[['ovo',2],['mussarela',15],['tomate',50]],
   P:[['ovo',2],['mussarela',15]]},
- M1:{slot:'ref', n:'Macarrão ao molho de tomate com atum', t:20, oc:1,
+ M1:{slot:'ref', n:'Macarrão ao molho de tomate com atum', t:20, oc:1, junto:['macarrao','passata','atum','espinafre','azeite','parmesao'], jn:'Macarrão com molho',
   L:[['macarrao',100],['passata',200],['atum',1],['azeite',1],['parmesao',15],['espinafre',45]],
   P:[['macarrao',55],['passata',150],['atum',.5],['azeite',.5],['parmesao',10],['espinafre',45],['ovo',1]]},
- M2:{slot:'ref', n:'Omelete com batata assada e salada', t:20,
+ M2:{slot:'ref', n:'Omelete com batata assada e salada', t:20, junto:['batata','tomate','pepino'], jn:'Batata assada e salada',
   L:[['ovo',3],['mussarela',30],['espinafre',30],['batata',225],['arroz',100],['feijao',140],['azeite',.5],['tomate',75],['pepino',50]],
   P:[['ovo',2],['mussarela',15],['espinafre',30],['frango',50],['batata',150],['azeite',.25],['tomate',75],['pepino',50]]},
- M3:{slot:'ref', n:'Peixe na airfryer com batata e legumes', t:25,
+ M3:{slot:'ref', n:'Peixe na airfryer com batata e legumes', t:25, outros:1, junto:['peixe','batata','cenoura','abobrinha'], jn:'Assadeira',
   L:[['peixe',180],['batata',225],['arroz',100],['cenoura',90],['abobrinha',100],['azeite',1],['limao',.5]],
   P:[['peixe',140],['batata',150],['cenoura',90],['abobrinha',100],['azeite',.25],['limao',.5]]},
- M4:{slot:'ref', n:'Crepe de espinafre recheado', t:20,
+ M4:{slot:'ref', n:'Crepe de espinafre recheado', t:20, junto:['ovo','aveia','espinafre','batata'], jn:'Massa e batata',
   L:[['ovo',2],['aveia',30],['espinafre',45],['atum',1],['mussarela',15],['batata',225],['azeite',.5]],
-  P:[['ovo',2],['aveia',20],['espinafre',45],['frango',50],['tomate',50],['mussarela',15],['batata',150],['azeite',.25]]},
- M5:{slot:'ref', n:'Sardinha ou frango com purê e legumes', t:25, oc:1,
+  P:[['ovo',2],['aveia',30],['espinafre',45],['frango',50],['tomate',50],['mussarela',15],['batata',150],['azeite',.25]]},
+ M5:{slot:'ref', n:'Sardinha ou frango com purê e legumes', t:25, oc:1, junto:['batata','leite','azeite'], jn:'Purê',
   L:[['sardinha',1],['ovo',2],['batata',225],['leite',50],['azeite',.5],['cenoura',90],['tomate',50]],
   P:[['frango',110],['batata',150],['leite',50],['azeite',.25],['cenoura',90],['abobrinha',100]]},
- M6:{slot:'ref', n:'Salada morna de batata com ovo e atum', t:20, oc:1,
+ M6:{slot:'ref', n:'Salada morna de batata com ovo e atum', t:20, oc:1, junto:['batata','tomate','pepino','azeite','atum','ovo'], jn:'Salada',
   L:[['batata',300],['ovo',2],['atum',1],['tomate',75],['pepino',50],['azeite',1],['feijao',140]],
   P:[['batata',225],['ovo',2],['atum',.5],['tomate',75],['pepino',50],['azeite',.5]]},
- M7:{slot:'ref', n:'Macarrão de arroz com abobrinha e parmesão', t:20,
+ M7:{slot:'ref', n:'Macarrão de arroz com abobrinha e parmesão', t:20, junto:['macarrao','abobrinha','tomate','azeite','parmesao'], jn:'Macarrão com abobrinha',
   L:[['macarrao',100],['atum',1],['abobrinha',150],['tomate',50],['azeite',1],['parmesao',15]],
   P:[['macarrao',55],['frango',100],['abobrinha',75],['tomate',50],['azeite',.5],['parmesao',10]]},
- M8:{slot:'ref', n:'Peixe ao molho de tomate com espinafre', t:25,
+ M8:{slot:'ref', n:'Peixe ao molho de tomate com espinafre', t:25, outros:1, junto:['peixe','passata','espinafre'], jn:'Peixe no molho',
   L:[['peixe',180],['passata',150],['espinafre',45],['azeite',.5],['arroz',150],['feijao',140]],
   P:[['peixe',150],['passata',150],['espinafre',45],['azeite',.25],['batata',225]]},
  M9:{slot:'ref', n:'Sanduíche quente de atum ou frango com batata', t:20,
@@ -425,13 +431,13 @@ const MEALS = {
 };
 const WEEK = [
  {d:'2026-11-15', wd:'Dom', slots:{lanche:'L1', jantar:'M1', ceia:'E1'}},
- {d:'2026-11-16', wd:'Seg', slots:{cafe:'C1', almoco:'M2', lanche:'L1', jantar:'M3', ceia:'E2'}},
+ {d:'2026-11-16', wd:'Seg', slots:{cafe:'C1', almoco:'M2', lanche:'L1', jantar:'M6', ceia:'E2'}},
  {d:'2026-11-17', wd:'Ter', slots:{cafe:'C2', almoco:'M5', lanche:'L1', jantar:'M4', ceia:'E1'}},
  {d:'2026-11-18', wd:'Qua', slots:{cafe:'C1', almoco:'M1', lanche:'L1', jantar:'M2', ceia:'E2'}},
- {d:'2026-11-19', wd:'Qui', slots:{cafe:'C2', almoco:'M3', lanche:'L1', jantar:'M5', ceia:'E1'}},
+ {d:'2026-11-19', wd:'Qui', slots:{cafe:'C2', almoco:'M7', lanche:'L1', jantar:'M5', ceia:'E1'}},
  {d:'2026-11-20', wd:'Sex', slots:{cafe:'C1', almoco:'M4', lanche:'L1', jantar:'M1', ceia:'E2'}},
  {d:'2026-11-21', wd:'Sáb', slots:{cafe:'C2', almoco:'M2', lanche:'L1', jantar:'M5', ceia:'E1'}},
- {d:'2026-11-22', wd:'Dom', slots:{cafe:'C1', almoco:'M3'}}
+ {d:'2026-11-22', wd:'Dom', slots:{cafe:'C1', almoco:'M9'}}
 ];
 
 /* ===== RECEITAS E FOTOS ===== */
@@ -441,60 +447,59 @@ const SN={ovo:'ovo',atum:'atum',sardinha:'sardinha',peixe:'filé de peixe',frang
 
 const RECIPES={
  C1:{steps:[
-  'Torre o pão na frigideira ou na torradeira (Lucas 3 fatias, Pri 1).',
-  'Mexa os ovos com sal e um fio de azeite por 2 min em fogo médio.',
-  'Passe o cottage no pão (Lucas 3 colheres, Pri 2) e coloque os ovos por cima.',
+  'Torre o pão (Lucas 3 fatias, Pri 1).',
+  'Bata os ovos dos dois juntos com sal e mexa numa frigideira só, com um fio de azeite, por 2 min.',
+  'Passe o cottage no pão e divida os ovos na proporção do quadro.',
   'Sirva com o iogurte e a fruta: banana para o Lucas, morango para a Pri.'],
   tips:['Pão francês serve igual: 1 pão equivale a 2 fatias. A Pri fica com meio pão.','Pri: 1 fatia de pão de trigo por refeição fica dentro do FODMAP baixo. Mais que isso pode incomodar.']},
  C2:{steps:[
-  'Leve a aveia e o leite sem lactose à panela em fogo médio, mexendo por 4 a 5 min até ficar cremoso.',
-  'Fora do fogo, junte a pasta de amendoim e a banana amassada (Lucas). Pri: coloque os morangos fatiados por cima.',
-  'Sirva com os ovos cozidos do lote (sem lote, 8 min em água fervendo).'],
+  'Uma panela só: aveia e leite sem lactose (as quantidades do quadro “para os dois”), fogo médio, mexendo por 4 a 5 min até ficar cremoso.',
+  'Divida na proporção do quadro.',
+  'Por cima: banana e pasta de amendoim no do Lucas, morango no da Pri.',
+  'Ovos cozidos do lote ao lado.'],
   tips:['Versão sem fogo: misture aveia e leite na noite anterior e deixe na geladeira.','Os ovos cozidos saem do lote de domingo e quarta, veja a aba Preparo.']},
  L1:{steps:[
-  'Bata o leite, o whey, a fruta, a aveia e (só Lucas) a pasta de amendoim com 3 cubos de gelo por 40 s.',
-  'Divida em dois copos. O copo do Lucas sai maior, o da Pri menor.'],
-  tips:['Whey isolado tem pouquíssima lactose. Confira no rótulo se não traz sorbitol, manitol ou inulina, que incomodam quem faz FODMAP.','O mesmo liquidificador serve os dois: as quantidades de cada um estão no cartão.']},
+  'Bata tudo junto no liquidificador com 3 cubos de gelo, por 40 s (as quantidades do quadro “para os dois”).',
+  'Sirva na proporção do quadro: o copo do Lucas sai maior.',
+  'No copo do Lucas, misture a pasta de amendoim depois de servir.'],
+  tips:['Whey isolado tem pouquíssima lactose. Confira no rótulo se não traz sorbitol, manitol ou inulina, que incomodam quem faz FODMAP.','Pri: banana firme, ainda com a ponta verde.']},
  E1:{steps:['Coloque o iogurte em uma tigela.','Junte a aveia (só Lucas) e o mamão picado.'],tips:['Dia sem fome à noite? É a refeição mais fácil de pular. Se pular, use um extra no placar: 1 copo de iogurte.']},
  E2:{steps:['Coloque o iogurte em uma tigela.','Junte a aveia (só Lucas) e as uvas.'],tips:['Uva: até cerca de 150 g por vez fica dentro do limite FODMAP baixo para a Pri.']},
  M1:{steps:[
-  'Ferva água com sal e cozinhe o macarrão de arroz pelo tempo do pacote (8 a 10 min). Escorra e passe um fio de azeite.',
-  'Na panela, aqueça o azeite aromatizado (receita base) e junte o molho de tomate. Cozinhe 8 min em fogo baixo com sal, orégano e pimenta.',
-  'Junte o espinafre picado nos últimos 2 min.',
-  'Misture o atum escorrido ao molho: 1 lata para o Lucas e meia lata para a Pri.',
-  'Sirva sobre o macarrão e finalize com o parmesão. Pri: 1 ovo cozido ao lado.'],
-  tips:['A meia lata que sobra vai no pão do lanche ou na salada do dia seguinte.','Sem alho nem cebola no molho: o sabor vem do azeite aromatizado.']},
+  'Cozinhe o macarrão dos dois numa panela só, pelo tempo do pacote. Escorra e passe um fio de azeite.',
+  'Numa panela, aqueça o azeite aromatizado (receita base) e junte o molho de tomate. 8 min em fogo baixo com sal, orégano e pimenta.',
+  'Junte o espinafre picado nos últimos 2 min e o atum escorrido no fim.',
+  'Divida macarrão e molho na proporção do quadro e finalize com parmesão. Pri: 1 ovo cozido ao lado.'],
+  tips:['Sem alho nem cebola no molho: o sabor vem do azeite aromatizado.']},
  M2:{steps:[
-  'Corte a batata em palitos e misture com azeite, sal e páprica. Airfryer a 200 °C por 18 min, mexendo na metade (forno: 220 °C por 25 min).',
-  'Bata os ovos com sal. Em frigideira antiaderente untada, cozinhe 2 min, coloque espinafre e mussarela no meio e dobre.',
-  'Pri: junte o frango desfiado do lote ao recheio.',
-  'Salada de tomate e pepino com limão e um fio de azeite.',
-  'Lucas: esquente o arroz e o feijão do lote.'],
-  tips:['A batata assada é a mesma base do peixe e do crepe, então dá para fazer a assadeira para os dois de uma vez.']},
+  'Uma assadeira só para os dois: batata em palitos com azeite, sal e páprica. Airfryer a 200 °C por 18 min, mexendo na metade (forno: 220 °C por 25 min).',
+  'Uma tigela só de salada: tomate e pepino com limão e um fio de azeite.',
+  'Omeletes: um para cada (os recheios mudam). Bata os ovos com sal, cozinhe 2 min, coloque espinafre e mussarela e dobre. Pri: junte o frango desfiado do lote.',
+  'Divida batata e salada na proporção do quadro. Lucas: arroz e feijão do lote.'],
+  tips:['A mesma assadeira de batata serve outras refeições do dia, se quiser adiantar.']},
  M3:{steps:[
-  'Tempere o filé ainda congelado com sal, limão e páprica. Não precisa descongelar.',
-  'Misture batata em cubos e cenoura em rodelas com azeite e sal. A abobrinha entra mais tarde.',
-  'Airfryer a 200 °C: batata e cenoura por 10 min. Junte o peixe e a abobrinha e mais 14 a 16 min, virando o peixe na metade.',
-  'Está pronto quando o peixe fica opaco e solta lascas com o garfo.',
-  'Lucas: arroz do lote ao lado.'],
-  tips:['Filé grosso (mais de 2 cm) pede 2 a 3 min a mais.']},
+  'Uma assadeira só: tempere os filés ainda congelados com sal, limão e páprica.',
+  'Batata em cubos e cenoura em rodelas com azeite e sal: 10 min na airfryer a 200 °C.',
+  'Junte o peixe e a abobrinha e mais 14 a 16 min, virando o peixe na metade.',
+  'Divida na proporção do quadro. Lucas: arroz do lote ao lado.'],
+  tips:['Prato de Outros: só quando comprar peixe. Filé grosso (mais de 2 cm) pede 2 a 3 min a mais.']},
  M4:{steps:[
-  'Bata no liquidificador, para os dois: 2 ovos, espinafre, aveia e sal. A aveia é 30 g para o Lucas e 20 g para a Pri. Faça uma massa para cada um.',
-  'Frigideira antiaderente untada: despeje metade da massa e cozinhe 2 min de cada lado. Repita com o resto.',
-  'Recheio do Lucas: 1 lata de atum escorrido e 20 g de mussarela. Recheio da Pri: frango desfiado, tomate e 20 g de mussarela.',
-  'Enrole e sirva com a batata assada (mesma assadeira do dia, 250 g Lucas e 130 g Pri).'],
+  'Uma massa só no liquidificador: os ovos, a aveia e o espinafre do quadro, com sal.',
+  'Frigideira antiaderente untada: faça os crepes, 2 min de cada lado, e divida meio a meio.',
+  'Recheios: Lucas com atum e mussarela; Pri com frango desfiado, tomate e mussarela. Enrole.',
+  'Batata assada numa assadeira só, dividida na proporção do quadro.'],
   tips:['A massa fica mais firme se descansar 5 min antes de ir para a frigideira.']},
  M5:{steps:[
-  'Cozinhe a batata em cubos por 15 min. Escorra e amasse com leite sem lactose, sal e azeite. Sem manteiga e sem alho.',
-  'Lucas: escorra a sardinha e aqueça em frigideira por 3 min com limão. Fatie 2 ovos cozidos do lote.',
-  'Pri: esquente o frango do lote.',
-  'Legumes: cenoura e abobrinha no vapor por 8 min (Pri). Cenoura ralada e tomate crus (Lucas).'],
+  'Uma panela só de purê: cozinhe todas as batatas em cubos por 15 min, escorra e amasse com o leite, o azeite e sal. Sem manteiga e sem alho.',
+  'Divida o purê na proporção do quadro.',
+  'Lucas: sardinha aquecida com limão e 2 ovos cozidos do lote. Pri: frango do lote.',
+  'Legumes: cenoura e abobrinha no vapor (Pri), cenoura ralada e tomate crus (Lucas).'],
   tips:['Sardinha em lata já vem cozida, é só aquecer ou comer fria.']},
  C3:{steps:[
-  'Amasse a banana e misture com os ovos, a aveia e uma pitada de canela. Uma massa para cada um (Lucas: 3 ovos e 40 g de aveia; Pri: 2 ovos e 25 g).',
-  'Frigideira antiaderente em fogo médio, untada com papel e azeite. Pingue conchas pequenas e vire quando as bordas firmarem, cerca de 2 min de cada lado.',
-  'Sirva com o iogurte por cima. Lucas: um fio de pasta de amendoim.'],
-  tips:['Pri: banana firme, ainda com a ponta verde. Madura demais pesa no FODMAP.','Rende mais fácil em panquecas pequenas, que viram sem quebrar.']},
+  'Uma massa só: amasse as bananas e misture com os ovos e a aveia (as quantidades do quadro “para os dois”) e uma pitada de canela.',
+  'Frigideira antiaderente untada, fogo médio: pingue conchas pequenas e vire quando as bordas firmarem, cerca de 2 min de cada lado.',
+  'Divida as panquecas na proporção do quadro e sirva com o iogurte. Lucas: um fio de pasta de amendoim.'],
+  tips:['Pri: banana firme, ainda com a ponta verde. Madura demais pesa no FODMAP.','Panquecas pequenas viram sem quebrar.']},
  C4:{steps:[
   'Faça os ovos fritos ou mexidos (Lucas 3, Pri 2).',
   'Monte o pão com a mussarela e o ovo. Frigideira tampada em fogo baixo, 2 min de cada lado, até o queijo derreter. Lucas: 3 fatias, Pri: 1 fatia aberta.',
@@ -506,8 +511,8 @@ const RECIPES={
   'Ovos cozidos do lote ao lado, com sal (3 Lucas, 2 Pri).'],
   tips:['É o café de quem está com pressa: nada vai ao fogo se os ovos do lote estiverem prontos.']},
  L2:{steps:[
-  'Bata o iogurte, o whey, a fruta e a aveia (Lucas: mais a pasta de amendoim) por 30 s.',
-  'Divida em dois copos: o do Lucas maior, o da Pri menor.'],
+  'Bata juntos o iogurte, o whey, os morangos e a aveia por 30 s (as quantidades do quadro “para os dois”).',
+  'Divida na proporção do quadro. No copo do Lucas, misture a pasta de amendoim.'],
   tips:['Fica mais grosso que a vitamina de leite. Se quiser mais líquido, junte um pouco de água gelada.']},
  L3:{steps:[
   'Misture o atum escorrido com tomate em cubos, sal e um fio de limão.',
@@ -525,27 +530,26 @@ const RECIPES={
   'Pri: meia dose de whey.'],
   tips:['Use esta ceia nos dias em que o placar está baixo: rende bem mais proteína que a tigela de iogurte.','Whey sabor baunilha ou chocolate fica parecido com um achocolatado quente.']},
  E4:{steps:[
-  'Bata os ovos com sal e cozinhe em frigideira antiaderente em fogo baixo, mexendo, por 2 min.',
-  'Desligue e junte a mussarela. Lucas: tomate picado por cima.'],
+  'Bata os ovos dos dois juntos com sal e cozinhe numa frigideira só, em fogo baixo, mexendo por 2 min.',
+  'Desligue, junte a mussarela e divida na proporção do quadro. Lucas: tomate picado por cima.'],
   tips:['Fogo baixo deixa o ovo cremoso e evita ressecar.']},
  M6:{steps:[
-  'Cozinhe a batata em cubos por 12 min em água com sal, até ficar macia mas inteira. Escorra.',
-  'Corte os ovos cozidos do lote em quartos, o tomate e o pepino em cubos.',
-  'Misture a batata ainda morna com azeite, limão, sal e orégano. Junte os legumes, os ovos e o atum escorrido (Lucas 1 lata, Pri meia).',
-  'Lucas: feijão do lote ao lado.'],
+  'Cozinhe todas as batatas em cubos por 12 min em água com sal, até ficarem macias mas inteiras.',
+  'Uma tigela só: batata morna, ovos cozidos do lote em quartos, atum escorrido, tomate e pepino, com azeite, limão, sal e orégano.',
+  'Divida na proporção do quadro. Lucas: feijão do lote ao lado.'],
   tips:['Morna ou fria, funciona igual. Dá para levar em pote.']},
  M7:{steps:[
-  'Cozinhe o macarrão de arroz pelo tempo do pacote. Escorra e passe um fio de azeite.',
-  'Na frigideira, azeite aromatizado e a abobrinha em meia-lua por 4 min, até dourar. Junte o tomate em cubos por mais 2 min.',
-  'Divida: atum escorrido na parte do Lucas, frango desfiado do lote na parte da Pri.',
-  'Misture com o macarrão e finalize com parmesão.'],
+  'Cozinhe o macarrão dos dois junto, pelo tempo do pacote. Escorra e passe um fio de azeite.',
+  'Uma frigideira só: abobrinha em meia-lua no azeite aromatizado por 4 min, depois o tomate por mais 2 min.',
+  'Misture com o macarrão e divida na proporção do quadro.',
+  'Proteína no prato: atum no do Lucas, frango desfiado do lote no da Pri. Parmesão por cima.'],
   tips:['Pri: abobrinha até cerca de 75 g por refeição fica dentro do FODMAP baixo.']},
  M8:{steps:[
-  'Aqueça o azeite aromatizado e junte o molho de tomate com sal e orégano. 3 min em fogo baixo.',
-  'Coloque os filés ainda congelados no molho, tampe e cozinhe 12 a 15 min, até o peixe ficar opaco.',
-  'Junte o espinafre nos últimos 2 min.',
+  'Uma panela só: aqueça o azeite aromatizado e junte o molho de tomate com sal e orégano, 3 min em fogo baixo.',
+  'Coloque os filés ainda congelados no molho, tampe e cozinhe 12 a 15 min.',
+  'Junte o espinafre nos últimos 2 min e divida na proporção do quadro.',
   'Lucas: arroz e feijão do lote. Pri: batata cozida ou assada.'],
-  tips:['O molho segura o peixe úmido, então não tem como ressecar.']},
+  tips:['Prato de Outros: só quando comprar peixe.']},
  M9:{steps:[
   'Pri: batata em cubos na airfryer a 200 °C por 18 min (ou a batata assada do dia).',
   'Lucas: mexa 2 ovos com o atum. Pri: aqueça o frango desfiado do lote.',
@@ -616,22 +620,23 @@ function frac(n){const w=Math.floor(n+1e-9),r=n-w,F=[[.25,'¼'],[.5,'½'],[.75,'
   return r<.03?String(w):r>.97?String(w+1):F?(w?w+F[1]:F[1]):fmt(n,1);}
 const R0=n=>Math.round(n);
 function fq(id,q){
+  const n=frac(q),pl=q>1.01;
   switch(id){
-    case 'ovo': return `${fmt(q)} ${q===1?'ovo':'ovos'}`;
-    case 'atum': case 'sardinha': return q===.5?`½ lata de ${SN[id]}`:`${fmt(q)} ${q===1?'lata':'latas'} de ${SN[id]}`;
-    case 'whey': return `${fmt(q)} dose de whey`;
-    case 'azeite': return `${q===.25?'¼':q===.5?'½':fmt(q)} col. sopa de azeite`;
-    case 'banana': return `${fmt(q)} banana${q>1?'s':''}`;
-    case 'limao': return `${q===.5?'½':fmt(q)} limão`;
-    case 'pao': return `${fmt(q)} ${q===1?'fatia':'fatias'} de pão`;
-    case 'banana': return `${q===.5?'½':fmt(q)} banana${q>1?'s':''}`;
-    case 'laranja': case 'kiwi': return `${q===.5?'½':fmt(q)} ${SN[id]}${q>1?'s':''}`;
-    default:{const h=ING[id].hu;if(h){const n=q/h[2],u=ING[id].u==='ml'?'ml':'g',w=n>1.01?h[1]:h[0];
+    case 'ovo': return `${n} ${pl?'ovos':'ovo'}`;
+    case 'atum': case 'sardinha': return `${n} ${pl?'latas':'lata'} de ${SN[id]}`;
+    case 'whey': return `${n} ${pl?'doses':'dose'} de whey`;
+    case 'azeite': return `${n} col. sopa de azeite`;
+    case 'banana': return `${n} ${pl?'bananas':'banana'}`;
+    case 'limao': return `${n} ${pl?'limões':'limão'}`;
+    case 'pao': return `${n} ${pl?'fatias':'fatia'} de pão`;
+    case 'laranja': case 'kiwi': return `${n} ${SN[id]}${pl?'s':''}`;
+    default:{const h=ING[id].hu;if(h){const m=q/h[2],u=ING[id].u==='ml'?'ml':'g',w=m>1.01?h[1]:h[0];
       /* "¾ tomate", não "¾ tomate de tomate" */
-      const same=h[0].split(/[ -]/)[0]===SN[id].split(/[ -]/)[0];return `${frac(n)} ${w}${same?'':' de '+SN[id]} (${fmt(q,0)} ${u})`;}
+      const same=h[0].split(/[ -]/)[0]===SN[id].split(/[ -]/)[0];return `${frac(m)} ${w}${same?'':' de '+SN[id]} (${fmt(q,0)} ${u})`;}
       return `${fmt(q)} ${ING[id].u==='ml'?'ml':'g'} de ${SN[id]}`;}
   }
 }
+
 /* Ingredientes de uma refeição para uma pessoa, já com os ajustes feitos no editor (valem para todos os dias). */
 const ING_IDS=Object.keys(ING);
 function itemsOf(mid,who){
@@ -909,16 +914,28 @@ function advice(day){
 /* Ingredientes que já entram no plano base da semana: alternativa que usa só eles não pede compra nova. */
 function baseIng(){const s=new Set();WEEK.forEach(d=>Object.values(d.slots).forEach(mid=>['L','P'].forEach(w=>itemsOf(mid,w).forEach(it=>s.add(it[0])))));return s;}
 function sgn(n){n=R0(n);return n>0?`+${n}`:n<0?`−${-n}`:'='; }
+/* Preparo único: soma o que vai junto (uma massa, uma vitamina, uma panela) e mostra quanto fica com cada um. */
+function juntoBlock(mid){
+  const m=MEALS[mid];if(!m.junto)return '';
+  const iL=itemsOf(mid,'L'),iP=itemsOf(mid,'P'),q=(its,id)=>(its.find(i=>i[0]===id)||[0,0])[1];
+  const ids=m.junto.filter(id=>q(iL,id)+q(iP,id)>0);if(!ids.length)return '';
+  const kL=ids.reduce((a,id)=>a+ING[id].k*q(iL,id),0),kP=ids.reduce((a,id)=>a+ING[id].k*q(iP,id),0);
+  const sL=Math.round(kL/(kL+kP||1)*20)*5;
+  return `<div class="junto"><b>${m.jn} para os dois, de uma vez:</b> ${ids.map(id=>fq(id,q(iL,id)+q(iP,id))).join(', ')}.
+    <span class="sub">Divida: <span class="L">Lucas ~${sL}%</span>, <span class="P">Pri ~${100-sL}%</span>.</span></div>`;
+}
 function altsBlock(day,k,mid){
   const key=`${day.d}|${k}`,cur={L:nut(itemsOf(mid,'L')).p,P:nut(itemsOf(mid,'P')).p},have=baseIng();
-  const ids=Object.keys(MEALS).filter(id=>MEALS[id].slot===KIND[k]&&id!==mid);
-  const rows=ids.map(id=>{const m=MEALS[id],iL=itemsOf(id,'L'),iP=itemsOf(id,'P'),l=nut(iL).p,p=nut(iP).p;
+  const all=Object.keys(MEALS).filter(id=>MEALS[id].slot===KIND[k]&&id!==mid);
+  const row=id=>{const m=MEALS[id],iL=itemsOf(id,'L'),iP=itemsOf(id,'P'),l=nut(iL).p,p=nut(iP).p;
     const extra=[...new Set(iL.concat(iP).map(it=>it[0]))].filter(i=>!have.has(i)).map(i=>SN[i]);
     return `<div class="alt"><div class="mini">${ill(id)}</div><div class="alt-tx"><b>${m.n}</b>
       <span class="sub">${m.t} min · <span class="L">Lucas ${R0(l)} g (${sgn(l-cur.L)})</span> · <span class="P">Pri ${R0(p)} g (${sgn(p-cur.P)})</span></span>
       <span class="sub">${extra.length?`Compra a mais: ${extra.join(', ')}`:'Só com o que já está na lista'}</span></div>
-      <button class="btn small primary" data-act="swap" data-key="${key}" data-id="${id}">Usar</button></div>`;}).join('');
-  return `<div class="alts"><div class="eyebrow">Trocar por</div>${rows}</div>`;
+      <button class="btn small primary" data-act="swap" data-key="${key}" data-id="${id}">Usar</button></div>`;};
+  const main=all.filter(id=>!MEALS[id].outros),out=all.filter(id=>MEALS[id].outros);
+  return `<div class="alts"><div class="eyebrow">Trocar por</div>${main.map(row).join('')}
+    ${out.length?`<div class="eyebrow alts-out">Outros · quando comprar peixe</div>${out.map(row).join('')}`:''}</div>`;
 }
 /* ----- Editor de ingredientes: vale para a refeição em todos os dias ----- */
 function amtOf(id,q){const g=ING[id],h=g.hu;
@@ -960,7 +977,7 @@ function slotCard(day,k,label){
    <button class="link" data-act="editopen" data-key="${key}" aria-expanded="${ed}">${ed?'Fechar ajuste':'Ajustar'}</button>
    <button class="link" data-act="swapopen" data-key="${key}" aria-expanded="${open}">${open?'Fechar trocas':'Trocar'}</button>
    ${mid!==base?`<button class="link" data-act="swap" data-key="${key}" data-id="${base}">Voltar ao plano</button>`:''}</div></div>
-   ${open?altsBlock(day,k,mid):''}${ed?editBlock(mid):''}<div class="people">${people}</div></article>`;
+   ${juntoBlock(mid)}${open?altsBlock(day,k,mid):''}${ed?editBlock(mid):''}<div class="people">${people}</div></article>`;
 }
 function extrasBlock(day){
   const w=V.extraWho,key=`${day.d}|${w}`,ex=S.extras[key]||{};
@@ -1008,12 +1025,12 @@ function viewSemana(){
     return `<button class="dayc" data-act="day-go" data-day="${d.d}"><div class="top"><h3>${WD_FULL[d.wd]} ${d.d.slice(8)}</h3>${d.d===TODAY?'<span class="tag">hoje</span>':''}</div>
       <div class="tots"><span class="tot L">Lucas ${R0(l.p)} g · ${R0(l.k)} kcal</span><span class="tot P">Pri ${R0(p.p)} g · ${R0(p.k)} kcal</span></div><ul>${rows}</ul></button>`;}).join('');
   const counts={};WEEK.forEach(d=>Object.values(slotsOf(d)).forEach(m=>{if(MEALS[m].slot==='ref')counts[m]=(counts[m]||0)+1;}));
-  const nAlt=k=>Object.keys(MEALS).filter(id=>MEALS[id].slot===k).length;
+  const nAlt=k=>Object.keys(MEALS).filter(id=>MEALS[id].slot===k&&!MEALS[id].outros).length;
   const rod=Object.keys(counts).sort().map(m=>`${SHORT[m]} ${counts[m]}×`).join(' · ');
   return `<div class="stack"><section class="card stack"><div><div class="eyebrow">Plano da semana, domingo 15 a domingo 22</div>
    <div class="sub">Média dos dias completos: Lucas ${R0(avg('L'))} g de proteína (meta ${S.targets.L.p}), Pri ${R0(avg('P'))} g (meta ${S.targets.P.p}). O plano já inclui uma folga para os dias em que algo escapar. As barras mostram a proteína planejada em % da meta de cada um.</div></div>
    <div class="chart">${chartSvg()}</div><div class="who-legend"><span><span class="dot L"></span>Lucas</span><span><span class="dot P"></span>Pri</span></div>
-   <div class="sub">Almoço e jantar desta semana: ${rod}. Não deu vontade ou faltou um ingrediente? Na aba Hoje, toque em Trocar em qualquer refeição: são ${nAlt('cafe')} cafés, ${nAlt('ref')} pratos, ${nAlt('lanche')} lanches e ${nAlt('ceia')} ceias, todos com o que costuma estar na lista. Compras e preparo se recalculam sozinhos.</div></section>
+   <div class="sub">Almoço e jantar desta semana: ${rod}. Não deu vontade ou faltou um ingrediente? Na aba Hoje, toque em Trocar em qualquer refeição: são ${nAlt('cafe')} cafés, ${nAlt('ref')} pratos, ${nAlt('lanche')} lanches e ${nAlt('ceia')} ceias, todos com o que costuma estar na lista. Os pratos com peixe ficam em Outros, para quando comprar. Compras e preparo se recalculam sozinhos.</div></section>
    <div class="week">${cards}</div></div>`;
 }
 
@@ -1062,7 +1079,7 @@ function recCard(id){
   const m=MEALS[id]||BASES[id],open=!!V.open[id],r=RECIPES[id];
   const isMeal=!!MEALS[id];
   const head=`<button class="rec-h" data-act="exp" data-id="${id}" aria-expanded="${open}" id="rec-${id}"><div class="ill">${ill(id)}</div>
-   <div><span class="tag">${isMeal?(m.slot==='cafe'?'Café':m.slot==='ref'?'Almoço ou jantar':m.slot==='lanche'?'Lanche':'Ceia'):'Preparo base'}</span><h3>${m.n}</h3>
+   <div><span class="tag">${isMeal?(m.outros?'Outros · almoço ou jantar':m.slot==='cafe'?'Café':m.slot==='ref'?'Almoço ou jantar':m.slot==='lanche'?'Lanche':'Ceia'):'Preparo base'}</span><h3>${m.n}</h3>
    <div class="sub">${m.t} min${isMeal?` · Lucas ${R0(nut(itemsOf(id,'L')).p)} g · Pri ${R0(nut(itemsOf(id,'P')).p)} g de proteína${isCustom(id)?' · ajustada por vocês':''}`:''}</div></div>${CHEV}</button>`;
   let body='';
   if(open){
@@ -1070,16 +1087,17 @@ function recCard(id){
     const steps=`<ol class="steps">${r.steps.map((s,i)=>{const k=`${id}|${i}`;return `<li class="${S.steps[k]?'done':''}" data-act="step" data-key="${k}"><span>${s}</span></li>`;}).join('')}</ol>`;
     const tips=r.tips.length?`<div class="note">${r.tips.map(t=>`<div>${t}</div>`).join('')}</div>`:'';
     const wh=isMeal?`<div class="where">Na semana: ${whereUsed(id)}</div>`:'';
-    body=`<div class="rec-b">${cols}${steps}${tips}${wh}<div><button class="link" data-act="clearsteps" data-id="${id}">Limpar passos marcados</button></div></div>`;
+    body=`<div class="rec-b">${isMeal?juntoBlock(id):''}${cols}${steps}${tips}${wh}<div><button class="link" data-act="clearsteps" data-id="${id}">Limpar passos marcados</button></div></div>`;
   }
   return `<article class="rec">${head}${body}</article>`;
 }
 function viewReceitas(){
-  const F=[['all','Todas'],['cafe','Café'],['ref','Almoço e jantar'],['lc','Lanche e ceia'],['base','Base']];
+  const F=[['all','Todas'],['cafe','Café'],['ref','Almoço e jantar'],['lc','Lanche e ceia'],['outros','Outros'],['base','Base']];
   const chips=F.map(f=>`<button class="chip" data-act="filter" data-f="${f[0]}" aria-pressed="${V.filter===f[0]}">${f[1]}</button>`).join('');
   const ids=Object.keys(MEALS).concat(Object.keys(BASES)).filter(id=>{
     const sl=(MEALS[id]||BASES[id]).slot;
-    return V.filter==='all'||(V.filter==='lc'?(sl==='lanche'||sl==='ceia'):sl===V.filter);});
+    const o=!!(MEALS[id]&&MEALS[id].outros);
+    return V.filter==='all'||(V.filter==='outros'?o:!o&&(V.filter==='lc'?(sl==='lanche'||sl==='ceia'):sl===V.filter));});
   return `<div class="chips">${chips}</div><div class="stack">${ids.map(recCard).join('')}</div>`;
 }
 
