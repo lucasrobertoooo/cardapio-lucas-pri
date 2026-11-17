@@ -26,7 +26,7 @@ const RECIPES={
  M1:{steps:[
   'Cozinhe o macarrão dos dois numa panela só, pelo tempo do pacote. Escorra e passe um fio de azeite.',
   'Numa panela, aqueça o azeite aromatizado (receita base) e junte o molho de tomate. 8 min em fogo baixo com sal, orégano e pimenta.',
-  'Junte o espinafre picado nos últimos 2 min e o atum escorrido no fim.',
+  'Junte o espinafre picado nos últimos 2 min e o frango desfiado do lote no fim, só para aquecer.',
   'Divida macarrão e molho na proporção do quadro e finalize com parmesão. Pri: 1 ovo cozido ao lado.'],
   tips:['Sem alho nem cebola no molho: o sabor vem do azeite aromatizado.']},
  M2:{steps:[
@@ -44,15 +44,15 @@ const RECIPES={
  M4:{steps:[
   'Uma massa só no liquidificador: os ovos, a aveia e o espinafre do quadro, com sal.',
   'Frigideira antiaderente untada: faça os crepes, 2 min de cada lado, e divida meio a meio.',
-  'Recheios: Lucas com atum e mussarela; Pri com frango desfiado, tomate e mussarela. Enrole.',
+  'Recheio dos dois: frango desfiado do lote e mussarela (Pri com tomate também). Enrole.',
   'Batata assada numa assadeira só, dividida na proporção do quadro.'],
   tips:['A massa fica mais firme se descansar 5 min antes de ir para a frigideira.']},
  M5:{steps:[
   'Uma panela só de purê: cozinhe todas as batatas em cubos por 15 min, escorra e amasse com o leite, o azeite e sal. Sem manteiga e sem alho.',
   'Divida o purê na proporção do quadro.',
-  'Lucas: sardinha aquecida com limão e 2 ovos cozidos do lote. Pri: frango do lote.',
+  'Frango do lote aquecido com um fio de limão para os dois. Lucas: mais 2 ovos cozidos do lote.',
   'Legumes: cenoura e abobrinha no vapor (Pri), cenoura ralada e tomate crus (Lucas).'],
-  tips:['Sardinha em lata já vem cozida, é só aquecer ou comer fria.']},
+  tips:['Frango fatiado do lote fica melhor aquecido na frigideira, 2 min de cada lado.']},
  C3:{steps:[
   'Uma massa só: amasse as bananas e misture com os ovos e a aveia (as quantidades do quadro “para os dois”) e uma pitada de canela.',
   'Frigideira antiaderente untada, fogo médio: pingue conchas pequenas e vire quando as bordas firmarem, cerca de 2 min de cada lado.',
@@ -76,7 +76,7 @@ const RECIPES={
   'Misture o atum escorrido com tomate em cubos, sal e um fio de limão.',
   'Monte no pão com a mussarela (Lucas 3 fatias, Pri 1 fatia aberta). Se quiser quente, 2 min na frigideira tampada.',
   'Lucas: um copo de leite sem lactose ao lado.'],
-  tips:['A Pri leva a lata inteira de atum aqui, porque é a proteína principal do lanche dela.']},
+  tips:['Prato de Outros: só quando tiver atum em casa. Meia lata para cada.']},
  L4:{steps:[
   'Descasque os ovos cozidos do lote (Lucas 3, Pri 2) e tempere com sal.',
   'Copo de leite sem lactose (Lucas 300 ml, Pri 250 ml).',
@@ -93,14 +93,14 @@ const RECIPES={
   tips:['Fogo baixo deixa o ovo cremoso e evita ressecar.']},
  M6:{steps:[
   'Cozinhe todas as batatas em cubos por 12 min em água com sal, até ficarem macias mas inteiras.',
-  'Uma tigela só: batata morna, ovos cozidos do lote em quartos, atum escorrido, tomate e pepino, com azeite, limão, sal e orégano.',
+  'Uma tigela só: batata morna, ovos cozidos do lote em quartos, frango desfiado do lote, tomate e pepino, com azeite, limão, sal e orégano.',
   'Divida na proporção do quadro. Lucas: feijão do lote ao lado.'],
   tips:['Morna ou fria, funciona igual. Dá para levar em pote.']},
  M7:{steps:[
   'Cozinhe o macarrão dos dois junto, pelo tempo do pacote. Escorra e passe um fio de azeite.',
   'Uma frigideira só: abobrinha em meia-lua no azeite aromatizado por 4 min, depois o tomate por mais 2 min.',
   'Misture com o macarrão e divida na proporção do quadro.',
-  'Proteína no prato: atum no do Lucas, frango desfiado do lote no da Pri. Parmesão por cima.'],
+  'Proteína no prato: frango desfiado do lote nos dois. Parmesão por cima.'],
   tips:['Pri: abobrinha até cerca de 75 g por refeição fica dentro do FODMAP baixo.']},
  M8:{steps:[
   'Uma panela só: aqueça o azeite aromatizado e junte o molho de tomate com sal e orégano, 3 min em fogo baixo.',
@@ -110,14 +110,14 @@ const RECIPES={
   tips:['Prato de Outros: só quando comprar peixe.']},
  M9:{steps:[
   'Pri: batata em cubos na airfryer a 200 °C por 18 min (ou a batata assada do dia).',
-  'Lucas: mexa 2 ovos com o atum. Pri: aqueça o frango desfiado do lote.',
+  'Aqueça o frango desfiado do lote. Lucas: mexa 2 ovos e junte ao frango.',
   'Monte com a mussarela, o tomate e o espinafre (Lucas: 2 sanduíches com 4 fatias; Pri: 1 fatia aberta). Frigideira tampada, 2 min de cada lado.'],
   tips:['A Pri leva batata no lugar do segundo pão, para ficar dentro do FODMAP baixo.']},
  B1:{steps:[
   'Tempere o peito de frango com sal, páprica, limão e um fio de azeite.',
   'Forno a 200 °C por 22 a 25 min, até ficar branco por dentro e sem rosa.',
   'Descanse 5 min. Desfie metade e fatie a outra metade.',
-  'Guarde em potes na geladeira por até 4 dias.'],tips:['Só a Pri usa o frango. As porções dela são de 50 a 110 g por refeição.']},
+  'Guarde em potes na geladeira por até 4 dias.'],tips:['Esta semana o frango é dos dois: Lucas 100 a 120 g por refeição, Pri 50 a 110 g.']},
  B2:{steps:[
   'Arroz: lave 100 g de arroz, refogue em um fio de azeite, junte 250 ml de água e sal. Tampado, 12 min em fogo baixo.',
   'Feijão: cubra 150 g de feijão (de molho por 8 h, se tiver) com água, panela de pressão por 25 min depois de pegar pressão.',

@@ -8,7 +8,7 @@ const AISLES = {
 // MEALS: slot = tipo (cafe, ref = almoço ou jantar, lanche, ceia); oc = os ovos da refeição são cozidos no lote.
 // junto = ingredientes feitos de uma vez para os dois (uma massa, uma vitamina, uma panela), jn = nome desse preparo.
 // O lanche da tarde é a refeição maior (academia à noite). A ceia completa a proteína que faltar no dia (ver ceiaFactor em logic.js).
-// outros = prato com ingrediente caro (peixe): fica fora do plano da semana, só aparece em Outros nas trocas.
+// outros = prato com ingrediente caro (peixe, atum, sardinha): fica fora do plano da semana, só aparece em Outros nas trocas.
 // Toda refeição do mesmo tipo é alternativa das outras na aba Hoje (botão Trocar).
 const ING = {
   ovo:      {n:'Ovo', u:'un', p:6.2, k:75, pack:12, pk:['dúzia','dúzias'], wp:60, aisle:'lat'},
@@ -104,7 +104,7 @@ const MEALS = {
  L2:{slot:'lanche', n:'Iogurte batido com whey e morango e torrada com cottage', t:5, junto:['iogurte','whey','morango','aveia'], jn:'Batido',
   L:[['iogurte',250],['whey',1],['morango',96],['aveia',40],['pao',2],['cottage',40],['amendoim',15]],
   P:[['iogurte',200],['whey',1],['morango',96],['aveia',30],['pao',1],['cottage',20]]},
- L3:{slot:'lanche', n:'Sanduíche de atum com mussarela, leite e banana', t:5, junto:['atum'], jn:'Atum',
+ L3:{slot:'lanche', n:'Sanduíche de atum com mussarela, leite e banana', t:5, outros:1, junto:['atum'], jn:'Atum',
   L:[['pao',3],['atum',.5],['mussarela',30],['tomate',50],['leite',300],['banana',1]],
   P:[['pao',1],['atum',.5],['mussarela',15],['tomate',50],['leite',200],['banana',.5]]},
  L4:{slot:'lanche', n:'Ovos cozidos, pão com pasta de amendoim, leite e fruta', t:3, oc:1,
@@ -122,9 +122,9 @@ const MEALS = {
  E4:{slot:'ceia', n:'Ovos mexidos com mussarela', t:5, junto:['ovo','mussarela'], jn:'Ovos mexidos',
   L:[['ovo',2],['mussarela',15],['tomate',50]],
   P:[['ovo',2],['mussarela',15]]},
- M1:{slot:'ref', n:'Macarrão ao molho de tomate com atum', t:20, oc:1, junto:['macarrao','passata','atum','espinafre','azeite','parmesao'], jn:'Macarrão com molho',
-  L:[['macarrao',100],['passata',200],['atum',1],['azeite',1],['parmesao',15],['espinafre',45]],
-  P:[['macarrao',55],['passata',150],['atum',.5],['azeite',.5],['parmesao',10],['espinafre',45],['ovo',1]]},
+ M1:{slot:'ref', n:'Macarrão ao molho de tomate com frango', t:20, oc:1, junto:['macarrao','passata','frango','espinafre','azeite','parmesao'], jn:'Macarrão com molho',
+  L:[['macarrao',100],['passata',200],['frango',120],['azeite',1],['parmesao',15],['espinafre',45]],
+  P:[['macarrao',55],['passata',150],['frango',60],['azeite',.5],['parmesao',10],['espinafre',45],['ovo',1]]},
  M2:{slot:'ref', n:'Omelete com batata assada e salada', t:20, junto:['batata','tomate','pepino'], jn:'Batata assada e salada',
   L:[['ovo',3],['mussarela',30],['espinafre',30],['batata',225],['arroz',100],['feijao',140],['azeite',.5],['tomate',75],['pepino',50]],
   P:[['ovo',2],['mussarela',15],['espinafre',30],['frango',50],['batata',150],['azeite',.25],['tomate',75],['pepino',50]]},
@@ -132,22 +132,22 @@ const MEALS = {
   L:[['peixe',180],['batata',225],['arroz',100],['cenoura',90],['abobrinha',100],['azeite',1],['limao',.5]],
   P:[['peixe',140],['batata',150],['cenoura',90],['abobrinha',100],['azeite',.25],['limao',.5]]},
  M4:{slot:'ref', n:'Crepe de espinafre recheado', t:20, junto:['ovo','aveia','espinafre','batata'], jn:'Massa e batata',
-  L:[['ovo',2],['aveia',30],['espinafre',45],['atum',1],['mussarela',15],['batata',225],['azeite',.5]],
+  L:[['ovo',2],['aveia',30],['espinafre',45],['frango',120],['mussarela',15],['batata',225],['azeite',.5]],
   P:[['ovo',2],['aveia',30],['espinafre',45],['frango',50],['tomate',50],['mussarela',15],['batata',150],['azeite',.25]]},
- M5:{slot:'ref', n:'Sardinha ou frango com purê e legumes', t:25, oc:1, junto:['batata','leite','azeite'], jn:'Purê',
-  L:[['sardinha',1],['ovo',2],['batata',225],['leite',50],['azeite',.5],['cenoura',90],['tomate',50]],
+ M5:{slot:'ref', n:'Frango com purê e legumes', t:25, oc:1, junto:['batata','leite','azeite'], jn:'Purê',
+  L:[['frango',100],['ovo',2],['batata',225],['leite',50],['azeite',.5],['cenoura',90],['tomate',50]],
   P:[['frango',110],['batata',150],['leite',50],['azeite',.25],['cenoura',90],['abobrinha',100]]},
- M6:{slot:'ref', n:'Salada morna de batata com ovo e atum', t:20, oc:1, junto:['batata','tomate','pepino','azeite','atum','ovo'], jn:'Salada',
-  L:[['batata',300],['ovo',2],['atum',1],['tomate',75],['pepino',50],['azeite',1],['feijao',140]],
-  P:[['batata',225],['ovo',2],['atum',.5],['tomate',75],['pepino',50],['azeite',.5]]},
- M7:{slot:'ref', n:'Macarrão de arroz com abobrinha e parmesão', t:20, junto:['macarrao','abobrinha','tomate','azeite','parmesao'], jn:'Macarrão com abobrinha',
-  L:[['macarrao',100],['atum',1],['abobrinha',150],['tomate',50],['azeite',1],['parmesao',15]],
+ M6:{slot:'ref', n:'Salada morna de batata com ovo e frango', t:20, oc:1, junto:['batata','tomate','pepino','azeite','frango','ovo'], jn:'Salada',
+  L:[['batata',300],['ovo',2],['frango',120],['tomate',75],['pepino',50],['azeite',1],['feijao',140]],
+  P:[['batata',225],['ovo',2],['frango',60],['tomate',75],['pepino',50],['azeite',.5]]},
+ M7:{slot:'ref', n:'Macarrão de arroz com frango, abobrinha e parmesão', t:20, junto:['macarrao','abobrinha','tomate','azeite','parmesao'], jn:'Macarrão com abobrinha',
+  L:[['macarrao',100],['frango',120],['abobrinha',150],['tomate',50],['azeite',1],['parmesao',15]],
   P:[['macarrao',55],['frango',100],['abobrinha',75],['tomate',50],['azeite',.5],['parmesao',10]]},
  M8:{slot:'ref', n:'Peixe ao molho de tomate com espinafre', t:25, outros:1, junto:['peixe','passata','espinafre'], jn:'Peixe no molho',
   L:[['peixe',180],['passata',150],['espinafre',45],['azeite',.5],['arroz',150],['feijao',140]],
   P:[['peixe',150],['passata',150],['espinafre',45],['azeite',.25],['batata',225]]},
- M9:{slot:'ref', n:'Sanduíche quente de atum ou frango com batata', t:20,
-  L:[['pao',4],['ovo',2],['atum',1],['mussarela',30],['tomate',50],['espinafre',30]],
+ M9:{slot:'ref', n:'Sanduíche quente de frango com batata', t:20,
+  L:[['pao',4],['ovo',2],['frango',120],['mussarela',30],['tomate',50],['espinafre',30]],
   P:[['pao',1],['frango',100],['mussarela',15],['tomate',50],['espinafre',30],['batata',150]]}
 };
 const WEEK = [

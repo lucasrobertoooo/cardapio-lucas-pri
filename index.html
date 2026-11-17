@@ -293,7 +293,7 @@ const AISLES = {
 // MEALS: slot = tipo (cafe, ref = almoço ou jantar, lanche, ceia); oc = os ovos da refeição são cozidos no lote.
 // junto = ingredientes feitos de uma vez para os dois (uma massa, uma vitamina, uma panela), jn = nome desse preparo.
 // O lanche da tarde é a refeição maior (academia à noite). A ceia completa a proteína que faltar no dia (ver ceiaFactor em logic.js).
-// outros = prato com ingrediente caro (peixe): fica fora do plano da semana, só aparece em Outros nas trocas.
+// outros = prato com ingrediente caro (peixe, atum, sardinha): fica fora do plano da semana, só aparece em Outros nas trocas.
 // Toda refeição do mesmo tipo é alternativa das outras na aba Hoje (botão Trocar).
 const ING = {
   ovo:      {n:'Ovo', u:'un', p:6.2, k:75, pack:12, pk:['dúzia','dúzias'], wp:60, aisle:'lat'},
@@ -389,7 +389,7 @@ const MEALS = {
  L2:{slot:'lanche', n:'Iogurte batido com whey e morango e torrada com cottage', t:5, junto:['iogurte','whey','morango','aveia'], jn:'Batido',
   L:[['iogurte',250],['whey',1],['morango',96],['aveia',40],['pao',2],['cottage',40],['amendoim',15]],
   P:[['iogurte',200],['whey',1],['morango',96],['aveia',30],['pao',1],['cottage',20]]},
- L3:{slot:'lanche', n:'Sanduíche de atum com mussarela, leite e banana', t:5, junto:['atum'], jn:'Atum',
+ L3:{slot:'lanche', n:'Sanduíche de atum com mussarela, leite e banana', t:5, outros:1, junto:['atum'], jn:'Atum',
   L:[['pao',3],['atum',.5],['mussarela',30],['tomate',50],['leite',300],['banana',1]],
   P:[['pao',1],['atum',.5],['mussarela',15],['tomate',50],['leite',200],['banana',.5]]},
  L4:{slot:'lanche', n:'Ovos cozidos, pão com pasta de amendoim, leite e fruta', t:3, oc:1,
@@ -407,9 +407,9 @@ const MEALS = {
  E4:{slot:'ceia', n:'Ovos mexidos com mussarela', t:5, junto:['ovo','mussarela'], jn:'Ovos mexidos',
   L:[['ovo',2],['mussarela',15],['tomate',50]],
   P:[['ovo',2],['mussarela',15]]},
- M1:{slot:'ref', n:'Macarrão ao molho de tomate com atum', t:20, oc:1, junto:['macarrao','passata','atum','espinafre','azeite','parmesao'], jn:'Macarrão com molho',
-  L:[['macarrao',100],['passata',200],['atum',1],['azeite',1],['parmesao',15],['espinafre',45]],
-  P:[['macarrao',55],['passata',150],['atum',.5],['azeite',.5],['parmesao',10],['espinafre',45],['ovo',1]]},
+ M1:{slot:'ref', n:'Macarrão ao molho de tomate com frango', t:20, oc:1, junto:['macarrao','passata','frango','espinafre','azeite','parmesao'], jn:'Macarrão com molho',
+  L:[['macarrao',100],['passata',200],['frango',120],['azeite',1],['parmesao',15],['espinafre',45]],
+  P:[['macarrao',55],['passata',150],['frango',60],['azeite',.5],['parmesao',10],['espinafre',45],['ovo',1]]},
  M2:{slot:'ref', n:'Omelete com batata assada e salada', t:20, junto:['batata','tomate','pepino'], jn:'Batata assada e salada',
   L:[['ovo',3],['mussarela',30],['espinafre',30],['batata',225],['arroz',100],['feijao',140],['azeite',.5],['tomate',75],['pepino',50]],
   P:[['ovo',2],['mussarela',15],['espinafre',30],['frango',50],['batata',150],['azeite',.25],['tomate',75],['pepino',50]]},
@@ -417,22 +417,22 @@ const MEALS = {
   L:[['peixe',180],['batata',225],['arroz',100],['cenoura',90],['abobrinha',100],['azeite',1],['limao',.5]],
   P:[['peixe',140],['batata',150],['cenoura',90],['abobrinha',100],['azeite',.25],['limao',.5]]},
  M4:{slot:'ref', n:'Crepe de espinafre recheado', t:20, junto:['ovo','aveia','espinafre','batata'], jn:'Massa e batata',
-  L:[['ovo',2],['aveia',30],['espinafre',45],['atum',1],['mussarela',15],['batata',225],['azeite',.5]],
+  L:[['ovo',2],['aveia',30],['espinafre',45],['frango',120],['mussarela',15],['batata',225],['azeite',.5]],
   P:[['ovo',2],['aveia',30],['espinafre',45],['frango',50],['tomate',50],['mussarela',15],['batata',150],['azeite',.25]]},
- M5:{slot:'ref', n:'Sardinha ou frango com purê e legumes', t:25, oc:1, junto:['batata','leite','azeite'], jn:'Purê',
-  L:[['sardinha',1],['ovo',2],['batata',225],['leite',50],['azeite',.5],['cenoura',90],['tomate',50]],
+ M5:{slot:'ref', n:'Frango com purê e legumes', t:25, oc:1, junto:['batata','leite','azeite'], jn:'Purê',
+  L:[['frango',100],['ovo',2],['batata',225],['leite',50],['azeite',.5],['cenoura',90],['tomate',50]],
   P:[['frango',110],['batata',150],['leite',50],['azeite',.25],['cenoura',90],['abobrinha',100]]},
- M6:{slot:'ref', n:'Salada morna de batata com ovo e atum', t:20, oc:1, junto:['batata','tomate','pepino','azeite','atum','ovo'], jn:'Salada',
-  L:[['batata',300],['ovo',2],['atum',1],['tomate',75],['pepino',50],['azeite',1],['feijao',140]],
-  P:[['batata',225],['ovo',2],['atum',.5],['tomate',75],['pepino',50],['azeite',.5]]},
- M7:{slot:'ref', n:'Macarrão de arroz com abobrinha e parmesão', t:20, junto:['macarrao','abobrinha','tomate','azeite','parmesao'], jn:'Macarrão com abobrinha',
-  L:[['macarrao',100],['atum',1],['abobrinha',150],['tomate',50],['azeite',1],['parmesao',15]],
+ M6:{slot:'ref', n:'Salada morna de batata com ovo e frango', t:20, oc:1, junto:['batata','tomate','pepino','azeite','frango','ovo'], jn:'Salada',
+  L:[['batata',300],['ovo',2],['frango',120],['tomate',75],['pepino',50],['azeite',1],['feijao',140]],
+  P:[['batata',225],['ovo',2],['frango',60],['tomate',75],['pepino',50],['azeite',.5]]},
+ M7:{slot:'ref', n:'Macarrão de arroz com frango, abobrinha e parmesão', t:20, junto:['macarrao','abobrinha','tomate','azeite','parmesao'], jn:'Macarrão com abobrinha',
+  L:[['macarrao',100],['frango',120],['abobrinha',150],['tomate',50],['azeite',1],['parmesao',15]],
   P:[['macarrao',55],['frango',100],['abobrinha',75],['tomate',50],['azeite',.5],['parmesao',10]]},
  M8:{slot:'ref', n:'Peixe ao molho de tomate com espinafre', t:25, outros:1, junto:['peixe','passata','espinafre'], jn:'Peixe no molho',
   L:[['peixe',180],['passata',150],['espinafre',45],['azeite',.5],['arroz',150],['feijao',140]],
   P:[['peixe',150],['passata',150],['espinafre',45],['azeite',.25],['batata',225]]},
- M9:{slot:'ref', n:'Sanduíche quente de atum ou frango com batata', t:20,
-  L:[['pao',4],['ovo',2],['atum',1],['mussarela',30],['tomate',50],['espinafre',30]],
+ M9:{slot:'ref', n:'Sanduíche quente de frango com batata', t:20,
+  L:[['pao',4],['ovo',2],['frango',120],['mussarela',30],['tomate',50],['espinafre',30]],
   P:[['pao',1],['frango',100],['mussarela',15],['tomate',50],['espinafre',30],['batata',150]]}
 };
 const WEEK = [
@@ -474,7 +474,7 @@ const RECIPES={
  M1:{steps:[
   'Cozinhe o macarrão dos dois numa panela só, pelo tempo do pacote. Escorra e passe um fio de azeite.',
   'Numa panela, aqueça o azeite aromatizado (receita base) e junte o molho de tomate. 8 min em fogo baixo com sal, orégano e pimenta.',
-  'Junte o espinafre picado nos últimos 2 min e o atum escorrido no fim.',
+  'Junte o espinafre picado nos últimos 2 min e o frango desfiado do lote no fim, só para aquecer.',
   'Divida macarrão e molho na proporção do quadro e finalize com parmesão. Pri: 1 ovo cozido ao lado.'],
   tips:['Sem alho nem cebola no molho: o sabor vem do azeite aromatizado.']},
  M2:{steps:[
@@ -492,15 +492,15 @@ const RECIPES={
  M4:{steps:[
   'Uma massa só no liquidificador: os ovos, a aveia e o espinafre do quadro, com sal.',
   'Frigideira antiaderente untada: faça os crepes, 2 min de cada lado, e divida meio a meio.',
-  'Recheios: Lucas com atum e mussarela; Pri com frango desfiado, tomate e mussarela. Enrole.',
+  'Recheio dos dois: frango desfiado do lote e mussarela (Pri com tomate também). Enrole.',
   'Batata assada numa assadeira só, dividida na proporção do quadro.'],
   tips:['A massa fica mais firme se descansar 5 min antes de ir para a frigideira.']},
  M5:{steps:[
   'Uma panela só de purê: cozinhe todas as batatas em cubos por 15 min, escorra e amasse com o leite, o azeite e sal. Sem manteiga e sem alho.',
   'Divida o purê na proporção do quadro.',
-  'Lucas: sardinha aquecida com limão e 2 ovos cozidos do lote. Pri: frango do lote.',
+  'Frango do lote aquecido com um fio de limão para os dois. Lucas: mais 2 ovos cozidos do lote.',
   'Legumes: cenoura e abobrinha no vapor (Pri), cenoura ralada e tomate crus (Lucas).'],
-  tips:['Sardinha em lata já vem cozida, é só aquecer ou comer fria.']},
+  tips:['Frango fatiado do lote fica melhor aquecido na frigideira, 2 min de cada lado.']},
  C3:{steps:[
   'Uma massa só: amasse as bananas e misture com os ovos e a aveia (as quantidades do quadro “para os dois”) e uma pitada de canela.',
   'Frigideira antiaderente untada, fogo médio: pingue conchas pequenas e vire quando as bordas firmarem, cerca de 2 min de cada lado.',
@@ -524,7 +524,7 @@ const RECIPES={
   'Misture o atum escorrido com tomate em cubos, sal e um fio de limão.',
   'Monte no pão com a mussarela (Lucas 3 fatias, Pri 1 fatia aberta). Se quiser quente, 2 min na frigideira tampada.',
   'Lucas: um copo de leite sem lactose ao lado.'],
-  tips:['A Pri leva a lata inteira de atum aqui, porque é a proteína principal do lanche dela.']},
+  tips:['Prato de Outros: só quando tiver atum em casa. Meia lata para cada.']},
  L4:{steps:[
   'Descasque os ovos cozidos do lote (Lucas 3, Pri 2) e tempere com sal.',
   'Copo de leite sem lactose (Lucas 300 ml, Pri 250 ml).',
@@ -541,14 +541,14 @@ const RECIPES={
   tips:['Fogo baixo deixa o ovo cremoso e evita ressecar.']},
  M6:{steps:[
   'Cozinhe todas as batatas em cubos por 12 min em água com sal, até ficarem macias mas inteiras.',
-  'Uma tigela só: batata morna, ovos cozidos do lote em quartos, atum escorrido, tomate e pepino, com azeite, limão, sal e orégano.',
+  'Uma tigela só: batata morna, ovos cozidos do lote em quartos, frango desfiado do lote, tomate e pepino, com azeite, limão, sal e orégano.',
   'Divida na proporção do quadro. Lucas: feijão do lote ao lado.'],
   tips:['Morna ou fria, funciona igual. Dá para levar em pote.']},
  M7:{steps:[
   'Cozinhe o macarrão dos dois junto, pelo tempo do pacote. Escorra e passe um fio de azeite.',
   'Uma frigideira só: abobrinha em meia-lua no azeite aromatizado por 4 min, depois o tomate por mais 2 min.',
   'Misture com o macarrão e divida na proporção do quadro.',
-  'Proteína no prato: atum no do Lucas, frango desfiado do lote no da Pri. Parmesão por cima.'],
+  'Proteína no prato: frango desfiado do lote nos dois. Parmesão por cima.'],
   tips:['Pri: abobrinha até cerca de 75 g por refeição fica dentro do FODMAP baixo.']},
  M8:{steps:[
   'Uma panela só: aqueça o azeite aromatizado e junte o molho de tomate com sal e orégano, 3 min em fogo baixo.',
@@ -558,14 +558,14 @@ const RECIPES={
   tips:['Prato de Outros: só quando comprar peixe.']},
  M9:{steps:[
   'Pri: batata em cubos na airfryer a 200 °C por 18 min (ou a batata assada do dia).',
-  'Lucas: mexa 2 ovos com o atum. Pri: aqueça o frango desfiado do lote.',
+  'Aqueça o frango desfiado do lote. Lucas: mexa 2 ovos e junte ao frango.',
   'Monte com a mussarela, o tomate e o espinafre (Lucas: 2 sanduíches com 4 fatias; Pri: 1 fatia aberta). Frigideira tampada, 2 min de cada lado.'],
   tips:['A Pri leva batata no lugar do segundo pão, para ficar dentro do FODMAP baixo.']},
  B1:{steps:[
   'Tempere o peito de frango com sal, páprica, limão e um fio de azeite.',
   'Forno a 200 °C por 22 a 25 min, até ficar branco por dentro e sem rosa.',
   'Descanse 5 min. Desfie metade e fatie a outra metade.',
-  'Guarde em potes na geladeira por até 4 dias.'],tips:['Só a Pri usa o frango. As porções dela são de 50 a 110 g por refeição.']},
+  'Guarde em potes na geladeira por até 4 dias.'],tips:['Esta semana o frango é dos dois: Lucas 100 a 120 g por refeição, Pri 50 a 110 g.']},
  B2:{steps:[
   'Arroz: lave 100 g de arroz, refogue em um fio de azeite, junte 250 ml de água e sal. Tampado, 12 min em fogo baixo.',
   'Feijão: cubra 150 g de feijão (de molho por 8 h, se tiver) com água, panela de pressão por 25 min depois de pegar pressão.',
