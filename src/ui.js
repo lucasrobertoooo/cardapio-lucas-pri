@@ -191,10 +191,12 @@ function viewSemana(){
 }
 
 /* ----- COMPRAS ----- */
+function esc(t){return String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function viewCompras(){
   const trips=shopping();const t=trips.find(x=>x.id===V.trip);
-  const tabs=trips.map(x=>{const done=x.items.filter(i=>S.shop[`${x.id}|${i.id}`]).length;
-    return `<button class="trip" data-act="trip" data-id="${x.id}" aria-pressed="${x.id===V.trip}"><b>${x.n}</b><span class="sub">${x.long}</span><span class="sub">${done}/${x.items.length} itens · ${fmt(x.kg,1)} kg</span></button>`;}).join('');
+  const man=id=>Object.keys(S.manual[id]||{});
+  const tabs=trips.map(x=>{const m=man(x.id),done=x.items.filter(i=>S.shop[`${x.id}|${i.id}`]).length+m.filter(k=>S.shop[`${x.id}|m-${k}`]).length;
+    return `<button class="trip" data-act="trip" data-id="${x.id}" aria-pressed="${x.id===V.trip}"><b>${x.n}</b><span class="sub">${x.long}</span><span class="sub">${done}/${x.items.length+m.length} itens · ${fmt(x.kg,1)} kg</span></button>`;}).join('');
   const max=S.maxKg,scale=Math.max(max*1.4,t.kg*1.05),over=t.kg>max;
   const groups={};t.items.forEach(i=>{(groups[ING[i.id].aisle]=groups[ING[i.id].aisle]||[]).push(i);});
   const order=['hort','prot','lat','merc'];
@@ -205,6 +207,12 @@ function viewCompras(){
        <span class="nm">${g.n}</span><span class="qt">${buyText(i)}</span>
        <span class="meta">${i.who.L?'<span class="mini-tag L">L</span>':''}${i.who.P?'<span class="mini-tag P">P</span>':''}<span>precisa de ${needText(i.id,i.need)} · ${i.uses.join(', ')}</span></span></label>`;}).join('');
     return `<section class="aisle"><h3>${AISLES[a]}<span class="sub">${done}/${its.length}</span></h3><div class="list">${rows}</div></section>`;}).join('');
+  /* Itens adicionados à mão: ficam nesta compra, sincronizam e não entram no peso. */
+  const mk=man(t.id),mdone=mk.filter(k=>S.shop[`${t.id}|m-${k}`]).length;
+  const mrows=mk.map(k=>{const key=`${t.id}|m-${k}`,on=!!S.shop[key],n=esc(S.manual[t.id][k]);
+    return `<div class="mrow"><label class="item${on?' done':''}"><input type="checkbox" data-act="shop" data-key="${key}"${on?' checked':''}><span class="box">${CHECK}</span><span class="nm">${n}</span></label><button class="rm" data-act="mandel" data-id="${k}" aria-label="Tirar ${n} da lista">×</button></div>`;}).join('');
+  const manual=`<section class="aisle"><h3>Outros itens<span class="sub">${mk.length?`${mdone}/${mk.length}`:'adicionados por vocês'}</span></h3><div class="list">${mrows}
+    <form class="man-add" data-act="manadd"><input id="man-in" class="in-text" type="text" maxlength="60" autocomplete="off" enterkeyhint="done" placeholder="Ex.: papel toalha, detergente" aria-label="Item para adicionar"><button class="btn primary" type="submit">Adicionar</button></form></div></section>`;
   let pantry='';
   if(t.id==='T1'){
     const pn=needs(ALL_DAYS);
@@ -225,7 +233,7 @@ function viewCompras(){
    <section class="card"><div class="eyebrow">${t.n} · ${t.long}</div><div class="sub">Cobre ${t.covers}. Peso estimado na mochila: <b>${fmt(t.kg,1)} kg</b> (limite ${max} kg).</div>
    <div class="meter${over?' over':''}" role="img" aria-label="${fmt(t.kg,1)} kg de ${max} kg"><i style="width:${Math.min(100,t.kg/scale*100)}%"></i><u style="left:${max/scale*100}%"></u></div>
    ${over?'<div class="tip" style="margin-top:8px">Passou do limite da mochila. Se puder, marque em Estoque o que já tem em casa, ou aumente o limite em Ajustes.</div>':''}</section>
-   ${stock}${aisles}${pantry}
+   ${stock}${aisles}${manual}${pantry}
    <div><button class="btn${conf?' warn':''}" data-act="resetshop" data-id="${t.id}">${conf?'Toque de novo para zerar':'Zerar marcações desta compra'}</button></div></div>`;
 }
 
@@ -368,6 +376,7 @@ document.addEventListener('click',e=>{
     case 'exadd':case 'exdel':{const key=`${V.day}|${V.extraWho}`;const ex=S.extras[key]=S.extras[key]||{};const id=t.dataset.id;ex[id]=Math.max(0,(ex[id]||0)+(a==='exadd'?1:-1));save();render(true);return;}
     case 'have':S.have[t.dataset.id]=!S.have[t.dataset.id];save();render(true);return;
     case 'trip':V.trip=t.dataset.id;V.confirm=null;render(true);return;
+    case 'mandel':{const m=S.manual[V.trip]||{};delete m[t.dataset.id];delete S.shop[`${V.trip}|m-${t.dataset.id}`];if(!Object.keys(m).length)delete S.manual[V.trip];save();render(true);return;}
     case 'stock':{const id=t.dataset.id;S.stock[id]=Math.max(0,(S.stock[id]||0)+Number(t.dataset.d));save();render(true);return;}
     case 'resetshop':{const k='shop:'+t.dataset.id;if(V.confirm===k){Object.keys(S.shop).forEach(x=>{if(x.indexOf(t.dataset.id+'|')===0)delete S.shop[x];});V.confirm=null;save();}else arm(k);render(true);return;}
     case 'resetall':{if(V.confirm==='all'){S.checks={};S.extras={};S.shop={};S.pantry={};S.prep={};S.steps={};S.have={};S.swap={};V.confirm=null;save();}else arm('all');render(true);return;}
@@ -416,6 +425,10 @@ document.addEventListener('change',e=>{
   else if(a==='num'){const v=Number(t.value);if(!isFinite(v)||v<0)return;const p=t.dataset.path.split('.');
     if(p[0]==='t')S.targets[p[1]][p[2]]=v;else if(p[0]==='r')S.ref[p[1]]=v;else if(p[0]==='maxkg')S.maxKg=v;save();render(true);}
 });
+document.addEventListener('submit',e=>{const f=e.target;if(f.dataset.act!=='manadd')return;e.preventDefault();
+  const i=f.querySelector('input'),v=(i.value||'').trim().slice(0,60);if(!v)return;
+  (S.manual[V.trip]=S.manual[V.trip]||{})[Date.now().toString(36)+Math.random().toString(36).slice(2,5)]=v;save();render(true);
+  const n=document.getElementById('man-in');if(n)n.focus();});
 window.addEventListener('hashchange',()=>go(location.hash.slice(1)));
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.classList&&e.target.classList.contains('ed-in'))e.target.blur();});
 document.addEventListener('focusout',e=>{if(e.target.classList&&e.target.classList.contains('ed-in'))setTimeout(()=>{if(V.edIn){V.edIn=null;render(true);}},0);});

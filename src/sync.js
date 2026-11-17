@@ -1,9 +1,9 @@
 /* ===== SINCRONIZAÇÃO ENTRE OS CELULARES =====
    Firebase Realtime Database pela API REST (sem biblioteca): PATCH para gravar, EventSource para ouvir.
-   Em comum: trocas de refeição, ajustes de ingredientes, compras, estoque, despensa, preparo, metas e referências.
+   Em comum: trocas de refeição, ajustes de ingredientes, compras (e itens adicionados à mão), estoque, despensa, preparo, metas e referências.
    De cada aparelho: o que cada um comeu (checks), extras, passos de receita e ícone.
    O código de sincronização é o endereço completo da casa no banco (…/casas/<código>) e fica só no aparelho. */
-const SHARED=['swap','shop','stock','have','pantry','prep','targets','ref','maxKg','custom'];
+const SHARED=['swap','shop','stock','have','pantry','prep','targets','ref','maxKg','custom','manual'];
 const SYK='cardapio-sync';
 const SY={merge:false,url:'',pend:{},state:'off',es:null,base:{},remote:null,sending:false,retry:null};
 
@@ -84,7 +84,7 @@ function syListen(){
     }else if(first&&SY.merge){
       /* entrando numa casa que já tem dados: nada deste aparelho se perde. O que só existe aqui sobe;
          onde os dois têm (mesma troca, mesmo item, mesma refeição ajustada), vale o que já está no banco. */
-      const grp=k=>{const p=k.split('/');return p.slice(0,p[0]==='custom'?3:2).join('/');};
+      const grp=k=>{const p=k.split('/');return p.slice(0,p[0]==='custom'||p[0]==='manual'?3:2).join('/');};
       const rg=new Set(Object.keys(flat(SY.remote)).map(grp)),mine=flat(sharedOf(S));
       for(const k in mine)if(!rg.has(grp(k)))SY.pend[k]=mine[k];
       SY.merge=false;syStore();
