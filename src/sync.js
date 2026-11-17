@@ -1,14 +1,16 @@
-/* ===== SINCRONIZAÇÃO ENTRE OS CELULARES =====
+/* ===== SINCRONIZAÇÃO ENTRE OS APARELHOS (celulares e computadores, quantos forem) =====
    Firebase Realtime Database pela API REST (sem biblioteca): PATCH para gravar, EventSource para ouvir.
-   Em comum: trocas de refeição, ajustes de ingredientes, compras (e itens adicionados à mão), estoque, despensa, preparo, metas e referências.
-   De cada aparelho: o que cada um comeu (checks), extras, passos de receita e ícone.
+   Em comum: tudo que é do plano e da casa, inclusive o que cada um comeu (checks), extras e passos de receita.
+   Só do aparelho: ícone e a escolha de ver em gramas (unit).
    O código de sincronização é o endereço completo da casa no banco (…/casas/<código>) e fica só no aparelho. */
-const SHARED=['swap','shop','stock','have','pantry','prep','targets','ref','maxKg','custom','manual'];
+const SHARED=['swap','shop','stock','have','pantry','prep','targets','ref','maxKg','custom','manual','checks','extras','steps'];
+/* passaram a sincronizar depois: na 1ª conexão de um aparelho que já estava na casa, o que só ele tem sobe (nada se apaga) */
+const LATE=['checks','extras','steps'];
 const SYK='cardapio-sync';
-const SY={merge:false,url:'',pend:{},state:'off',es:null,base:{},remote:null,sending:false,retry:null};
+const SY={mig:false,based:false,merge:false,url:'',pend:{},state:'off',es:null,base:{},remote:null,sending:false,retry:null};
 
-function syLoad(){try{const o=JSON.parse(localStorage.getItem(SYK)||'{}');SY.url=o.url||'';SY.pend=o.pend||{};SY.merge=!!o.merge;}catch(e){}}
-function syStore(){try{localStorage.setItem(SYK,JSON.stringify({url:SY.url,pend:SY.pend,merge:SY.merge}));}catch(e){}}
+function syLoad(){try{const o=JSON.parse(localStorage.getItem(SYK)||'{}');SY.url=o.url||'';SY.pend=o.pend||{};SY.merge=!!o.merge;SY.mig=!!o.mig;}catch(e){}}
+function syStore(){try{localStorage.setItem(SYK,JSON.stringify({url:SY.url,pend:SY.pend,merge:SY.merge,mig:SY.mig}));}catch(e){}}
 function sharedOf(s){const o={};SHARED.forEach(f=>{if(s[f]!==undefined)o[f]=s[f];});return o;}
 /* {shop:{'T1|ovo':true}} -> {'shop/T1|ovo':true}; objetos vazios somem, como no Firebase */
 function flat(o,pre,out){out=out||{};
@@ -28,7 +30,7 @@ function setPath(root,path,val){
 
 function syStatus(){
   const el=document.getElementById('sync-st');const n=Object.keys(SY.pend).length;
-  const txt={off:'',conn:'Sincronizando…',ok:'Sincronizado com o outro celular',offline:n?`Sem internet · ${n} ${n>1?'mudanças esperando':'mudança esperando'}`:'Sem internet · usando o que está salvo',erro:'Sincronização recusada pelo banco. Veja Ajustes.'}[SY.state]||'';
+  const txt={off:'',conn:'Sincronizando…',ok:'Sincronizado com os outros aparelhos',offline:n?`Sem internet · ${n} ${n>1?'mudanças esperando':'mudança esperando'}`:'Sem internet · usando o que está salvo',erro:'Sincronização recusada pelo banco. Veja Ajustes.'}[SY.state]||'';
   if(el){el.textContent=txt;el.className='sync-st '+SY.state;el.hidden=!txt;}
   const box=document.getElementById('sync-box');if(box)box.textContent=txt||'Desligada';
 }
@@ -41,7 +43,7 @@ function syCollect(){
   for(const k in SY.base)if(!(k in now))SY.pend[k]=null;
   SY.base=now;syStore();
 }
-function syPush(){if(!SY.url||SY.remote===null)return;syCollect();syFlush();}
+function syPush(){if(!SY.url)return;if(SY.based)syCollect();if(SY.remote!==null)syFlush();}
 async function syFlush(){
   if(!SY.url||SY.sending||!Object.keys(SY.pend).length){if(SY.url&&SY.state!=='erro'&&SY.remote!==null&&navigator.onLine!==false&&!Object.keys(SY.pend).length)sySet('ok');return;}
   SY.sending=true;const batch=Object.assign({},SY.pend);
@@ -65,7 +67,7 @@ function syApply(){
     else if(f==='maxKg')S.maxKg=sh.maxKg!=null?sh.maxKg:DEF.maxKg;
     else S[f]=sh[f]||{};
   }
-  SY.base=flat(sharedOf(S));
+  SY.base=flat(sharedOf(S));SY.based=true;
   try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}
   const a=document.activeElement;
   if(!(a&&a.tagName==='INPUT'&&a.type!=='checkbox'))render(true);
@@ -75,19 +77,23 @@ function syListen(){
   const es=SY.es=new EventSource(SY.url+'/s.json');
   const onEv=type=>e=>{let d;try{d=JSON.parse(e.data);}catch(x){return;}
     const first=SY.remote===null;
-    if(first)SY.remote={};else syCollect(); /* toque recente ainda não salvo não pode ser atropelado */
+    if(first){SY.remote={};if(SY.based)syCollect();}else syCollect(); /* toque recente ainda não salvo não pode ser atropelado */
     if(type==='put')SY.remote=setPath(SY.remote,d.path,d.data);
     else for(const k in (d.data||{}))SY.remote=setPath(SY.remote,(d.path==='/'?'':d.path)+'/'+k,d.data[k]);
     if(first&&!Object.keys(SY.remote).length){
       /* casa nova e vazia: este aparelho manda o que tem */
-      SY.pend=Object.assign(flat(sharedOf(S)),SY.pend);syStore();SY.base=flat(sharedOf(S));
+      SY.pend=Object.assign(flat(sharedOf(S)),SY.pend);SY.mig=true;syStore();SY.base=flat(sharedOf(S));
     }else if(first&&SY.merge){
       /* entrando numa casa que já tem dados: nada deste aparelho se perde. O que só existe aqui sobe;
          onde os dois têm (mesma troca, mesmo item, mesma refeição ajustada), vale o que já está no banco. */
       const grp=k=>{const p=k.split('/');return p.slice(0,p[0]==='custom'||p[0]==='manual'?3:2).join('/');};
       const rg=new Set(Object.keys(flat(SY.remote)).map(grp)),mine=flat(sharedOf(S));
       for(const k in mine)if(!rg.has(grp(k)))SY.pend[k]=mine[k];
-      SY.merge=false;syStore();
+      SY.merge=false;SY.mig=true;syStore();
+    }else if(first&&!SY.mig){
+      const rk=new Set(Object.keys(flat(SY.remote))),mine=flat(sharedOf(S));
+      for(const k in mine)if(LATE.includes(k.split('/')[0])&&!rk.has(k)&&!(k in SY.pend))SY.pend[k]=mine[k];
+      SY.mig=true;syStore();
     }
     syApply();syFlush();};
   es.addEventListener('put',onEv('put'));
@@ -115,4 +121,6 @@ function syLeave(){if(SY.es)SY.es.close();SY.es=null;SY.url='';SY.pend={};SY.rem
 
 syLoad();
 if(SY.url){syListen();}
+/* Voltou para o app (celular tira a conexão em segundo plano): reconecta e pega o que mudou nos outros aparelhos. */
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&SY.url&&SY.state!=='erro'){saveNow();syListen();}});
 window.addEventListener('online',()=>{if(SY.url){if(!SY.es||SY.es.readyState===2)syListen();else syFlush();}});

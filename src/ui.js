@@ -341,15 +341,15 @@ function applyIcon(){const l=document.getElementById('touch-icon');if(l&&ICONS.s
 function syncBlock(){
   const msg=V.syMsg?`<div class="tip">${V.syMsg}</div>`:'';
   if(SY.url){const conf=V.confirm==='syleave';
-    return `<section class="card stack"><div class="stack" style="gap:6px"><div class="eyebrow">Sincronizar com o outro celular</div>
+    return `<section class="card stack"><div class="stack" style="gap:6px"><div class="eyebrow">Sincronizar entre os aparelhos</div>
      <div class="sub">Ligada. Situação: <b id="sync-box"></b></div>
-     <div class="sub">Em comum: trocas de refeição, as 3 listas de compras, estoque, despensa, preparo, metas e referências. Fica só aqui: o que cada um comeu, os extras e os passos de receita.</div></div>
-     <div class="row wrap"><button class="btn primary" data-act="sycopy">${V.syCopied?'Código copiado':'Copiar código para o outro celular'}</button>
-     <button class="btn${conf?' warn':''}" data-act="syleave">${conf?'Toque de novo para desligar':'Desligar neste celular'}</button></div>${msg}</section>`;}
-  return `<section class="card stack"><div><div class="eyebrow">Sincronizar com o outro celular</div>
-   <div class="sub">Deixa as trocas de refeição, as listas de compras, o estoque e o preparo iguais nos dois celulares, na hora. O que cada um comeu continua separado.</div></div>
-   <div class="fld-col"><label for="sy-db">1º celular: cole o endereço do banco do Firebase</label><input id="sy-db" class="in-text" type="text" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="https://….firebaseio.com"><button class="btn primary" data-act="sycreate">Criar código da casa</button></div>
-   <div class="fld-col"><label for="sy-code">2º celular: cole o código copiado no 1º</label><input id="sy-code" class="in-text" type="text" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="https://…/casas/…"><button class="btn" data-act="syjoin">Entrar</button></div>
+     <div class="sub">Tudo fica igual em todos os aparelhos da casa, celular ou computador: trocas, ajustes, o que cada um comeu, extras, compras, estoque, preparo e metas. Só o ícone e a escolha de ver em gramas ficam em cada aparelho.</div></div>
+     <div class="row wrap"><button class="btn primary" data-act="sycopy">${V.syCopied?'Código copiado':'Copiar código para outro aparelho'}</button>
+     <button class="btn${conf?' warn':''}" data-act="syleave">${conf?'Toque de novo para desligar':'Desligar neste aparelho'}</button></div>${msg}</section>`;}
+  return `<section class="card stack"><div><div class="eyebrow">Sincronizar entre os aparelhos</div>
+   <div class="sub">Deixa tudo igual em todos os aparelhos da casa (celulares e computadores), na hora: trocas, ajustes, o que cada um comeu, compras, estoque e preparo.</div></div>
+   <div class="fld-col"><label for="sy-db">1º aparelho: cole o endereço do banco do Firebase</label><input id="sy-db" class="in-text" type="text" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="https://….firebaseio.com"><button class="btn primary" data-act="sycreate">Criar código da casa</button></div>
+   <div class="fld-col"><label for="sy-code">Outros aparelhos: cole o código copiado no 1º</label><input id="sy-code" class="in-text" type="text" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="https://…/casas/…"><button class="btn" data-act="syjoin">Entrar</button></div>
    ${msg}</section>`;
 }
 function numFld(label,hint,path,val,step){return `<div class="fld"><label for="n-${path}">${label}${hint?`<small>${hint}</small>`:''}</label><input id="n-${path}" type="number" inputmode="decimal" step="${step||1}" min="0" value="${val}" data-act="num" data-path="${path}"></div>`;}
@@ -378,7 +378,7 @@ function viewAjustes(){
     <tr><td class="ok-t">Morango, uva, mamão, banana firme, laranja, kiwi, abacaxi</td><td class="no-t">Manga, maçã, pera, abacate, banana muito madura</td></tr></tbody></table></div>
    <div class="sub">Tolerância varia de pessoa para pessoa e por porção. Se a Pri acompanha com nutricionista, vale alinhar esta lista com ela.</div></section>
   ${syncBlock()}
-  <section class="card stack"><div class="eyebrow">Dados</div><div class="sub">Tudo fica salvo neste aparelho e funciona sem internet. Com a sincronização ligada, trocas, compras, estoque, preparo e metas também vão para o outro celular. O que cada um comeu fica só no aparelho de cada um.</div>${SY.url?'<div class="sub"><b>Atenção:</b> com a sincronização ligada, zerar tudo também zera as compras, trocas e o preparo no outro celular.</div>':''}
+  <section class="card stack"><div class="eyebrow">Dados</div><div class="sub">Tudo fica salvo neste aparelho e funciona sem internet. Com a sincronização ligada, tudo (inclusive o que cada um comeu) vai também para os outros aparelhos da casa.</div>${SY.url?'<div class="sub"><b>Atenção:</b> com a sincronização ligada, zerar tudo também zera tudo nos outros aparelhos, inclusive o que cada um comeu.</div>':''}
    <div><button class="btn${conf?' warn':''}" data-act="resetall">${conf?'Toque de novo para zerar tudo':'Zerar todas as marcações'}</button></div></section></div>`;
 }
 
