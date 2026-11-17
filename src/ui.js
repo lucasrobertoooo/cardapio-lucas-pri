@@ -57,6 +57,20 @@ function juntoBlock(mid,day,slot){
   return `<div class="junto"><b>${m.jn} para os dois, de uma vez:</b> ${ids.map(id=>fq(id,q(iL,id)+q(iP,id))).join(', ')}.
     <span class="sub">Divida: <span class="L">Lucas ~${sL}%</span>, <span class="P">Pri ~${100-sL}%</span>.</span></div>`;
 }
+/* Troca rápida da proteína principal: converte pela proteína (120 g de frango ≈ 1 lata de atum ≈ 4 ovos).
+   Grava em S.custom, como o editor: vale para todos os dias com esta refeição e sincroniza. */
+const PROT=['frango','ovo','atum','sardinha','peixe','camarao'];
+function mainProt(its){const c=its.filter(i=>PROT.includes(i[0]));if(!c.length)return null;
+  const o=c.filter(i=>i[0]!=='ovo'),l=o.length?o:c;return l.reduce((a,b)=>ING[b[0]].p*b[1]>ING[a[0]].p*a[1]?b:a);}
+function protConv(from,q,to){const st=ING[to].st||1;return Math.max(st,Math.round(ING[from].p*q/ING[to].p/st)*st);}
+const PN={frango:'Frango',ovo:'Ovos',atum:'Atum',sardinha:'Sardinha',peixe:'Peixe',camarao:'Camarão'};
+function protLabel(id,q){const u=ING[id].u;return u==='un'?`${fmt(q)} ${q===1?'ovo':'ovos'}`:u==='lata'?`${PN[id]} ${frac(q)} ${q>1?'latas':'lata'}`:`${PN[id]} ${fmt(q,0)} g`;}
+function protBlock(mid){
+  const sel=['L','P'].map(w=>{const its=itemsOf(mid,w),mp=mainProt(its);if(!mp)return '';const [cur,q]=mp,has=id=>(its.find(i=>i[0]===id)||[0,0])[1];
+    const opts=PROT.map(id=>`<option value="${id}"${id===cur?' selected':''}>${protLabel(id,id===cur?q:has(id)+protConv(cur,q,id))}</option>`).join('');
+    return `<label class="${w}"><span>${WHO[w]}</span><select data-act="prot" data-mid="${mid}" data-who="${w}" data-from="${cur}" aria-label="Proteína de ${WHO[w]}">${opts}</select></label>`;}).join('');
+  return sel?`<div class="prot"><div class="prot-t">Proteína <span class="sub">· troca nesta refeição em todos os dias</span></div>${sel}</div>`:'';
+}
 function ceiaNote(day){
   const i={L:ceiaInfo(day,'L'),P:ceiaInfo(day,'P')};if(!i.L.auto&&!i.P.auto)return '';
   const t=w=>{const x=i[w];if(!x.auto)return `${WHO[w]}: como ajustada no editor`;return x.gap<=3?`${WHO[w]}: hoje não precisa, a meta já fechou`:`${WHO[w]}: faltam ~${R0(x.gap)} g`;};
@@ -117,7 +131,7 @@ function slotCard(day,k,label){
    <button class="link" data-act="editopen" data-key="${key}" aria-expanded="${ed}">${ed?'Fechar ajuste':'Ajustar'}</button>
    <button class="link" data-act="swapopen" data-key="${key}" aria-expanded="${open}">${open?'Fechar trocas':'Trocar'}</button>
    ${mid!==base?`<button class="link" data-act="swap" data-key="${key}" data-id="${base}">Voltar ao plano</button>`:''}</div></div>
-   ${k==='ceia'?ceiaNote(day):''}${juntoBlock(mid,day,k)}${open?altsBlock(day,k,mid):''}${ed?editBlock(mid):''}<div class="people">${people}</div></article>`;
+   ${k==='ceia'?ceiaNote(day):''}${juntoBlock(mid,day,k)}${protBlock(mid)}${open?altsBlock(day,k,mid):''}${ed?editBlock(mid):''}<div class="people">${people}</div></article>`;
 }
 function extrasBlock(day){
   const w=V.extraWho,key=`${day.d}|${w}`,ex=S.extras[key]||{};
@@ -389,6 +403,8 @@ document.addEventListener('change',e=>{
     /* para a Pri, começa dentro do limite FODMAP */
     if(t.dataset.who==='P'&&g.pri>0&&q>g.pri)q=Math.max(st,Math.floor(g.pri/st)*st);
     customOf(t.dataset.mid,t.dataset.who)[id]=q;save();render(true);}
+  else if(a==='prot'){const d=t.dataset,to=t.value,c=customOf(d.mid,d.who),from=d.from;if(!ING[to]||to===from)return;
+    const add=protConv(from,c[from]||0,to);c[from]=0;c[to]=Math.round(((c[to]||0)+add)*1000)/1000;save();render(true);}
   else if(a==='shop'){S.shop[t.dataset.key]=t.checked;save();render(true);}
   else if(a==='pantry'){S.pantry[t.dataset.key]=t.checked;save();render(true);}
   else if(a==='prep'){S.prep[t.dataset.key]=t.checked;save();render(true);}

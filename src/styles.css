@@ -229,6 +229,11 @@ table.t th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:va
 .junto{grid-column:1/-1;background:var(--leaf-soft);border-radius:12px;padding:10px 12px;font-size:14px;line-height:1.4}
 .junto .sub{display:block;margin-top:2px}.junto .L{color:var(--lucas);font-weight:600}.junto .P{color:var(--pri);font-weight:600}
 .rec-b .junto{margin-top:14px}
+.prot{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
+.prot-t{width:100%;font-size:13px;font-weight:700}.prot-t .sub{font-weight:400}
+.prot label{flex:1 1 150px;min-width:0;display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:12px;padding:4px 4px 4px 8px;font-size:13px;font-weight:700}
+.prot label.L{background:var(--lucas-soft);color:var(--lucas)}.prot label.P{background:var(--pri-soft);color:var(--pri)}
+.prot select{flex:1;min-width:0;min-height:36px;border:0;border-radius:9px;background:var(--surface);color:var(--ink);font:500 13px/1.2 var(--f-body);padding:0 2px;text-overflow:ellipsis}
 .alts-out{margin-top:6px}
 .ill img,.mini img{width:100%;height:100%;object-fit:cover;display:block}
 /* Editor de ingredientes */
