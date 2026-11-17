@@ -339,18 +339,9 @@ function parseQty(s){s=String(s||'').trim().replace(',','.').replace('½',' .5')
 const ICONS=[['verde','Verde'],['preto','Preto'],['rosa','Rosa'],['claro','Claro']];
 function applyIcon(){const l=document.getElementById('touch-icon');if(l&&ICONS.some(i=>i[0]===S.icon))l.href=`icons/${S.icon}-180.png`;}
 function syncBlock(){
-  const msg=V.syMsg?`<div class="tip">${V.syMsg}</div>`:'';
-  if(SY.url){const conf=V.confirm==='syleave';
-    return `<section class="card stack"><div class="stack" style="gap:6px"><div class="eyebrow">Sincronizar entre os aparelhos</div>
-     <div class="sub">Ligada. Situação: <b id="sync-box"></b></div>
-     <div class="sub">Tudo fica igual em todos os aparelhos da casa, celular ou computador: trocas, ajustes, o que cada um comeu, extras, compras, estoque, preparo e metas. Só o ícone e a escolha de ver em gramas ficam em cada aparelho.</div></div>
-     <div class="row wrap"><button class="btn primary" data-act="sycopy">${V.syCopied?'Código copiado':'Copiar código para outro aparelho'}</button>
-     <button class="btn${conf?' warn':''}" data-act="syleave">${conf?'Toque de novo para desligar':'Desligar neste aparelho'}</button></div>${msg}</section>`;}
-  return `<section class="card stack"><div><div class="eyebrow">Sincronizar entre os aparelhos</div>
-   <div class="sub">Deixa tudo igual em todos os aparelhos da casa (celulares e computadores), na hora: trocas, ajustes, o que cada um comeu, compras, estoque e preparo.</div></div>
-   <div class="fld-col"><label for="sy-db">1º aparelho: cole o endereço do banco do Firebase</label><input id="sy-db" class="in-text" type="text" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="https://….firebaseio.com"><button class="btn primary" data-act="sycreate">Criar código da casa</button></div>
-   <div class="fld-col"><label for="sy-code">Outros aparelhos: cole o código copiado no 1º</label><input id="sy-code" class="in-text" type="text" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="https://…/casas/…"><button class="btn" data-act="syjoin">Entrar</button></div>
-   ${msg}</section>`;
+  return `<section class="card stack"><div class="eyebrow">Sincronização</div>
+   <div class="sub">Automática: todo celular ou computador que abre o app fica igual aos outros, sem configurar nada. Situação: <b id="sync-box"></b></div>
+   <div class="sub">Vai para todos: trocas, ajustes, o que cada um comeu, extras, compras, estoque, preparo e metas. Só o ícone e a escolha de ver em gramas ficam em cada aparelho.</div></section>`;
 }
 function numFld(label,hint,path,val,step){return `<div class="fld"><label for="n-${path}">${label}${hint?`<small>${hint}</small>`:''}</label><input id="n-${path}" type="number" inputmode="decimal" step="${step||1}" min="0" value="${val}" data-act="num" data-path="${path}"></div>`;}
 function viewAjustes(){
@@ -378,7 +369,7 @@ function viewAjustes(){
     <tr><td class="ok-t">Morango, uva, mamão, banana firme, laranja, kiwi, abacaxi</td><td class="no-t">Manga, maçã, pera, abacate, banana muito madura</td></tr></tbody></table></div>
    <div class="sub">Tolerância varia de pessoa para pessoa e por porção. Se a Pri acompanha com nutricionista, vale alinhar esta lista com ela.</div></section>
   ${syncBlock()}
-  <section class="card stack"><div class="eyebrow">Dados</div><div class="sub">Tudo fica salvo neste aparelho e funciona sem internet. Com a sincronização ligada, tudo (inclusive o que cada um comeu) vai também para os outros aparelhos da casa.</div>${SY.url?'<div class="sub"><b>Atenção:</b> com a sincronização ligada, zerar tudo também zera tudo nos outros aparelhos, inclusive o que cada um comeu.</div>':''}
+  <section class="card stack"><div class="eyebrow">Dados</div><div class="sub">Tudo fica salvo neste aparelho e funciona sem internet. Tudo (inclusive o que cada um comeu) vai também para os outros aparelhos, sozinho.</div>${SY.url?'<div class="sub"><b>Atenção:</b> zerar tudo também zera tudo nos outros aparelhos, inclusive o que cada um comeu.</div>':''}
    <div><button class="btn${conf?' warn':''}" data-act="resetall">${conf?'Toque de novo para zerar tudo':'Zerar todas as marcações'}</button></div></section></div>`;
 }
 
@@ -418,10 +409,6 @@ document.addEventListener('click',e=>{
     case 'step':S.steps[t.dataset.key]=!S.steps[t.dataset.key];save();render(true);return;
     case 'clearsteps':Object.keys(S.steps).forEach(x=>{if(x.indexOf(t.dataset.id+'|')===0)delete S.steps[x];});save();render(true);return;
     case 'filter':V.filter=t.dataset.f;render(true);return;
-    case 'sycreate':case 'syjoin':{const v=(document.getElementById(a==='sycreate'?'sy-db':'sy-code')||{}).value;V.syMsg=a==='sycreate'?syCreate(v):syJoin(v);render(true);syStatus();return;}
-    case 'sycopy':{const done=()=>{V.syCopied=true;render(true);syStatus();setTimeout(()=>{V.syCopied=false;render(true);syStatus();},2500);};
-      try{navigator.clipboard.writeText(SY.url).then(done,()=>{V.syMsg='Não deu para copiar. Código: '+SY.url;render(true);syStatus();});}catch(e){V.syMsg='Código: '+SY.url;render(true);syStatus();}return;}
-    case 'syleave':if(V.confirm==='syleave'){syLeave();V.confirm=null;V.syMsg='';}else arm('syleave');render(true);syStatus();return;
     case 'icon':S.icon=t.dataset.id;applyIcon();save();render(true);return;
     case 'swapopen':V.swap=V.swap===t.dataset.key?null:t.dataset.key;V.edit=null;render(true);return;
     case 'editopen':V.edit=t.dataset.key&&V.edit!==t.dataset.key?t.dataset.key:null;V.swap=null;render(true);return;

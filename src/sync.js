@@ -2,7 +2,7 @@
    Firebase Realtime Database pela API REST (sem biblioteca): PATCH para gravar, EventSource para ouvir.
    Em comum: tudo que é do plano e da casa, inclusive o que cada um comeu (checks), extras e passos de receita.
    Só do aparelho: ícone e a escolha de ver em gramas (unit).
-   O código de sincronização é o endereço completo da casa no banco (…/casas/<código>) e fica só no aparelho. */
+   A casa (…/casas/<código>) vem embutida no app (CASA, no fim deste arquivo): nada para configurar. */
 const SHARED=['swap','shop','stock','have','pantry','prep','targets','ref','maxKg','custom','manual','checks','extras','steps'];
 /* passaram a sincronizar depois: na 1ª conexão de um aparelho que já estava na casa, o que só ele tem sobe (nada se apaga) */
 const LATE=['checks','extras','steps'];
@@ -34,6 +34,9 @@ function syStatus(){
   if(el){el.textContent=txt;el.className='sync-st '+SY.state;el.hidden=!txt;}
   const box=document.getElementById('sync-box');if(box)box.textContent=txt||'Desligada';
 }
+/* Metas, referências, estoque e limite da mochila no valor padrão não sobem ao entrar: um aparelho em branco não pode trocar o que vocês ajustaram. */
+function syMine(){const mine=flat(sharedOf(S)),def=flat({targets:DEF.targets,ref:DEF.ref,maxKg:DEF.maxKg,stock:DEF.stock});
+  for(const k in def)if(mine[k]===def[k])delete mine[k];return mine;}
 function sySet(st){SY.state=st;syStatus();}
 
 /* Chamado depois de cada save(): o que mudou nas partes compartilhadas vira PATCH */
@@ -65,6 +68,7 @@ function syApply(){
     if(f==='targets'){const t=sh.targets||{};S.targets={L:Object.assign({},DEF.targets.L,t.L),P:Object.assign({},DEF.targets.P,t.P)};}
     else if(f==='ref')S.ref=Object.assign({},DEF.ref,sh.ref);
     else if(f==='maxKg')S.maxKg=sh.maxKg!=null?sh.maxKg:DEF.maxKg;
+    else if(f==='stock')S.stock=Object.assign(clone(DEF.stock),sh.stock);
     else S[f]=sh[f]||{};
   }
   SY.base=flat(sharedOf(S));SY.based=true;
@@ -82,12 +86,12 @@ function syListen(){
     else for(const k in (d.data||{}))SY.remote=setPath(SY.remote,(d.path==='/'?'':d.path)+'/'+k,d.data[k]);
     if(first&&!Object.keys(SY.remote).length){
       /* casa nova e vazia: este aparelho manda o que tem */
-      SY.pend=Object.assign(flat(sharedOf(S)),SY.pend);SY.mig=true;syStore();SY.base=flat(sharedOf(S));
+      SY.pend=Object.assign(syMine(),SY.pend);SY.mig=true;syStore();SY.base=flat(sharedOf(S));
     }else if(first&&SY.merge){
       /* entrando numa casa que já tem dados: nada deste aparelho se perde. O que só existe aqui sobe;
          onde os dois têm (mesma troca, mesmo item, mesma refeição ajustada), vale o que já está no banco. */
       const grp=k=>{const p=k.split('/');return p.slice(0,p[0]==='custom'||p[0]==='manual'?3:2).join('/');};
-      const rg=new Set(Object.keys(flat(SY.remote)).map(grp)),mine=flat(sharedOf(S));
+      const rg=new Set(Object.keys(flat(SY.remote)).map(grp)),mine=syMine();
       for(const k in mine)if(!rg.has(grp(k)))SY.pend[k]=mine[k];
       SY.merge=false;SY.mig=true;syStore();
     }else if(first&&!SY.mig){
@@ -102,25 +106,14 @@ function syListen(){
   es.onopen=()=>{if(SY.state==='offline')sySet(Object.keys(SY.pend).length?'conn':'ok');syFlush();};
   es.onerror=()=>{if(SY.state!=='erro')sySet('offline');};
 }
-function syRandom(n){const a='abcdefghijkmnpqrstuvwxyz23456789';const b=new Uint8Array(n);crypto.getRandomValues(b);return [...b].map(x=>a[x%a.length]).join('');}
-function syValidBase(u){return /^https:\/\/[a-z0-9.-]+\.(firebaseio\.com|firebasedatabase\.app)$/.test(u)||/^http:\/\/(127\.0\.0\.1|localhost):\d+$/.test(u);}
-/* Primeiro celular: cola o endereço do banco e cria a casa */
-function syCreate(db){
-  db=(db||'').trim().replace(/\/+$/,'');
-  if(!syValidBase(db))return 'Endereço inválido. Ele termina em firebaseio.com ou firebasedatabase.app.';
-  SY.url=db+'/casas/'+syRandom(24);SY.pend={};syStore();syListen();return '';
-}
-/* Segundo celular: cola o código que o primeiro copiou (o banco manda, o que está aqui é trocado) */
-function syJoin(code){
-  code=(code||'').trim().replace(/\/+$/,'');
-  const m=code.match(/^(.*)\/casas\/([a-z0-9]{20,})$/);
-  if(!m||!syValidBase(m[1]))return 'Código inválido. Copie de novo no outro celular, em Ajustes.';
-  SY.url=code;SY.pend={};SY.merge=true;syStore();syListen();return '';
-}
-function syLeave(){if(SY.es)SY.es.close();SY.es=null;SY.url='';SY.pend={};SY.remote=null;syStore();sySet('off');}
-
+/* Sem configuração: todo aparelho que abre o app entra sozinho na mesma casa.
+   Quem já tinha dados (ou estava numa casa criada à mão) entra mesclando: o que só ele tem sobe, nada se apaga.
+   'cardapio-sync-test' troca o banco só para testes locais. */
+const CASA=(()=>{let b='';try{b=localStorage.getItem('cardapio-sync-test')||'';}catch(e){}
+  return (b||'https://cardapio-lucas-pri-default-rtdb.firebaseio.com')+'/casas/2jiut88v973bhzvr2pwq4dtm';})();
 syLoad();
-if(SY.url){syListen();}
+if(SY.url!==CASA){SY.url=CASA;SY.pend={};SY.merge=true;syStore();}
+syListen();
 /* Voltou para o app (celular tira a conexão em segundo plano): reconecta e pega o que mudou nos outros aparelhos. */
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&SY.url&&SY.state!=='erro'){saveNow();syListen();}});
 window.addEventListener('online',()=>{if(SY.url){if(!SY.es||SY.es.readyState===2)syListen();else syFlush();}});
