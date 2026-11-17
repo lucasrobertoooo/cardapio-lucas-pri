@@ -23,7 +23,7 @@ const ING = {
   leite:    {n:'Leite sem lactose', u:'ml', p:.032, k:.62, pack:1000, pk:['caixa','caixas'], size:'1 L', wp:1.03, aisle:'lat'},
   whey:     {n:'Whey isolado', u:'dose', p:24, k:115, pack:33, pk:['pote','potes'], size:'1 kg', aisle:'desp', pantry:true},
   azeite:   {n:'Azeite de oliva', u:'cs', p:0, k:120, pack:1, pk:['garrafa','garrafas'], aisle:'desp', pantry:true, mlPerUnit:15},
-  pao:      {n:'Pão de forma tradicional (ou pão francês: 1 pão = 2 fatias)', u:'fatia', p:2, k:63, pack:20, pk:['pacote','pacotes'], size:'500 g', wp:25, aisle:'merc'},
+  pao:      {n:'Pão de forma tradicional', u:'fatia', p:2, k:63, pack:20, pk:['pacote','pacotes'], size:'500 g', wp:25, aisle:'merc'},
   arroz:    {n:'Arroz', u:'g cozido', p:.025, k:1.3, f:.34, pack:1000, pk:['pacote','pacotes'], size:'1 kg', aisle:'merc'},
   feijao:   {n:'Feijão', u:'g cozido', p:.05, k:.77, f:.35, pack:500, pk:['pacote','pacotes'], size:'500 g', aisle:'merc'},
   macarrao: {n:'Macarrão de arroz ou milho', u:'g', p:.07, k:3.6, pack:500, pk:['pacote','pacotes'], size:'500 g', aisle:'merc'},
@@ -56,7 +56,9 @@ const ING = {
   camarao:  {n:'Camarão congelado (limpo)', u:'g', p:.24, k:1, pack:400, pk:['pacote','pacotes'], size:'400 g', aisle:'prot'},
   grao:     {n:'Grão-de-bico cozido (lata)', u:'g', p:.07, k:1.2, pack:265, pk:['lata','latas'], size:'265 g escorrido', wp:1.5, aisle:'prot'},
   quinoa:   {n:'Quinoa', u:'g cozido', p:.044, k:1.2, f:.36, pack:250, pk:['pacote','pacotes'], size:'250 g', aisle:'merc'},
-  pts:      {n:'PTS (proteína texturizada de soja)', u:'g', p:.5, k:3.3, pack:500, pk:['pacote','pacotes'], size:'500 g', aisle:'merc'}
+  pts:      {n:'PTS (proteína texturizada de soja)', u:'g', p:.5, k:3.3, pack:500, pk:['pacote','pacotes'], size:'500 g', aisle:'merc'},
+  paofr:    {n:'Pão francês (padaria)', u:'un', p:4.7, k:150, pack:1, loose:true, wp:50, aisle:'merc'},
+  ameixa:   {n:'Ameixa fresca', u:'un', p:.5, k:37, pack:1, loose:true, wp:70, aisle:'hort'}
 };
 /* Editor de refeição: st = passo do + e −, hu = medida caseira [singular, plural, g ou ml por medida],
    pri = máximo por refeição para a Pri ficar no FODMAP baixo (0 = evitar).
@@ -68,7 +70,7 @@ const ADJ = {
   cottage:{st:20, hu:['colher','colheres',20], pri:40}, mussarela:{st:15, hu:['fatia','fatias',15]}, parmesao:{st:5, hu:['colher','colheres',5]},
   iogurte:{st:50, hu:['copo','copos',200]}, leite:{st:50, hu:['copo','copos',200]}, whey:{st:.5, gw:30}, azeite:{st:.25, gw:13}, pao:{st:1, pri:1, gw:25},
   arroz:{st:25, hu:['colher de servir','colheres de servir',50]}, feijao:{st:70, hu:['concha','conchas',140], pri:0},
-  quinoa:{st:25, hu:['colher de servir','colheres de servir',50]}, macarrao:{st:10}, pts:{st:10, pri:0},
+  quinoa:{st:25, hu:['colher de servir','colheres de servir',50]}, macarrao:{st:10}, pts:{st:10, pri:0}, paofr:{st:.5, pri:.5, gw:50},
   aveia:{st:10, hu:['colher','colheres',10], pri:40}, amendoim:{st:15, hu:['colher','colheres',15], pri:30},
   passata:{st:50, hu:['copo','copos',200]},
   batata:{st:75, hu:['batata média','batatas médias',150]}, batatadoce:{st:75, hu:['batata-doce média','batatas-doces médias',150], pri:75},
@@ -80,7 +82,7 @@ const ADJ = {
   pimentao:{st:37.5, hu:['pimentão','pimentões',150]}, pepino:{st:50, hu:['pepino','pepinos',200]}, tomate:{st:25, hu:['tomate','tomates',100]},
   banana:{st:.5, pri:1, gw:100}, laranja:{st:1, gw:130}, kiwi:{st:1, gw:75},
   morango:{st:12, hu:['morango','morangos',12]}, mamao:{st:75, hu:['fatia','fatias',150]}, uva:{st:25, hu:['punhado','punhados',50], pri:150},
-  abacaxi:{st:40, hu:['fatia','fatias',80], pri:140}, limao:{st:.5, gw:40}
+  abacaxi:{st:40, hu:['fatia','fatias',80], pri:140}, limao:{st:.5, gw:40}, ameixa:{st:1, pri:0, gw:70}
 };
 for (const id in ADJ) Object.assign(ING[id], ADJ[id]);
 const MEALS = {

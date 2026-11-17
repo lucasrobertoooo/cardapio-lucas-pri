@@ -57,21 +57,26 @@ function juntoBlock(mid,day,slot){
   return `<div class="junto"><b>${m.jn} para os dois, de uma vez:</b> ${ids.map(id=>fq(id,q(iL,id)+q(iP,id))).join(', ')}.
     <span class="sub">Divida: <span class="L">Lucas ~${sL}%</span>, <span class="P">Pri ~${100-sL}%</span>.</span></div>`;
 }
-/* Troca rápida da proteína principal: converte pela proteína (120 g de frango ≈ 1 lata de atum ≈ 4 ovos).
-   Grava em S.custom, como o editor: vale para todos os dias com esta refeição e sincroniza. */
+/* Trocas rápidas no card: proteína (convertida pela proteína: 120 g de frango ≈ 1 lata de atum ≈ 4 ovos),
+   pão e fruta (convertidos pelas kcal). Gravam em S.custom, como o editor: valem para todos os dias com a refeição e sincronizam. */
 const PROT=['frango','ovo','atum','sardinha','peixe','camarao','pts'];
-function mainProt(its){const c=its.filter(i=>PROT.includes(i[0]));if(!c.length)return null;
-  const o=c.filter(i=>i[0]!=='ovo'),l=o.length?o:c;return l.reduce((a,b)=>ING[b[0]].p*b[1]>ING[a[0]].p*a[1]?b:a);}
-/* Voltar à proteína original do prato restaura as quantidades do plano (sem erro de arredondamento). */
-function protBase(mid,w){const b=MEALS[mid][w],m=mainProt(b);return m?{id:m[0],items:b}:null;}
-function protConv(from,q,to){const st=ING[to].st||1;return Math.max(st,Math.round(ING[from].p*q/ING[to].p/st)*st);}
+const TROCAS=[{g:'prot',t:'Proteína',ids:PROT,by:'p'},{g:'pao',t:'Pão',ids:['pao','paofr'],by:'k'},
+  {g:'fruta',t:'Fruta',ids:['banana','morango','mamao','uva','laranja','kiwi','abacaxi','ameixa'],by:'k'}];
+const TR=Object.fromEntries(TROCAS.map(x=>[x.g,x]));
+function mainOf(T,its){const c=its.filter(i=>T.ids.includes(i[0]));if(!c.length)return null;
+  const o=T.g==='prot'?c.filter(i=>i[0]!=='ovo'):c,l=o.length?o:c;return l.reduce((a,b)=>ING[b[0]][T.by]*b[1]>ING[a[0]][T.by]*a[1]?b:a);}
+/* Voltar ao item original do prato restaura as quantidades do plano (sem erro de arredondamento). */
+function trBase(T,mid,w){const b=MEALS[mid][w],m=mainOf(T,b);return m?{id:m[0],items:b}:null;}
+function trConv(T,from,q,to){const st=ING[to].st||1;return Math.max(st,Math.round(ING[from][T.by]*q/ING[to][T.by]/st)*st);}
 const PN={frango:'Frango',ovo:'Ovos',atum:'Atum',sardinha:'Sardinha',peixe:'Peixe',camarao:'Camarão',pts:'PTS'};
-function protLabel(id,q){const u=ING[id].u;return u==='un'?`${fmt(q)} ${q===1?'ovo':'ovos'}`:u==='lata'?`${PN[id]} ${frac(q)} ${q>1?'latas':'lata'}`:`${PN[id]} ${fmt(q,0)} g${id==='pts'?' seca':''}`;}
-function protBlock(mid){
-  const sel=['L','P'].map(w=>{const its=itemsOf(mid,w),mp=mainProt(its);if(!mp)return '';const [cur,q]=mp,has=id=>(its.find(i=>i[0]===id)||[0,0])[1],pb=protBase(mid,w);
-    const opts=PROT.filter(id=>!(w==='P'&&ING[id].pri===0)||id===cur).map(id=>`<option value="${id}"${id===cur?' selected':''}>${protLabel(id,id===cur?q:pb&&id===pb.id?(pb.items.find(i=>i[0]===id)||[0,0])[1]:has(id)+protConv(cur,q,id))}</option>`).join('');
-    return `<label class="${w}"><span>${WHO[w]}</span><select data-act="prot" data-mid="${mid}" data-who="${w}" data-from="${cur}" aria-label="Proteína de ${WHO[w]}">${opts}</select></label>`;}).join('');
-  return sel?`<div class="prot"><div class="prot-t">Proteína <span class="sub">· troca nesta refeição em todos os dias</span></div>${sel}</div>`:'';
+function trLabel(id,q){const u=ING[id].u;if(id==='pao'||id==='paofr')return `${frac(q)} ${id==='pao'?(q>1.01?'fatias':'fatia'):(q>1.01?'franceses':'francês')}`;
+  if(!PN[id]){const t=fq(id,q).replace(/ \(.*\)$/,'');return t[0].toUpperCase()+t.slice(1);}
+  return u==='un'?`${fmt(q)} ${q===1?'ovo':'ovos'}`:u==='lata'?`${PN[id]} ${frac(q)} ${q>1?'latas':'lata'}`:`${PN[id]} ${fmt(q,0)} g${id==='pts'?' seca':''}`;}
+function trocaBlock(mid){
+  return TROCAS.map((T,n)=>{const sel=['L','P'].map(w=>{const its=itemsOf(mid,w),mp=mainOf(T,its);if(!mp)return '';const [cur,q]=mp,has=id=>(its.find(i=>i[0]===id)||[0,0])[1],pb=trBase(T,mid,w);
+    const opts=T.ids.filter(id=>!(w==='P'&&ING[id].pri===0)||id===cur).map(id=>`<option value="${id}"${id===cur?' selected':''}>${trLabel(id,id===cur?q:pb&&id===pb.id?(pb.items.find(i=>i[0]===id)||[0,0])[1]:has(id)+trConv(T,cur,q,id))}</option>`).join('');
+    return `<label class="${w}"><span>${WHO[w]}</span><select data-act="troca" data-g="${T.g}" data-mid="${mid}" data-who="${w}" data-from="${cur}" aria-label="${T.t} de ${WHO[w]}">${opts}</select></label>`;}).join('');
+  return sel?`<div class="prot"><div class="prot-t">${T.t}${n===0?' <span class="sub">· troca nesta refeição em todos os dias</span>':''}</div>${sel}</div>`:'';}).join('');
 }
 function ceiaNote(day){
   const i={L:ceiaInfo(day,'L'),P:ceiaInfo(day,'P')};if(!i.L.auto&&!i.P.auto)return '';
@@ -133,7 +138,7 @@ function slotCard(day,k,label){
    <button class="link" data-act="editopen" data-key="${key}" aria-expanded="${ed}">${ed?'Fechar ajuste':'Ajustar'}</button>
    <button class="link" data-act="swapopen" data-key="${key}" aria-expanded="${open}">${open?'Fechar trocas':'Trocar'}</button>
    ${mid!==base?`<button class="link" data-act="swap" data-key="${key}" data-id="${base}">Voltar ao plano</button>`:''}</div></div>
-   ${k==='ceia'?ceiaNote(day):''}${juntoBlock(mid,day,k)}${protBlock(mid)}${open?altsBlock(day,k,mid):''}${ed?editBlock(mid):''}<div class="people">${people}</div></article>`;
+   ${k==='ceia'?ceiaNote(day):''}${juntoBlock(mid,day,k)}${trocaBlock(mid)}${open?altsBlock(day,k,mid):''}${ed?editBlock(mid):''}<div class="people">${people}</div></article>`;
 }
 function extrasBlock(day){
   const w=V.extraWho,key=`${day.d}|${w}`,ex=S.extras[key]||{};
@@ -414,10 +419,10 @@ document.addEventListener('change',e=>{
     /* para a Pri, começa dentro do limite FODMAP */
     if(t.dataset.who==='P'&&g.pri>0&&q>g.pri)q=Math.max(st,Math.floor(g.pri/st)*st);
     customOf(t.dataset.mid,t.dataset.who)[id]=q;save();render(true);}
-  else if(a==='prot'){const d=t.dataset,to=t.value,c=customOf(d.mid,d.who),from=d.from;if(!ING[to]||to===from)return;
-    const pb=protBase(d.mid,d.who);
-    if(pb&&to===pb.id)PROT.forEach(id=>{const b=pb.items.find(i=>i[0]===id);if(b)c[id]=b[1];else if(c[id])c[id]=0;});
-    else{const add=protConv(from,c[from]||0,to);c[from]=0;c[to]=Math.round(((c[to]||0)+add)*1000)/1000;}
+  else if(a==='troca'){const d=t.dataset,T=TR[d.g],to=t.value,c=customOf(d.mid,d.who),from=d.from;if(!T||!ING[to]||to===from)return;
+    const pb=trBase(T,d.mid,d.who);
+    if(pb&&to===pb.id)T.ids.forEach(id=>{const b=pb.items.find(i=>i[0]===id);if(b)c[id]=b[1];else if(c[id])c[id]=0;});
+    else{const add=trConv(T,from,c[from]||0,to);c[from]=0;c[to]=Math.round(((c[to]||0)+add)*1000)/1000;}
     save();render(true);}
   else if(a==='shop'){S.shop[t.dataset.key]=t.checked;save();render(true);}
   else if(a==='pantry'){S.pantry[t.dataset.key]=t.checked;save();render(true);}

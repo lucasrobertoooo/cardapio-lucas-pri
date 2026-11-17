@@ -44,6 +44,8 @@ function fq(id,q){
     case 'banana': return `${n} ${pl?'bananas':'banana'}`;
     case 'limao': return `${n} ${pl?'limões':'limão'}`;
     case 'pao': return `${n} ${pl?'fatias':'fatia'} de pão`;
+    case 'paofr': return `${n} ${pl?'pães franceses':'pão francês'}`;
+    case 'ameixa': return `${n} ${pl?'ameixas':'ameixa'}`;
     case 'laranja': case 'kiwi': return `${n} ${SN[id]}${pl?'s':''}`;
     default:{const h=ING[id].hu;if(h){const m=q/h[2],u=ING[id].u==='ml'?'ml':'g',w=m>1.01?h[1]:h[0];
       /* "¾ tomate", não "¾ tomate de tomate" */
