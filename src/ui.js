@@ -90,9 +90,9 @@ function trLabel(id,q){const u=ING[id].u;if(id==='pao'||id==='paofr')return `${f
 function trocaBlock(mid){
   const J=juntoIds(mid);
   return TROCAS.map((T,n)=>{
-    /* item do preparo único (vitamina, panela): uma troca só, para os dois, senão viram duas receitas */
+    /* mesmo item nos dois pratos: uma troca só, para os dois. A receita é uma; só a quantidade muda. */
     const mL=mainOf(T,itemsOf(mid,'L')),mP=mainOf(T,itemsOf(mid,'P'));
-    if(mL&&mP&&mL[0]===mP[0]&&J.has(mL[0])){const cur=mL[0],bL=trBase(T,mid,'L'),bP=trBase(T,mid,'P');
+    if(mL&&mP&&mL[0]===mP[0]){const cur=mL[0],bL=trBase(T,mid,'L'),bP=trBase(T,mid,'P');
       const qv=(w,mm,b,id)=>{const its=itemsOf(mid,w);if(id===cur)return mm[1];if(b&&id===b.id)return (b.items.find(i=>i[0]===id)||[0,0])[1];return (its.find(i=>i[0]===id)||[0,0])[1]+trConv(T,cur,mm[1],id);};
       const opts=T.ids.filter(id=>ING[id].pri!==0||id===cur).map(id=>`<option value="${id}"${id===cur?' selected':''}>${trLabel(id,qv('L',mL,bL,id)+qv('P',mP,bP,id))}</option>`).join('');
       return `<div class="prot"><div class="prot-t">${T.t}${n===0?' <span class="sub">· troca nesta refeição em todos os dias</span>':''}</div><label class="LP"><span>Os dois</span><select data-act="troca" data-g="${T.g}" data-mid="${mid}" data-who="LP" data-from="${cur}" aria-label="${T.t} dos dois">${opts}</select></label></div>`;}
