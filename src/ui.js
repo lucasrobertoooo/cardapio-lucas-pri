@@ -59,15 +59,17 @@ function juntoBlock(mid,day,slot){
 }
 /* Troca rápida da proteína principal: converte pela proteína (120 g de frango ≈ 1 lata de atum ≈ 4 ovos).
    Grava em S.custom, como o editor: vale para todos os dias com esta refeição e sincroniza. */
-const PROT=['frango','ovo','atum','sardinha','peixe','camarao'];
+const PROT=['frango','ovo','atum','sardinha','peixe','camarao','pts'];
 function mainProt(its){const c=its.filter(i=>PROT.includes(i[0]));if(!c.length)return null;
   const o=c.filter(i=>i[0]!=='ovo'),l=o.length?o:c;return l.reduce((a,b)=>ING[b[0]].p*b[1]>ING[a[0]].p*a[1]?b:a);}
+/* Voltar à proteína original do prato restaura as quantidades do plano (sem erro de arredondamento). */
+function protBase(mid,w){const b=MEALS[mid][w],m=mainProt(b);return m?{id:m[0],items:b}:null;}
 function protConv(from,q,to){const st=ING[to].st||1;return Math.max(st,Math.round(ING[from].p*q/ING[to].p/st)*st);}
-const PN={frango:'Frango',ovo:'Ovos',atum:'Atum',sardinha:'Sardinha',peixe:'Peixe',camarao:'Camarão'};
-function protLabel(id,q){const u=ING[id].u;return u==='un'?`${fmt(q)} ${q===1?'ovo':'ovos'}`:u==='lata'?`${PN[id]} ${frac(q)} ${q>1?'latas':'lata'}`:`${PN[id]} ${fmt(q,0)} g`;}
+const PN={frango:'Frango',ovo:'Ovos',atum:'Atum',sardinha:'Sardinha',peixe:'Peixe',camarao:'Camarão',pts:'PTS'};
+function protLabel(id,q){const u=ING[id].u;return u==='un'?`${fmt(q)} ${q===1?'ovo':'ovos'}`:u==='lata'?`${PN[id]} ${frac(q)} ${q>1?'latas':'lata'}`:`${PN[id]} ${fmt(q,0)} g${id==='pts'?' seca':''}`;}
 function protBlock(mid){
-  const sel=['L','P'].map(w=>{const its=itemsOf(mid,w),mp=mainProt(its);if(!mp)return '';const [cur,q]=mp,has=id=>(its.find(i=>i[0]===id)||[0,0])[1];
-    const opts=PROT.map(id=>`<option value="${id}"${id===cur?' selected':''}>${protLabel(id,id===cur?q:has(id)+protConv(cur,q,id))}</option>`).join('');
+  const sel=['L','P'].map(w=>{const its=itemsOf(mid,w),mp=mainProt(its);if(!mp)return '';const [cur,q]=mp,has=id=>(its.find(i=>i[0]===id)||[0,0])[1],pb=protBase(mid,w);
+    const opts=PROT.filter(id=>!(w==='P'&&ING[id].pri===0)||id===cur).map(id=>`<option value="${id}"${id===cur?' selected':''}>${protLabel(id,id===cur?q:pb&&id===pb.id?(pb.items.find(i=>i[0]===id)||[0,0])[1]:has(id)+protConv(cur,q,id))}</option>`).join('');
     return `<label class="${w}"><span>${WHO[w]}</span><select data-act="prot" data-mid="${mid}" data-who="${w}" data-from="${cur}" aria-label="Proteína de ${WHO[w]}">${opts}</select></label>`;}).join('');
   return sel?`<div class="prot"><div class="prot-t">Proteína <span class="sub">· troca nesta refeição em todos os dias</span></div>${sel}</div>`:'';
 }
@@ -404,7 +406,10 @@ document.addEventListener('change',e=>{
     if(t.dataset.who==='P'&&g.pri>0&&q>g.pri)q=Math.max(st,Math.floor(g.pri/st)*st);
     customOf(t.dataset.mid,t.dataset.who)[id]=q;save();render(true);}
   else if(a==='prot'){const d=t.dataset,to=t.value,c=customOf(d.mid,d.who),from=d.from;if(!ING[to]||to===from)return;
-    const add=protConv(from,c[from]||0,to);c[from]=0;c[to]=Math.round(((c[to]||0)+add)*1000)/1000;save();render(true);}
+    const pb=protBase(d.mid,d.who);
+    if(pb&&to===pb.id)PROT.forEach(id=>{const b=pb.items.find(i=>i[0]===id);if(b)c[id]=b[1];else if(c[id])c[id]=0;});
+    else{const add=protConv(from,c[from]||0,to);c[from]=0;c[to]=Math.round(((c[to]||0)+add)*1000)/1000;}
+    save();render(true);}
   else if(a==='shop'){S.shop[t.dataset.key]=t.checked;save();render(true);}
   else if(a==='pantry'){S.pantry[t.dataset.key]=t.checked;save();render(true);}
   else if(a==='prep'){S.prep[t.dataset.key]=t.checked;save();render(true);}

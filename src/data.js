@@ -15,7 +15,7 @@ const ING = {
   atum:     {n:'Atum em lata (natural)', u:'lata', p:27, k:125, pack:1, pk:['lata','latas'], wp:170, aisle:'prot'},
   sardinha: {n:'Sardinha em lata', u:'lata', p:22, k:190, pack:1, pk:['lata','latas'], wp:125, aisle:'prot'},
   peixe:    {n:'Filé de peixe congelado (tilápia ou merluza)', u:'g', p:.20, k:.98, pack:500, pk:['pacote','pacotes'], size:'500 g', aisle:'prot'},
-  frango:   {n:'Peito de frango', u:'g', p:.23, k:1.1, pack:500, pk:['bandeja','bandejas'], size:'500 g', aisle:'prot'},
+  frango:   {n:'Peito de frango, filé ou sassami (peso cru)', u:'g', p:.23, k:1.1, pack:500, pk:['bandeja','bandejas'], size:'500 g', aisle:'prot'},
   cottage:  {n:'Queijo cottage', u:'g', p:.11, k:.98, pack:200, pk:['pote','potes'], size:'200 g', aisle:'lat'},
   mussarela:{n:'Mussarela fatiada', u:'g', p:.22, k:2.8, pack:150, pk:['pacote','pacotes'], size:'150 g', aisle:'lat'},
   parmesao: {n:'Parmesão ralado', u:'g', p:.36, k:4, pack:50, pk:['pacote','pacotes'], size:'50 g', aisle:'lat'},
@@ -55,7 +55,8 @@ const ING = {
   abacaxi:  {n:'Abacaxi', u:'g', p:.009, k:.48, pack:1000, pk:['abacaxi','abacaxis'], size:'~1 kg', aisle:'hort'},
   camarao:  {n:'Camarão congelado (limpo)', u:'g', p:.24, k:1, pack:400, pk:['pacote','pacotes'], size:'400 g', aisle:'prot'},
   grao:     {n:'Grão-de-bico cozido (lata)', u:'g', p:.07, k:1.2, pack:265, pk:['lata','latas'], size:'265 g escorrido', wp:1.5, aisle:'prot'},
-  quinoa:   {n:'Quinoa', u:'g cozido', p:.044, k:1.2, f:.36, pack:250, pk:['pacote','pacotes'], size:'250 g', aisle:'merc'}
+  quinoa:   {n:'Quinoa', u:'g cozido', p:.044, k:1.2, f:.36, pack:250, pk:['pacote','pacotes'], size:'250 g', aisle:'merc'},
+  pts:      {n:'PTS (proteína texturizada de soja)', u:'g', p:.5, k:3.3, pack:500, pk:['pacote','pacotes'], size:'500 g', aisle:'merc'}
 };
 /* Editor de refeição: st = passo do + e −, hu = medida caseira [singular, plural, g ou ml por medida],
    pri = máximo por refeição para a Pri ficar no FODMAP baixo (0 = evitar).
@@ -67,7 +68,7 @@ const ADJ = {
   cottage:{st:20, hu:['colher','colheres',20], pri:40}, mussarela:{st:15, hu:['fatia','fatias',15]}, parmesao:{st:5, hu:['colher','colheres',5]},
   iogurte:{st:50, hu:['copo','copos',200]}, leite:{st:50, hu:['copo','copos',200]}, whey:{st:.5, gw:30}, azeite:{st:.25, gw:13}, pao:{st:1, pri:1, gw:25},
   arroz:{st:25, hu:['colher de servir','colheres de servir',50]}, feijao:{st:70, hu:['concha','conchas',140], pri:0},
-  quinoa:{st:25, hu:['colher de servir','colheres de servir',50]}, macarrao:{st:10},
+  quinoa:{st:25, hu:['colher de servir','colheres de servir',50]}, macarrao:{st:10}, pts:{st:10, pri:0},
   aveia:{st:10, hu:['colher','colheres',10], pri:40}, amendoim:{st:15, hu:['colher','colheres',15], pri:30},
   passata:{st:50, hu:['copo','copos',200]},
   batata:{st:75, hu:['batata média','batatas médias',150]}, batatadoce:{st:75, hu:['batata-doce média','batatas-doces médias',150], pri:75},

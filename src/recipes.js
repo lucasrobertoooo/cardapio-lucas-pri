@@ -1,7 +1,7 @@
 /* ===== RECEITAS E FOTOS ===== */
 const SLOTS=[['cafe','Café da manhã'],['almoco','Almoço'],['lanche','Lanche'],['jantar','Jantar'],['ceia','Ceia']];
 const SHORT={C1:'Pão com cottage',C2:'Mingau',L1:'Vitamina',E1:'Iogurte',E2:'Iogurte',M1:'Macarrão',M2:'Omelete',M3:'Peixe',M4:'Crepe',M5:'Purê',C3:'Panqueca',C4:'Queijo quente',C5:'Iogurte e ovos',L2:'Iogurte batido',L3:'Sanduíche de atum',L4:'Ovos e leite',E3:'Leite com whey',E4:'Ovos mexidos',M6:'Salada morna',M7:'Macarrão e abobrinha',M8:'Peixe ao molho',M9:'Sanduíche quente'};
-const SN={ovo:'ovo',atum:'atum',sardinha:'sardinha',peixe:'filé de peixe',frango:'frango',cottage:'cottage',mussarela:'mussarela',parmesao:'parmesão',iogurte:'iogurte',leite:'leite sem lactose',whey:'whey',azeite:'azeite',pao:'pão',arroz:'arroz cozido',feijao:'feijão cozido',macarrao:'macarrão de arroz',aveia:'aveia',amendoim:'pasta de amendoim',passata:'molho de tomate',batata:'batata',cenoura:'cenoura',abobrinha:'abobrinha',pepino:'pepino',tomate:'tomate',espinafre:'espinafre',banana:'banana',morango:'morango',mamao:'mamão',uva:'uva',limao:'limão',abobora:'abóbora',alface:'alface',couve:'couve',brocolis:'brócolis',pimentao:'pimentão vermelho',berinjela:'berinjela',vagem:'vagem',batatadoce:'batata-doce',mandioca:'mandioca',laranja:'laranja',kiwi:'kiwi',abacaxi:'abacaxi',camarao:'camarão',grao:'grão-de-bico',quinoa:'quinoa cozida'};
+const SN={ovo:'ovo',atum:'atum',sardinha:'sardinha',peixe:'filé de peixe',frango:'frango',cottage:'cottage',mussarela:'mussarela',parmesao:'parmesão',iogurte:'iogurte',leite:'leite sem lactose',whey:'whey',azeite:'azeite',pao:'pão',arroz:'arroz cozido',feijao:'feijão cozido',macarrao:'macarrão de arroz',aveia:'aveia',amendoim:'pasta de amendoim',passata:'molho de tomate',batata:'batata',cenoura:'cenoura',abobrinha:'abobrinha',pepino:'pepino',tomate:'tomate',espinafre:'espinafre',banana:'banana',morango:'morango',mamao:'mamão',uva:'uva',limao:'limão',abobora:'abóbora',alface:'alface',couve:'couve',brocolis:'brócolis',pimentao:'pimentão vermelho',berinjela:'berinjela',vagem:'vagem',batatadoce:'batata-doce',mandioca:'mandioca',laranja:'laranja',kiwi:'kiwi',abacaxi:'abacaxi',camarao:'camarão',grao:'grão-de-bico',quinoa:'quinoa cozida',pts:'PTS seca'};
 
 const RECIPES={
  C1:{steps:[
@@ -114,10 +114,10 @@ const RECIPES={
   'Monte com a mussarela, o tomate e o espinafre (Lucas: 2 sanduíches com 4 fatias; Pri: 1 fatia aberta). Frigideira tampada, 2 min de cada lado.'],
   tips:['A Pri leva batata no lugar do segundo pão, para ficar dentro do FODMAP baixo.']},
  B1:{steps:[
-  'Tempere o peito de frango com sal, páprica, limão e um fio de azeite.',
+  'Pese cru (pode ser congelado: veja a dica). Tempere com sal, páprica, limão e um fio de azeite.',
   'Forno a 200 °C por 22 a 25 min, até ficar branco por dentro e sem rosa.',
   'Descanse 5 min. Desfie metade e fatie a outra metade.',
-  'Guarde em potes na geladeira por até 4 dias.'],tips:['Esta semana o frango é dos dois: Lucas 100 a 120 g por refeição, Pri 50 a 110 g.']},
+  'Guarde em potes na geladeira por até 4 dias.'],tips:['Todas as quantidades de frango do app são de frango cru. Assado, ele perde cerca de ¼ do peso: 120 g cru dão ~90 g prontos.','Congelado: pese direto na balança. Se tiver casca de gelo, passe na água fria uns segundos e seque antes, ou conte uns 10% a mais. Sem balança: peso do pacote ÷ número de pedaços (sassami tem ~40 a 50 g, filé de peito ~100 a 150 g).','Esta semana o frango é dos dois: Lucas 100 a 120 g por refeição, Pri 50 a 110 g.']},
  B2:{steps:[
   'Arroz: lave 100 g de arroz, refogue em um fio de azeite, junte 250 ml de água e sal. Tampado, 12 min em fogo baixo.',
   'Feijão: cubra 150 g de feijão (de molho por 8 h, se tiver) com água, panela de pressão por 25 min depois de pegar pressão.',
