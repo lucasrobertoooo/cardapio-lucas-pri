@@ -63,7 +63,8 @@ const ING = {
 /* Editor de refeição: st = passo do + e −, hu = medida caseira [singular, plural, g ou ml por medida],
    pri = máximo por refeição para a Pri ficar no FODMAP baixo (0 = evitar).
    Regra: sempre medida caseira (colher, concha, copo, xícara, unidade) quando der. Frango, peixe, camarão e macarrão ficam em gramas.
-   gw = gramas por unidade (para ver em gramas o que é contado em unidade: ovo, lata, banana...). */
+   fp = 1 porção de fruta (para a troca de fruta).
+  gw = gramas por unidade (para ver em gramas o que é contado em unidade: ovo, lata, banana...). */
 const ADJ = {
   ovo:{st:1, gw:50}, atum:{st:.5, gw:120}, sardinha:{st:.5, gw:84}, peixe:{st:20}, frango:{st:20}, camarao:{st:20},
   grao:{st:25, hu:['colher de servir','colheres de servir',50], pri:0},
@@ -80,9 +81,9 @@ const ADJ = {
   berinjela:{st:20, hu:['xícara','xícaras',80], pri:75}, vagem:{st:25, hu:['xícara','xícaras',100], pri:75},
   couve:{st:20, hu:['xícara','xícaras',40]}, espinafre:{st:15, hu:['xícara','xícaras',30]}, alface:{st:10, hu:['folha','folhas',10]},
   pimentao:{st:37.5, hu:['pimentão','pimentões',150]}, pepino:{st:50, hu:['pepino','pepinos',200]}, tomate:{st:25, hu:['tomate','tomates',100]},
-  banana:{st:.5, pri:1, gw:100}, laranja:{st:1, gw:130}, kiwi:{st:1, gw:75},
-  morango:{st:12, hu:['morango','morangos',12]}, mamao:{st:75, hu:['fatia','fatias',150]}, uva:{st:25, hu:['punhado','punhados',50], pri:150},
-  abacaxi:{st:40, hu:['fatia','fatias',80], pri:140}, limao:{st:.5, gw:40}, ameixa:{st:1, pri:0, gw:70}
+  banana:{fp:1, st:.5, pri:1, gw:100}, laranja:{fp:1, st:1, gw:130}, kiwi:{fp:2, st:1, gw:75},
+  morango:{fp:144, st:12, hu:['morango','morangos',12]}, mamao:{fp:150, st:75, hu:['fatia','fatias',150]}, uva:{fp:100, st:25, hu:['punhado','punhados',50], pri:150},
+  abacaxi:{fp:120, st:40, hu:['fatia','fatias',80], pri:140}, limao:{st:.5, gw:40}, ameixa:{fp:2, st:1, pri:0, gw:70}
 };
 for (const id in ADJ) Object.assign(ING[id], ADJ[id]);
 const MEALS = {
@@ -125,7 +126,7 @@ const MEALS = {
  E4:{slot:'ceia', n:'Ovos mexidos com mussarela', t:5, junto:['ovo','mussarela'], jn:'Ovos mexidos',
   L:[['ovo',2],['mussarela',15],['tomate',50]],
   P:[['ovo',2],['mussarela',15]]},
- M1:{slot:'ref', n:'Macarrão ao molho de tomate com frango', t:20, oc:1, junto:['macarrao','passata','frango','espinafre','azeite','parmesao'], jn:'Macarrão com molho',
+ M1:{slot:'ref', lote:1, n:'Macarrão ao molho de tomate com frango', t:20, oc:1, junto:['macarrao','passata','frango','espinafre','azeite','parmesao'], jn:'Macarrão com molho',
   L:[['macarrao',100],['passata',200],['frango',120],['azeite',1],['parmesao',15],['espinafre',45]],
   P:[['macarrao',55],['passata',150],['frango',60],['azeite',.5],['parmesao',10],['espinafre',45],['ovo',1]]},
  M2:{slot:'ref', n:'Omelete com batata assada e salada', t:20, junto:['batata','tomate','pepino'], jn:'Batata assada e salada',
@@ -137,13 +138,13 @@ const MEALS = {
  M4:{slot:'ref', n:'Crepe de espinafre recheado', t:20, junto:['ovo','aveia','espinafre','batata'], jn:'Massa e batata',
   L:[['ovo',2],['aveia',30],['espinafre',45],['frango',120],['mussarela',15],['batata',225],['azeite',.5]],
   P:[['ovo',2],['aveia',30],['espinafre',45],['frango',50],['tomate',50],['mussarela',15],['batata',150],['azeite',.25]]},
- M5:{slot:'ref', n:'Frango com purê e legumes', t:25, oc:1, junto:['batata','leite','azeite'], jn:'Purê',
+ M5:{slot:'ref', lote:1, n:'Frango com purê e legumes', t:25, oc:1, junto:['batata','leite','azeite'], jn:'Purê',
   L:[['frango',100],['ovo',2],['batata',225],['leite',50],['azeite',.5],['cenoura',90],['tomate',50]],
   P:[['frango',110],['batata',150],['leite',50],['azeite',.25],['cenoura',90],['abobrinha',100]]},
- M6:{slot:'ref', n:'Salada morna de batata com ovo e frango', t:20, oc:1, junto:['batata','tomate','pepino','azeite','frango','ovo'], jn:'Salada',
+ M6:{slot:'ref', lote:1, n:'Salada morna de batata com ovo e frango', t:20, oc:1, junto:['batata','tomate','pepino','azeite','frango','ovo'], jn:'Salada',
   L:[['batata',300],['ovo',2],['frango',120],['tomate',75],['pepino',50],['azeite',1],['feijao',140]],
   P:[['batata',225],['ovo',2],['frango',60],['tomate',75],['pepino',50],['azeite',.5]]},
- M7:{slot:'ref', n:'Macarrão de arroz com frango, abobrinha e parmesão', t:20, junto:['macarrao','abobrinha','tomate','azeite','parmesao'], jn:'Macarrão com abobrinha',
+ M7:{slot:'ref', lote:1, n:'Macarrão de arroz com frango, abobrinha e parmesão', t:20, junto:['macarrao','abobrinha','tomate','azeite','parmesao'], jn:'Macarrão com abobrinha',
   L:[['macarrao',100],['frango',120],['abobrinha',150],['tomate',50],['azeite',1],['parmesao',15]],
   P:[['macarrao',55],['frango',100],['abobrinha',75],['tomate',50],['azeite',.5],['parmesao',10]]},
  M8:{slot:'ref', n:'Peixe ao molho de tomate com espinafre', t:25, outros:1, junto:['peixe','passata','espinafre'], jn:'Peixe no molho',
@@ -153,14 +154,15 @@ const MEALS = {
   L:[['pao',4],['ovo',2],['frango',120],['mussarela',30],['tomate',50],['espinafre',30]],
   P:[['pao',1],['frango',100],['mussarela',15],['tomate',50],['espinafre',30],['batata',150]]}
 };
+/* Pratos de panela (lote:1) seguidos no plano viram uma panela só: cozinha em dobro e a refeição seguinte é sobra (loteOf em logic.js). */
 const WEEK = [
  {d:'2026-11-15', wd:'Dom', slots:{lanche:'L1', jantar:'M1', ceia:'E1'}},
  {d:'2026-11-16', wd:'Seg', slots:{cafe:'C1', almoco:'M2', lanche:'L1', jantar:'M6', ceia:'E2'}},
- {d:'2026-11-17', wd:'Ter', slots:{cafe:'C2', almoco:'M5', lanche:'L1', jantar:'M4', ceia:'E1'}},
- {d:'2026-11-18', wd:'Qua', slots:{cafe:'C1', almoco:'M1', lanche:'L1', jantar:'M2', ceia:'E2'}},
- {d:'2026-11-19', wd:'Qui', slots:{cafe:'C2', almoco:'M7', lanche:'L1', jantar:'M5', ceia:'E1'}},
- {d:'2026-11-20', wd:'Sex', slots:{cafe:'C1', almoco:'M4', lanche:'L1', jantar:'M1', ceia:'E2'}},
- {d:'2026-11-21', wd:'Sáb', slots:{cafe:'C2', almoco:'M2', lanche:'L1', jantar:'M5', ceia:'E1'}},
- {d:'2026-11-22', wd:'Dom', slots:{cafe:'C1', almoco:'M9'}}
+ {d:'2026-11-17', wd:'Ter', slots:{cafe:'C2', almoco:'M5', lanche:'L1', jantar:'M5', ceia:'E1'}},
+ {d:'2026-11-18', wd:'Qua', slots:{cafe:'C1', almoco:'M4', lanche:'L1', jantar:'M7', ceia:'E2'}},
+ {d:'2026-11-19', wd:'Qui', slots:{cafe:'C2', almoco:'M7', lanche:'L1', jantar:'M2', ceia:'E1'}},
+ {d:'2026-11-20', wd:'Sex', slots:{cafe:'C1', almoco:'M9', lanche:'L1', jantar:'M1', ceia:'E2'}},
+ {d:'2026-11-21', wd:'Sáb', slots:{cafe:'C2', almoco:'M1', lanche:'L1', jantar:'M6', ceia:'E1'}},
+ {d:'2026-11-22', wd:'Dom', slots:{cafe:'C1', almoco:'M6'}}
 ];
 if (typeof module!=='undefined') module.exports={ING,MEALS,WEEK,AISLES};

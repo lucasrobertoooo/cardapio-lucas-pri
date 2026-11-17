@@ -90,6 +90,16 @@ function slotsOf(day){
   for(const k in day.slots){const sw=S.swap[`${day.d}|${k}`];out[k]=sw&&MEALS[sw]&&MEALS[sw].slot===KIND[k]?sw:day.slots[k];}
   return out;
 }
+/* Panela em dobro: um prato de panela (lote:1) que aparece em dois almoços/jantares seguidos é feito uma vez só.
+   A primeira é 'cook' (faz em dobro), a segunda é 'sobra' (só esquentar). Segue as trocas: trocar uma das duas desfaz o par. */
+const REF=['almoco','jantar'];
+function loteMap(){const seq=[];for(const d of WEEK){const sl=slotsOf(d);for(const k of REF)if(sl[k])seq.push({d:d.d,k,mid:sl[k]});}
+  const m={};for(let i=0;i+1<seq.length;i++){const a=seq[i],b=seq[i+1],ka=a.d+'|'+a.k;if(m[ka])continue;
+    if(a.mid===b.mid&&MEALS[a.mid].lote){m[ka]={role:'cook',o:b};m[b.d+'|'+b.k]={role:'sobra',o:a};}}
+  return {m,seq};}
+function loteOf(d,k){return loteMap().m[d+'|'+k]||null;}
+/* A sobra é comprada junto com o dia em que a panela é feita. */
+function cookDate(d,k){const l=loteOf(d,k);return l&&l.role==='sobra'?l.o.d:d;}
 /* Ceia = o que falta no dia. A quantidade da ceia de cada um é ajustada para completar a meta de proteína,
    depois de somar café, almoço, lanche e jantar planejados. Entre metade e o triplo da receita; se a meta já fechou, a ceia sai (f=0).
    Não ajusta se a ceia foi mexida à mão no editor, nem em dia parcial. */
@@ -131,13 +141,13 @@ const TRIPS=[
   {id:'T2',n:'Compra 2',when:'Ter 17',long:'Terça 17',covers:'ter a qui, mais o frango e o arroz da quarta',days:['2026-11-17','2026-11-18','2026-11-19']},
   {id:'T3',n:'Compra 3',when:'Sex 20',long:'Sexta 20',covers:'sex a dom',days:['2026-11-20','2026-11-21','2026-11-22']}
 ];
-/* O que é cozido em lote é comprado antes do dia de cozinhar: lote 1 no domingo (cobre seg a qua), lote 2 na quarta (cobre qui a dom). */
-const BATCH1=['2026-11-15','2026-11-16','2026-11-17','2026-11-18'],BATCH2=['2026-11-19','2026-11-20','2026-11-21','2026-11-22'];
+/* O que é cozido em lote é comprado antes do dia de cozinhar: lote 1 no domingo (cobre seg e ter), lote 2 na quarta de manhã (cobre qua a dom). */
+const BATCH1=['2026-11-15','2026-11-16','2026-11-17'],BATCH2=['2026-11-18','2026-11-19','2026-11-20','2026-11-21','2026-11-22'];
 const ALL_DAYS=WEEK.map(d=>d.d);
 function needs(days,onlyMeals){
   const out={};
-  for(const dd of days){const day=WEEK.find(x=>x.d===dd);if(!day)continue;const sl=slotsOf(day);
-    for(const s of SLOTS){const mid=sl[s[0]];if(!mid)continue;
+  for(const day of WEEK){const sl=slotsOf(day);
+    for(const s of SLOTS){const mid=sl[s[0]];if(!mid||!days.includes(cookDate(day.d,s[0])))continue;
       for(const who of ['L','P']){for(const it of dayItems(day,s[0],who)){
         const o=out[it[0]]||(out[it[0]]={tot:0,L:0,P:0,uses:[]});
         o.tot+=it[1];o[who]+=it[1];const sh=SHORT[mid];if(!o.uses.includes(sh))o.uses.push(sh);}}}}
