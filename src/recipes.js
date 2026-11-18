@@ -33,7 +33,7 @@ const RECIPES={
   'Uma assadeira só para os dois: batata em palitos com azeite, sal e páprica. Airfryer a 200 °C por 18 min, mexendo na metade (forno: 220 °C por 25 min).',
   'Uma tigela só de salada: tomate e pepino com limão e um fio de azeite.',
   'Omelete com o mesmo recheio para os dois: bata os ovos com sal, cozinhe 2 min, coloque espinafre, mussarela e o frango desfiado do lote e dobre. O do Lucas leva mais ovos.',
-  'Divida batata e salada na proporção do quadro. Lucas: feijão do lote (a Pri não come feijão, FODMAP).'],
+  'Divida batata e salada na proporção do quadro. Lucas: arroz e feijão do lote.'],
   tips:['A mesma assadeira de batata serve outras refeições do dia, se quiser adiantar.']},
  M3:{steps:[
   'Uma assadeira só: tempere os filés ainda congelados com sal, limão e páprica.',
@@ -115,7 +115,7 @@ const RECIPES={
  M10:{steps:[
   'Cozinhe todas as batatas em cubos com a cenoura em cubinhos, 12 min em água com sal, até ficarem macias mas inteiras. Escorra e deixe esfriar.',
   'Uma tigela só: batata, cenoura, ovos cozidos do lote picados e a maionese light, com sal, limão e cheiro-verde. Mexa com cuidado para a batata não virar purê.',
-  'Divida na proporção do quadro. Frango desfiado do lote por cima ou ao lado.'],
+  'Divida na proporção do quadro. Frango desfiado do lote por cima ou ao lado. Lucas: arroz do lote.'],
   tips:['Gelada fica melhor: dá para fazer na véspera. Na geladeira, em pote fechado, dura 2 dias.','Pri: maionese com alho ou cebola na lista de ingredientes sai do FODMAP baixo. Confira o rótulo. Sem ervilha pelo mesmo motivo.']},
  B1:{steps:[
   'Pese cru (pode ser congelado: veja a dica). Tempere com sal, páprica, limão e um fio de azeite.',

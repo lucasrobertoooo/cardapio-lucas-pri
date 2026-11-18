@@ -132,7 +132,7 @@ const MEALS = {
   L:[['macarrao',100],['passata',200],['frango',120],['azeite',1],['parmesao',15],['espinafre',45],['ovo',1]],
   P:[['macarrao',55],['passata',150],['frango',60],['azeite',.5],['parmesao',10],['espinafre',45],['ovo',1]]},
  M2:{slot:'ref', n:'Omelete com batata assada e salada', t:20, junto:['batata','tomate','pepino'], jn:'Batata assada e salada',
-  L:[['ovo',3],['mussarela',30],['espinafre',30],['frango',60],['batata',375],['feijao',140],['azeite',.5],['tomate',75],['pepino',50]],
+  L:[['ovo',3],['mussarela',30],['espinafre',30],['frango',60],['batata',225],['arroz',100],['feijao',140],['azeite',.5],['tomate',75],['pepino',50]],
   P:[['ovo',2],['mussarela',15],['espinafre',30],['frango',50],['batata',150],['azeite',.25],['tomate',75],['pepino',50]]},
  M3:{slot:'ref', n:'Peixe na airfryer com batata e legumes', t:25, outros:1, junto:['peixe','batata','cenoura','abobrinha'], jn:'Assadeira',
   L:[['peixe',180],['batata',225],['arroz',100],['cenoura',90],['abobrinha',100],['azeite',1],['limao',.5]],
@@ -156,7 +156,7 @@ const MEALS = {
   L:[['pao',2],['ovo',2],['frango',120],['mussarela',30],['tomate',50],['espinafre',30],['batata',225]],
   P:[['pao',1],['ovo',1],['frango',100],['mussarela',15],['tomate',50],['espinafre',30],['batata',150]]},
  M10:{slot:'ref', lote:1, n:'Maionese de batata com frango', t:25, oc:1, junto:['batata','cenoura','ovo','maionese'], jn:'Maionese',
-  L:[['batata',450],['cenoura',90],['ovo',2],['maionese',45],['frango',140]],
+  L:[['batata',300],['cenoura',90],['ovo',2],['maionese',45],['frango',140],['arroz',100]],
   P:[['batata',225],['cenoura',60],['ovo',2],['maionese',30],['frango',80]]}
 };
 /* Pratos de panela (lote:1) seguidos no plano viram uma panela só: cozinha em dobro e a refeição seguinte é sobra (loteOf em logic.js). */

@@ -426,7 +426,7 @@ const MEALS = {
   L:[['macarrao',100],['passata',200],['frango',120],['azeite',1],['parmesao',15],['espinafre',45],['ovo',1]],
   P:[['macarrao',55],['passata',150],['frango',60],['azeite',.5],['parmesao',10],['espinafre',45],['ovo',1]]},
  M2:{slot:'ref', n:'Omelete com batata assada e salada', t:20, junto:['batata','tomate','pepino'], jn:'Batata assada e salada',
-  L:[['ovo',3],['mussarela',30],['espinafre',30],['frango',60],['batata',375],['feijao',140],['azeite',.5],['tomate',75],['pepino',50]],
+  L:[['ovo',3],['mussarela',30],['espinafre',30],['frango',60],['batata',225],['arroz',100],['feijao',140],['azeite',.5],['tomate',75],['pepino',50]],
   P:[['ovo',2],['mussarela',15],['espinafre',30],['frango',50],['batata',150],['azeite',.25],['tomate',75],['pepino',50]]},
  M3:{slot:'ref', n:'Peixe na airfryer com batata e legumes', t:25, outros:1, junto:['peixe','batata','cenoura','abobrinha'], jn:'Assadeira',
   L:[['peixe',180],['batata',225],['arroz',100],['cenoura',90],['abobrinha',100],['azeite',1],['limao',.5]],
@@ -450,7 +450,7 @@ const MEALS = {
   L:[['pao',2],['ovo',2],['frango',120],['mussarela',30],['tomate',50],['espinafre',30],['batata',225]],
   P:[['pao',1],['ovo',1],['frango',100],['mussarela',15],['tomate',50],['espinafre',30],['batata',150]]},
  M10:{slot:'ref', lote:1, n:'Maionese de batata com frango', t:25, oc:1, junto:['batata','cenoura','ovo','maionese'], jn:'Maionese',
-  L:[['batata',450],['cenoura',90],['ovo',2],['maionese',45],['frango',140]],
+  L:[['batata',300],['cenoura',90],['ovo',2],['maionese',45],['frango',140],['arroz',100]],
   P:[['batata',225],['cenoura',60],['ovo',2],['maionese',30],['frango',80]]}
 };
 /* Pratos de panela (lote:1) seguidos no plano viram uma panela só: cozinha em dobro e a refeição seguinte é sobra (loteOf em logic.js). */
@@ -500,7 +500,7 @@ const RECIPES={
   'Uma assadeira só para os dois: batata em palitos com azeite, sal e páprica. Airfryer a 200 °C por 18 min, mexendo na metade (forno: 220 °C por 25 min).',
   'Uma tigela só de salada: tomate e pepino com limão e um fio de azeite.',
   'Omelete com o mesmo recheio para os dois: bata os ovos com sal, cozinhe 2 min, coloque espinafre, mussarela e o frango desfiado do lote e dobre. O do Lucas leva mais ovos.',
-  'Divida batata e salada na proporção do quadro. Lucas: feijão do lote (a Pri não come feijão, FODMAP).'],
+  'Divida batata e salada na proporção do quadro. Lucas: arroz e feijão do lote.'],
   tips:['A mesma assadeira de batata serve outras refeições do dia, se quiser adiantar.']},
  M3:{steps:[
   'Uma assadeira só: tempere os filés ainda congelados com sal, limão e páprica.',
@@ -582,7 +582,7 @@ const RECIPES={
  M10:{steps:[
   'Cozinhe todas as batatas em cubos com a cenoura em cubinhos, 12 min em água com sal, até ficarem macias mas inteiras. Escorra e deixe esfriar.',
   'Uma tigela só: batata, cenoura, ovos cozidos do lote picados e a maionese light, com sal, limão e cheiro-verde. Mexa com cuidado para a batata não virar purê.',
-  'Divida na proporção do quadro. Frango desfiado do lote por cima ou ao lado.'],
+  'Divida na proporção do quadro. Frango desfiado do lote por cima ou ao lado. Lucas: arroz do lote.'],
   tips:['Gelada fica melhor: dá para fazer na véspera. Na geladeira, em pote fechado, dura 2 dias.','Pri: maionese com alho ou cebola na lista de ingredientes sai do FODMAP baixo. Confira o rótulo. Sem ervilha pelo mesmo motivo.']},
  B1:{steps:[
   'Pese cru (pode ser congelado: veja a dica). Tempere com sal, páprica, limão e um fio de azeite.',
