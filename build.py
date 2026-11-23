@@ -4,7 +4,7 @@ import glob, hashlib, os
 root=os.path.dirname(os.path.abspath(__file__)); src=os.path.join(root,'src')
 r=lambda f:open(os.path.join(src,f),encoding='utf-8').read()
 w=lambda f,s:open(os.path.join(root,f),'w',encoding='utf-8').write(s)
-FONT_CSS='https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap'
+FONT_CSS='https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap'
 data=r('data.js').split("if (typeof module")[0]
 photos=sorted(os.path.splitext(os.path.basename(f))[0] for f in glob.glob(os.path.join(root,'img','*.jpg')))
 js="\n".join([f'const PHOTOS={photos!r};',data,r('recipes.js'),r('logic.js'),r('smart.js'),r('sync.js'),r('editor.js'),r('ui.js')])

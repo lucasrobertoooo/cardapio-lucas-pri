@@ -19,23 +19,18 @@ const dayOf=d=>WEEK.find(x=>x.d===d);
 const MES=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
 /* "domingo 22 a sábado 28 de novembro" (ou "… 29 de novembro a sábado 5 de dezembro") */
 function semTxt(){const a=WEEK[0].d,b=WEEK[WEEK.length-1].d,m=x=>MES[+x.slice(5,7)-1];
-  return `domingo ${+a.slice(8)}${m(a)===m(b)?'':' de '+m(a)} a sábado ${+b.slice(8)} de ${m(b)}`;}
+  return `${+a.slice(8)}${m(a)===m(b)?'':' de '+m(a)} a ${+b.slice(8)} de ${m(b)}`;}
 
 function itemsText(items){return items.map(it=>fq(it[0],it[1])).join(', ');}
 
 /* ----- HOJE ----- */
 function scoreCard(day,who){
   const st=dayStats(day,who),t=S.targets[who];
-  const pp=Math.min(100,st.projected.p/t.p*100),dp=Math.min(100,st.done.p/t.p*100);
-  const kp=Math.min(100,st.projected.k/t.k*100),dk=Math.min(100,st.done.k/t.k*100);
-  const left=t.p-st.done.p;
-  const msg=left<=0?`<span class="st ok">Meta batida</span>`:`<span class="st">faltam ${R0(left)} g</span>`;
-  return `<div class="sc ${who}"><div class="nm"><span class="dot ${who}"></span>${WHO[who]}</div>
-   <div class="big">${R0(st.done.p)}<small> / ${t.p} g</small></div>
-   <div class="bar" role="img" aria-label="Proteína ${R0(st.done.p)} de ${t.p} gramas"><i class="plan" style="width:${pp}%"></i><i class="done" style="width:${dp}%"></i></div>
-   ${msg}
-   <div class="bar thin" role="img" aria-label="Energia ${R0(st.done.k)} de ${t.k} kcal"><i class="plan" style="width:${kp}%"></i><i class="done" style="width:${dk}%"></i></div>
-   <div class="st">${R0(st.done.k)} / ${t.k} kcal</div></div>`;
+  const pp=Math.min(100,st.projected.p/t.p*100),dp=Math.min(100,st.done.p/t.p*100),ok=st.done.p>=t.p;
+  return `<div class="sc ${who}"><div class="nm"><span class="dot ${who}"></span>${WHO[who]}${ok?'<span class="ok">meta batida</span>':''}</div>
+   <div class="big">${R0(st.done.p)}<small>/${t.p} g</small></div>
+   <div class="bar" role="img" aria-label="Proteína ${R0(st.done.p)} de ${t.p} gramas; o plano do dia chega a ${R0(st.projected.p)}"><i class="plan" style="width:${pp}%"></i><i class="done" style="width:${dp}%"></i></div>
+   <div class="st">${R0(st.done.k)} de ${t.k} kcal</div></div>`;
 }
 function advice(day){
   if(!day.slots.cafe||!day.slots.jantar)return '';
@@ -44,7 +39,7 @@ function advice(day){
     const st=dayStats(day,w),t=S.targets[w];const gap=t.p-st.projected.p;
     if(gap>5){const s=suggest(gap);out.push(`<b>${WHO[w]}:</b> o plano chega a ~${R0(st.projected.p)} g. Para fechar os ${t.p} g, adicione ${s}.`);}
   }
-  if(!out.length)return `<div class="tip ok">O plano do dia fecha a meta dos dois. Se um dia escapar, sem drama: vale a média da semana.</div>`;
+  if(!out.length)return '';
   return `<div class="tip">${out.join('<br>')}</div>`;
 }
 /* Ingredientes que já entram no plano base da semana: alternativa que usa só eles não pede compra nova. */
@@ -74,11 +69,6 @@ function juntoIds(mid){const m=MEALS[mid],J=new Set(m.junto||[]);if(!m.junto)ret
   const now=itemsOf(mid,'L').concat(itemsOf(mid,'P')),has=new Set(now.map(i=>i[0])),inBase=new Set(m.L.concat(m.P).map(i=>i[0]));
   const gone=new Set([...J].filter(id=>!has.has(id)).map(id=>ING[id].cat));
   now.forEach(([id])=>{if(!inBase.has(id)&&gone.has(ING[id].cat))J.add(id);});return J;}
-/* Ingredientes no card: tocar em um abre o painel já na troca dele (dois toques para trocar). */
-function ingChips(day,k,mid){
-  const ids=[...new Set(itemsOf(mid,'L').concat(itemsOf(mid,'P')).map(i=>i[0]))],key=`${day.d}|${k}`;
-  return `<div class="ings" aria-label="Itens da refeição: toque para trocar">${ids.map(id=>`<button class="ing-ch" data-act="shopen" data-key="${key}" data-mid="${mid}" data-id="${id}">${cap(SN[id]||ING[id].n)}<span aria-hidden="true">⇄</span></button>`).join('')}
-    <button class="ing-ch plus" data-act="shopen" data-key="${key}" data-mid="${mid}">+ Item</button></div>`;}
 function ceiaNote(day){
   const i={L:ceiaInfo(day,'L'),P:ceiaInfo(day,'P')};if(!i.L.auto&&!i.P.auto)return '';
   const t=w=>{const x=i[w];if(!x.auto)return `${WHO[w]}: como ajustada no editor`;return x.gap<=3?`${WHO[w]}: hoje não precisa, a meta já fechou`:`${WHO[w]}: faltam ~${R0(x.gap)} g`;};
@@ -109,75 +99,80 @@ function amtOf(id,q){const g=ING[id],h=g.hu;
   if(h){const n=q/h[2];return {big:frac(n),small:`${n>1.01?h[1]:h[0]} · ${fmt(q,0)} ${g.u==='ml'?'ml':'g'}`};}
   if(g.u==='g'||g.u==='ml'||g.u==='g cozido')return {big:fmt(q,0),small:g.u==='ml'?'ml':g.u};
   const t=fq(id,q);return {big:frac(q),small:t.replace(/^[\d,½¼¾]+\s*/,'').replace(/ de .*/,'')};}
-function slotCard(day,k,label){
-  const base=day.slots[k],mid=slotsOf(day)[k],m=MEALS[mid],key=`${day.d}|${k}`,open=V.swap===key;
-  const people=['L','P'].map(w=>{
-    const key=`${day.d}|${k}|${w}`,its=dayItems(day,k,w),n=nut(its),on=!!S.checks[key];
-    return `<label class="person ${w}${on?' done':''}"><input type="checkbox" data-act="chk" data-key="${key}"${on?' checked':''}><span class="box">${CHECK}</span>
-      <span class="who">${WHO[w]}</span><span class="nums">${R0(n.p)} g · ${R0(n.k)} kcal</span><span class="desc">${its.length?itemsText(its):'Não precisa hoje. Se der fome, metade da receita.'}</span></label>`;
-  }).join('');
-  const both=S.checks[`${day.d}|${k}|L`]&&S.checks[`${day.d}|${k}|P`],lo=loteOf(day.d,k);
-  return `<article class="slot"><div class="ill">${ill(mid)}</div>
-   <div><div class="slot-top"><span class="tag">${label}</span><span class="sub">${lo&&lo.role==='sobra'?'5 min · sobra':`${m.t} min${lo?' · em dobro':''}`}${mid!==base?' · trocado':''}${isCustom(mid)?' · ajustado':''}${m.user?' · de vocês':''}</span></div><h3>${m.n}</h3>
-   <div class="slot-actions"><button class="link" data-act="recipe" data-id="${mid}">Ver receita</button>
-   <button class="link" data-act="both" data-day="${day.d}" data-slot="${k}">${both?'Desmarcar os dois':'Os dois comeram'}</button>
-   <button class="link" data-act="shopen" data-key="${key}" data-mid="${mid}">Mudar itens</button>
-   <button class="link" data-act="swapopen" data-key="${key}" aria-expanded="${open}">${open?'Fechar trocas':'Trocar'}</button>
-   ${mid!==base?`<button class="link" data-act="swap" data-key="${key}" data-id="${base}">Voltar ao plano</button>`:''}</div></div>
-   ${k==='ceia'?ceiaNote(day):''}${juntoBlock(mid,day,k)}${ingChips(day,k,mid)}${open?altsBlock(day,k,mid):''}<div class="people">${people}</div></article>`;
+/* Quantidade de um item para uma pessoa, sem repetir o nome: "5" + "colheres · 50 g" */
+function qtyCell(id,q){if(!q)return '<td class="none">—</td>';const a=amtOf(id,q);return `<td><b>${a.big}</b>${a.small?`<small>${a.small}</small>`:''}</td>`;}
+/* Uma receita, duas quantidades: uma linha por ingrediente, Lucas e Pri lado a lado. Tocar no nome troca o item. */
+function qtyTable(day,k,mid){
+  const key=`${day.d}|${k}`,iL=dayItems(day,k,'L'),iP=dayItems(day,k,'P'),q=(its,id)=>(its.find(i=>i[0]===id)||[0,0])[1];
+  const ids=[...new Set(iL.concat(iP).map(i=>i[0]))],nL=nut(iL),nP=nut(iP);
+  const rows=ids.map(id=>`<tr><th><button data-act="shopen" data-key="${key}" data-mid="${mid}" data-id="${id}">${cap(SN[id]||ING[id].n)}</button></th>${qtyCell(id,q(iL,id))}${qtyCell(id,q(iP,id))}</tr>`).join('');
+  const empty=w=>!(w==='L'?iL:iP).length?'<div class="sub">Não precisa hoje. Se der fome, metade da receita.</div>':'';
+  return `<table class="qtab"><thead><tr><th><span class="sub">Toque num item para trocar</span></th><th class="L">Lucas</th><th class="P">Pri</th></tr></thead>
+   <tbody>${rows}<tr class="add"><th colspan="3"><button data-act="shopen" data-key="${key}" data-mid="${mid}">+ Adicionar item</button></th></tr></tbody>
+   <tfoot><tr><th>Proteína</th><td>${R0(nL.p)} g</td><td>${R0(nP.p)} g</td></tr><tr><th>Energia</th><td>${R0(nL.k)} kcal</td><td>${R0(nP.k)} kcal</td></tr></tfoot></table>${empty('L')}${empty('P')}`;
+}
+/* Próxima refeição de hoje: a primeira que ainda não foi marcada pelos dois. */
+function nextSlot(day){if(day.d!==TODAY)return null;const f=SLOTS.find(s=>day.slots[s[0]]&&!(S.checks[`${day.d}|${s[0]}|L`]&&S.checks[`${day.d}|${s[0]}|P`]));return f?f[0]:null;}
+function slotCard(day,k,label,nk){
+  const base=day.slots[k],mid=slotsOf(day)[k],m=MEALS[mid],key=`${day.d}|${k}`,sw=V.swap===key,lo=loteOf(day.d,k);
+  const open=key in V.open?V.open[key]:(k===nk||sw);
+  const ck=w=>!!S.checks[`${key}|${w}`];
+  const meta=[lo&&lo.role==='sobra'?'5 min · sobra':`${m.t} min${lo?' · em dobro':''}`,mid!==base?'trocado':'',isCustom(mid)?'ajustado':'',m.user?'de vocês':''].filter(Boolean).join(' · ');
+  const dots=['L','P'].map(w=>`<span class="eat-dot ${w}${ck(w)?' on':''}" aria-label="${WHO[w]} ${ck(w)?'comeu':'ainda não'}"></span>`).join('');
+  if(!open)return `<article class="slot closed${ck('L')&&ck('P')?' done':''}" id="s-${key}"><button class="slot-row" data-act="slotopen" data-key="${key}" aria-expanded="false">
+     <span class="mini">${ill(mid)}</span><span class="sr-tx"><span class="tag">${label}</span><b>${m.n}</b><span class="sub">${meta}</span></span><span class="dots">${dots}</span>${CHEV}</button></article>`;
+  const eat=['L','P'].map(w=>{const on=ck(w);return `<label class="eat ${w}${on?' on':''}"><input type="checkbox" data-act="chk" data-key="${key}|${w}"${on?' checked':''}><span class="box">${CHECK}</span>${WHO[w]} ${on?'comeu':'comeu?'}</label>`;}).join('');
+  return `<article class="slot open${k===nk?' now':''}" id="s-${key}">
+   <button class="hero" data-act="slotopen" data-key="${key}" aria-expanded="true" aria-label="Recolher ${label}">${ill(mid)}<span class="hero-tag">${k===nk?'Agora · ':''}${label}</span>${CHEV}</button>
+   <div class="slot-b"><h3>${m.n}</h3><div class="sub">${meta}</div>
+   <div class="eats">${eat}</div>
+   ${k==='ceia'?ceiaNote(day):''}${juntoBlock(mid,day,k)}${qtyTable(day,k,mid)}
+   <div class="slot-actions"><button class="btn small" data-act="swapopen" data-key="${key}" aria-expanded="${sw}">${sw?'Fechar trocas':'Trocar refeição'}</button>
+   <button class="btn small" data-act="recipe" data-id="${mid}">Receita</button>
+   ${mid!==base?`<button class="link" data-act="swap" data-key="${key}" data-id="${base}">Voltar ao plano</button>`:''}</div>
+   ${sw?altsBlock(day,k,mid):''}</div></article>`;
 }
 function extrasBlock(day){
   const w=V.extraWho,key=`${day.d}|${w}`,ex=S.extras[key]||{};
   const tabs=['L','P'].map(x=>`<button class="chip" data-act="exwho" data-who="${x}" aria-pressed="${x===w}"><span class="dot ${x}"></span>${WHO[x]}</button>`).join('');
   const pills=EXTRAS.map(e=>{const n=nut(e.it),c=ex[e.id]||0;
     return `<span class="pill"><span>${e.n} <b>+${R0(n.p)} g</b></span>${c?`<button class="pm" data-act="exdel" data-id="${e.id}" aria-label="Tirar um">−</button><span class="ct">${c}</span>`:''}<button class="pm add" data-act="exadd" data-id="${e.id}" aria-label="Adicionar ${e.n}">+</button></span>`;}).join('');
-  return `<section class="card stack"><div><div class="eyebrow">Extras do dia</div><div class="sub">Comeu algo fora do plano ou quer fechar a proteína? Registre aqui e o placar atualiza.</div></div>
+  return `<section class="card stack"><div><div class="eyebrow">Extras do dia</div><div class="sub">Comeu algo fora do plano? Registre e o placar atualiza.</div></div>
    <div class="row">${tabs}</div><div class="pills">${pills}</div></section>`;
 }
 function viewHoje(){
-  const day=dayOf(V.day);
-  const chips=WEEK.map(x=>`<button class="chip day-chip${x.d===TODAY?' today':''}" data-act="day" data-day="${x.d}" aria-pressed="${x.d===V.day}"><span>${x.wd}</span><b>${x.d.slice(8)}</b></button>`).join('');
+  const day=dayOf(V.day),nk=nextSlot(day);
+  const chips=WEEK.map(x=>`<button class="chip day-chip${x.d===TODAY?' today':''}" data-act="day" data-day="${x.d}" aria-pressed="${x.d===V.day}"><span>${x.wd}</span><b>${+x.d.slice(8)}</b></button>`).join('');
   const partial=!day.slots.cafe?'Dia parcial: o café e o almoço já passaram.':(!day.slots.jantar?'Dia parcial: o jantar fica para a próxima semana.':'');
-  const slots=SLOTS.filter(s=>day.slots[s[0]]).map(s=>slotCard(day,s[0],s[1])).join('');
-  return `<div class="chips" role="group" aria-label="Escolha o dia">${chips}</div>
+  const slots=SLOTS.filter(s=>day.slots[s[0]]).map(s=>slotCard(day,s[0],s[1],nk)).join('');
+  return `<div class="chips days" role="group" aria-label="Escolha o dia">${chips}</div>
    <div class="score">${scoreCard(day,'L')}${scoreCard(day,'P')}</div>
    <div class="stack">${partial?`<div class="sub">${partial}</div>`:''}${advice(day)}${slots}${extrasBlock(day)}</div>`;
 }
 
 /* ----- SEMANA ----- */
-function chartSvg(){
-  const W=440,H=210,L=34,Rr=6,T=18,B=40,iw=W-L-Rr,ih=H-T-B,n=WEEK.length,slot=iw/n,bw=Math.min(18,slot/2-3);
-  const y=v=>T+ih-(Math.min(v,130)/130)*ih;
-  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Proteína planejada por dia, em porcentagem da meta de cada um">`;
-  for(const v of [0,50,100]){s+=`<line class="${v===100?'goal':'grid'}" x1="${L}" x2="${W-Rr}" y1="${y(v)}" y2="${y(v)}"/><text x="${L-6}" y="${y(v)+4}" text-anchor="end">${v}%</text>`;}
-  WEEK.forEach((d,i)=>{
-    const cx=L+slot*i+slot/2;
-    for(const e of [['L',-bw-1],['P',1]]){
-      const w=e[0],dx=e[1];
-      const pc=dayStats(d,w).plan.p/S.targets[w].p*100;const yy=y(pc);
-      s+=`<rect class="b${w}" x="${cx+dx}" y="${yy}" width="${bw}" height="${Math.max(0,y(0)-yy)}" rx="3"/><text x="${cx+dx+bw/2}" y="${yy-4}" text-anchor="middle">${R0(pc)}</text>`;}
-    s+=`<text x="${cx}" y="${H-22}" text-anchor="middle">${d.wd} ${d.d.slice(8)}</text>`;
-    if(!d.slots.cafe||!d.slots.jantar)s+=`<text x="${cx}" y="${H-9}" text-anchor="middle">parcial</text>`;
-  });
-  return s+'</svg>';
-}
+/* Marcas do dia: compra e bloco de preparo que começam nele (tocar leva para a aba). */
+function dayMarks(d){const o=[];TRIPS.forEach(t=>{if(t.days[0]===d)o.push(`<button class="mark" data-act="gotrip" data-id="${t.id}">${t.n}</button>`);});
+  if(d===BATCH1[0]||d===BATCH2[0])o.push('<button class="mark prep" data-act="nav" data-v="preparo">Preparo</button>');return o.join('');}
 function viewSemana(){
   const full=WEEK.filter(d=>d.slots.cafe&&d.slots.jantar);
   const avg=w=>full.reduce((a,d)=>a+dayStats(d,w).plan.p,0)/full.length;
+  const okDays=full.filter(d=>['L','P'].every(w=>dayStats(d,w).plan.p>=S.targets[w].p*.95)).length;
+  /* refeição igual todos os dias (o lanche): aparece uma vez no topo, não em cada dia */
+  const same=SLOTS.map(s=>s[0]).filter(k=>{const ms=WEEK.filter(d=>slotsOf(d)[k]).map(d=>slotsOf(d)[k]);return ms.length>2&&ms.every(m=>m===ms[0]);});
+  const lbl=k=>SLOTS.find(s=>s[0]===k)[1];
+  const stat=w=>`<div class="stat ${w}"><span class="nm"><span class="dot ${w}"></span>${WHO[w]}</span><b>${R0(avg(w))} g</b><span class="sub">por dia · meta ${S.targets[w].p}</span></div>`;
   const cards=WEEK.map(d=>{
-    const sl=slotsOf(d);
-    const rows=SLOTS.filter(s=>sl[s[0]]).map(s=>{const mid=sl[s[0]];
-      return `<li><span class="sl">${s[1].split(' ')[0]}</span><span class="mini">${ill(mid)}</span><span>${MEALS[mid].n}${(loteOf(d.d,s[0])||{}).role==='sobra'?' <span class="sub">(sobra)</span>':''}${mid!==d.slots[s[0]]?' <span class="sub">(trocado)</span>':''}</span></li>`;}).join('');
-    const l=dayStats(d,'L').plan,p=dayStats(d,'P').plan;
-    return `<button class="dayc" data-act="day-go" data-day="${d.d}"><div class="top"><h3>${WD_FULL[d.wd]} ${d.d.slice(8)}</h3>${d.d===TODAY?'<span class="tag">hoje</span>':''}</div>
-      <div class="tots"><span class="tot L">Lucas ${R0(l.p)} g · ${R0(l.k)} kcal</span><span class="tot P">Pri ${R0(p.p)} g · ${R0(p.k)} kcal</span></div><ul>${rows}</ul></button>`;}).join('');
-  const counts={};let nS=0;WEEK.forEach(d=>{const sl=slotsOf(d);for(const k in sl){const m=sl[k];if(MEALS[m].slot!=='ref')continue;if((loteOf(d.d,k)||{}).role==='sobra'){nS++;continue;}counts[m]=(counts[m]||0)+1;}});
-  const nAlt=k=>Object.keys(MEALS).filter(id=>MEALS[id].slot===k&&!MEALS[id].outros).length;
-  const rod=Object.keys(counts).sort().map(m=>`${shortOf(m)} ${counts[m]}×`).join(' · ');
-  return `<div class="stack"><section class="card stack"><div><div class="eyebrow">Plano da semana, ${semTxt()}</div>
-   <div class="sub">Média dos dias completos: Lucas ${R0(avg('L'))} g de proteína (meta ${S.targets.L.p}), Pri ${R0(avg('P'))} g (meta ${S.targets.P.p}). O plano já inclui uma folga para os dias em que algo escapar. As barras mostram a proteína planejada em % da meta de cada um.</div></div>
-   <div class="chart">${chartSvg()}</div><div class="who-legend"><span><span class="dot L"></span>Lucas</span><span><span class="dot P"></span>Pri</span></div>
-   <div class="sub">Vezes no fogão, almoço e jantar: ${rod}.${nS?` Mais ${nS} ${nS>1?'refeições':'refeição'} de sobra: purê, macarrão e salada morna são feitos em dobro e a refeição seguinte só esquenta.`:''} Não deu vontade ou faltou um ingrediente? Na aba Hoje, toque em Trocar em qualquer refeição: são ${nAlt('cafe')} cafés, ${nAlt('ref')} pratos, ${nAlt('lanche')} lanches e ${nAlt('ceia')} ceias, todos com o que costuma estar na lista. Os pratos com peixe ficam em Outros, para quando comprar. Compras e preparo se recalculam sozinhos.</div></section>
+    const sl=slotsOf(d),past=d.d<TODAY;
+    const rows=SLOTS.filter(s=>sl[s[0]]&&!same.includes(s[0])).map(s=>{const mid=sl[s[0]],lo=loteOf(d.d,s[0]);
+      return `<li><button data-act="weekslot" data-day="${d.d}" data-k="${s[0]}"><span class="sl">${s[1].split(' ')[0]}</span><span class="mini">${ill(mid)}</span><span class="wn">${MEALS[mid].n}${lo&&lo.role==='sobra'?' <span class="sub">· sobra</span>':''}${mid!==d.slots[s[0]]?' <span class="sub">· trocado</span>':''}</span></button></li>`;}).join('');
+    const l=dayStats(d,'L').plan,p=dayStats(d,'P').plan,low=d.slots.cafe&&d.slots.jantar&&(l.p<S.targets.L.p*.95||p.p<S.targets.P.p*.95);
+    return `<article class="dayc${d.d===TODAY?' is-today':''}${past?' past':''}"><div class="top"><button class="dh" data-act="day-go" data-day="${d.d}"><h3>${WD_FULL[d.wd]} ${+d.d.slice(8)}</h3>${d.d===TODAY?'<span class="tag">hoje</span>':''}</button>
+      <span class="tots"><span class="tot L">${R0(l.p)} g</span><span class="tot P">${R0(p.p)} g</span></span></div>
+      ${dayMarks(d.d)||low?`<div class="marks">${dayMarks(d.d)}${low?'<span class="mark warn">abaixo da meta</span>':''}</div>`:''}<ul>${rows}</ul></article>`;}).join('');
+  return `<div class="stack"><section class="card stack"><div class="eyebrow">Média planejada de proteína</div>
+   <div class="stats">${stat('L')}${stat('P')}</div>
+   <div class="sub">${okDays} de ${full.length} dias completos dentro da meta.${same.map(k=>` ${lbl(k)} todo dia: ${MEALS[slotsOf(WEEK.find(d=>slotsOf(d)[k]))[k]].n}.`).join('')} Toque numa refeição para trocar.</div></section>
    <div class="week">${cards}</div></div>`;
 }
 
@@ -195,7 +190,7 @@ function viewCompras(){
   const rowsBy={};
   t.items.forEach(i=>{const key=`${t.id}|${i.id}`,on=!!S.shop[key],g=ING[i.id];
     const ex=(i.extra||[]).map(e=>`<span class="xtra">+ ${esc(e.t)} <button class="rm" data-act="mandel" data-id="${e.k}" aria-label="Tirar ${esc(e.t)}">×</button></span>`).join('');
-    const why=i.need>0?`${i.who.L?'<span class="mini-tag L">L</span>':''}${i.who.P?'<span class="mini-tag P">P</span>':''}<span>precisa de ${needText(i.id,i.need)} · ${i.uses.join(', ')}</span>`:'<span>adicionado por vocês</span>';
+    const why=i.need>0?`<span>${needText(i.id,i.need)} · ${i.uses.join(', ')}</span>`:'<span>adicionado por vocês</span>';
     (rowsBy[g.aisle]=rowsBy[g.aisle]||[]).push({on,html:`<div class="mrow"><label class="item${on?' done':''}"><input type="checkbox" data-act="shop" data-key="${key}"${on?' checked':''}><span class="box">${CHECK}</span>
        <span class="nm">${g.n}</span><span class="qt">${buyText(i)}</span><span class="meta">${why}</span></label>${ex?`<div class="xtras">${ex}</div>`:''}</div>`});});
   loose(t.id).forEach(({k,m})=>{const key=`${t.id}|m-${k}`,on=!!S.shop[key],n=esc(m.t);
@@ -208,7 +203,7 @@ function viewCompras(){
   const seen=new Set(man(t.id).map(k=>norm(S.manual[t.id][k])));
   const past=[...new Set(Object.values(S.manual).flatMap(o=>Object.values(o||{})).map(String))].filter(x=>!seen.has(norm(x))).slice(-8).reverse();
   const manual=`<section class="card stack add-shop"><div><div class="eyebrow">Adicionar à ${t.n.toLowerCase()}</div>
-    <div class="sub">Escreva como falaria: “2 kg batata”, “3 iogurtes”, “1 dúzia de ovos”, “detergente”. Comida que o app conhece entra no corredor certo e na mochila, e o que sobrar abate da próxima compra.</div></div>
+    <div class="sub">Escreva como falaria: “2 kg batata”, “detergente”. Vai para o corredor certo.</div></div>
     <form class="man-add" data-act="manadd"><input id="man-in" class="in-text" type="text" list="ing-list" data-act="manin" maxlength="60" autocomplete="off" enterkeyhint="done" placeholder="Ex.: 2 kg batata" aria-label="Item para adicionar"><button class="btn primary" type="submit">Adicionar</button></form>
     <div id="man-hint" class="sub man-hint"></div>
     <datalist id="ing-list">${ING_IDS.map(id=>`<option value="${esc(cap(SN[id]||ING[id].n))}">`).join('')}</datalist>
@@ -226,11 +221,12 @@ function viewCompras(){
   }
   const HAVE=['arroz','feijao','aveia','pao','macarrao','amendoim','passata'];
   const havePills=HAVE.map(id=>`<button class="chip" data-act="have" data-id="${id}" aria-pressed="${!!S.have[id]}">${S.have[id]?'Tenho: ':'Já tenho '}${ING[id].n.split(' (')[0].toLowerCase()}</button>`).join('');
-  const stock=t.k==='T1'?`<section class="card stack"><div><div class="eyebrow">Estoque em casa</div><div class="sub">O que já tem entra na conta e some da lista de compras. Atum e sardinha em unidades, o resto é só marcar.</div></div><div class="pills">${havePills}</div><div class="stock">
+  const stock=t.k==='T1'?`<section class="card stack"><div><div class="eyebrow">Estoque em casa</div><div class="sub">O que já tem sai da lista.</div></div><div class="pills">${havePills}</div><div class="stock">
     ${['atum','sardinha'].map(id=>`<div class="stepper"><button data-act="stock" data-id="${id}" data-d="-1" aria-label="Menos ${ING[id].n}">−</button><span>${S.stock[id]||0}</span><button data-act="stock" data-id="${id}" data-d="1" aria-label="Mais ${ING[id].n}">+</button><span class="sub">${ING[id].n}</span></div>`).join('')}</div></section>`:'';
   return `<div class="stack"><div class="trips">${tabs}</div>
-   <section class="card"><div class="eyebrow">${t.n} · ${t.long}</div><div class="sub">Cobre ${t.covers}. Peso estimado na mochila: <b>${fmt(t.kg,1)} kg</b> (limite ${max} kg).</div>
+   <section class="card"><div class="eyebrow">${t.n} · ${t.long}</div><div class="sub">Cobre ${t.covers}.</div>
    <div class="prog"><span>${ct.d} de ${ct.n} no carrinho</span><div class="pbar"><i style="width:${ct.n?ct.d/ct.n*100:0}%"></i></div></div>
+   <div class="prog"><span>Mochila <b>${fmt(t.kg,1)} kg</b> de ${max} kg</span></div>
    <div class="meter${over?' over':''}" role="img" aria-label="${fmt(t.kg,1)} kg de ${max} kg"><i style="width:${Math.min(100,t.kg/scale*100)}%"></i><u style="left:${max/scale*100}%"></u></div>
    ${over?'<div class="tip" style="margin-top:8px">Passou do limite da mochila. Se puder, marque em Estoque o que já tem em casa, ou aumente o limite em Ajustes.</div>':''}</section>
    ${manual}${stock}${aisles}${pantry}
@@ -276,30 +272,53 @@ function ceilTo(n,s){return Math.ceil(n/s-1e-9)*s;}
 function eggOf(list){const f=list.find(i=>i[0]==='ovo');return f?f[1]:0;}
 function boiledEggs(days){let n=0;days.forEach(dd=>{const d=dayOf(dd);if(!d)return;Object.values(slotsOf(d)).forEach(mid=>{
   if(MEALS[mid].oc)n+=eggOf(itemsOf(mid,'L'))+eggOf(itemsOf(mid,'P'));});});return n;}
+/* Potes: quanto de um item vai em cada refeição dos dias do bloco (frango pesado já assado, ~70% do cru). */
+function potes(days,id,f){const out=[];WEEK.forEach(d=>{if(!days.includes(d.d))return;SLOTS.forEach(([k,lb])=>{
+  const q=w=>(dayItems(d,k,w).find(i=>i[0]===id)||[0,0])[1]*f;const L=q('L'),P=q('P');
+  if(L+P>0)out.push(`<li><span>${d.wd} ${+d.d.slice(8)} · ${lb.split(' ')[0].toLowerCase()}</span><span class="L">${L?fmt(Math.round(L/5)*5,0)+' g':'—'}</span><span class="P">${P?fmt(Math.round(P/5)*5,0)+' g':'—'}</span></li>`);});});
+  return out.length?`<ul class="potes"><li class="ph"><span>Pote${f<1?' · peso já pronto':''}</span><span class="L">Lucas</span><span class="P">Pri</span></li>${out.join('')}</ul>`:'';}
+/* Tarefas em ordem de início: o que demora mais (pressão, forno) começa primeiro, o resto entra enquanto espera. */
 function prepPlan(){
-    const mk=(key,label,when,days,first)=>{
+  const mk=(key,label,days,first,trip)=>{
     const nd=needs(days);const fr=ceilTo(((nd.frango||{}).tot||0)*1.1,50);
     const ar=nd.arroz?ceilTo(nd.arroz.tot*.34*1.1,10):0;
     const feijAll=needs(ALL_DAYS).feijao;const fj=feijAll?ceilTo(feijAll.tot*.35*1.05,10):0;
     const ov=boiledEggs(days);
     const tasks=[
-      {id:`${WK}-${key}-azeite`,n:'Azeite aromatizado',m:8,t:'100 ml de azeite com 2 dentes de alho amassados, fogo baixo por 5 min. Tire todo o alho. Geladeira, até 4 dias.'+(first?'':' Descarte o do domingo e faça este novo.')},
-      {id:`${WK}-${key}-frango`,n:`Frango assado: ${fr} g`,m:30,t:`Tempere com sal, páprica e limão. Forno a 200 °C por 22 a 25 min. Desfie metade e fatie o resto. Cobre ${first?'domingo a terça':'quarta a sábado'}.`},
-      {id:`${WK}-${key}-ovos`,n:`Ovos cozidos: ${ov} un`,m:12,t:'Água fria, ferva e conte 10 min. Passe em água gelada. A conta inclui as trocas feitas na aba Hoje.'},
-      ar&&{id:`${WK}-${key}-arroz`,n:`Arroz: ${ar} g crus`,m:20,t:`Refogue no azeite, 2,5 partes de água, 12 min tampado. Rende ~${ar*3} g cozidos. Só o Lucas come arroz.`}].filter(Boolean);
-    if(first)tasks.push({id:`${WK}-${key}-feijao`,n:`Feijão: ${fj} g secos`,m:35,t:`Pressão por 25 min. Rende ~${Math.round(fj*2.85/10)*10} g cozidos. Congele em porções de 140 g, uma por refeição com feijão do Lucas.`});
-    else tasks.push({id:`${WK}-${key}-feijao`,n:'Feijão: porções do congelador',m:2,t:'Passe uma porção para a geladeira na véspera de cada refeição com feijão.'});
-    return{key,label,when,total:tasks.reduce((a,t)=>a+t.m,0),tasks};};
-  return [mk('dom','Domingo '+dia(0),'~1h15',BATCH1,true),mk('qua','Quarta '+dia(3),'~1h',BATCH2,false)];
+      first?{id:`${WK}-${key}-feijao`,n:`Feijão: ${fj} g secos`,s:0,m:35,eq:'Pressão',k:'25 min na pressão',t:`Deixe de molho na véspera se puder. Rende ~${Math.round(fj*2.85/10)*10} g cozidos: congele em porções de 140 g, uma por refeição com feijão do Lucas.`}
+           :{id:`${WK}-${key}-feijao`,n:'Feijão: porções do congelador',s:0,m:2,eq:'Geladeira',k:'1 porção na véspera',t:'Passe uma porção para a geladeira na véspera de cada refeição com feijão.'},
+      {id:`${WK}-${key}-frango`,n:`Frango assado: ${fr} g`,s:0,m:30,eq:'Forno',k:'200 °C · 22 a 25 min',t:'Tempere com sal, páprica e limão enquanto o forno aquece. Asse, deixe amornar, desfie metade e fatie o resto.',potes:potes(days,'frango',.7)},
+      ar&&{id:`${WK}-${key}-arroz`,n:`Arroz: ${ar} g crus`,s:5,m:20,eq:'Panela',k:`12 min tampado · rende ~${ar*3} g`,t:'Refogue no azeite, junte 2,5 partes de água fervente, tampe e cozinhe 12 min. Só o Lucas come arroz.',potes:potes(days,'arroz',1)},
+      ov&&{id:`${WK}-${key}-ovos`,n:`Ovos cozidos: ${ov} un`,s:15,m:12,eq:'Boca',k:'10 min + água gelada',t:'Água fria, ferva e conte 10 min. Passe em água gelada e guarde com casca.'},
+      {id:`${WK}-${key}-azeite`,n:'Azeite aromatizado',s:25,m:8,eq:'Boca',k:'fogo baixo · 5 min',t:'100 ml de azeite com 2 dentes de alho amassados. Tire todo o alho. Geladeira, até 4 dias.'+(first?'':' Descarte o do domingo.')}].filter(Boolean);
+    const end=Math.max(...tasks.map(t=>t.s+t.m))+10;
+    return{key,label,days,trip,end,tasks};};
+  return [mk('dom','Domingo '+dia(0),BATCH1,true,TRIPS[0]),mk('qua','Quarta '+dia(3),BATCH2,false,TRIPS[1])];
 }
+/* Cronômetros do preparo: só neste aparelho, não vão para o S nem para a sincronização. */
+const TIMERS={};let timerI=null;
+function mmss(ms){const t=Math.max(0,Math.ceil(ms/1000));return `${Math.floor(t/60)}:${pad(t%60)}`;}
+function tickTimers(){const now=Date.now();
+  for(const id in TIMERS){const left=TIMERS[id].end-now,el=document.querySelector(`[data-timer="${id}"]`);
+    if(left<=0){const n=TIMERS[id].n;delete TIMERS[id];try{navigator.vibrate&&navigator.vibrate([300,150,300]);}catch(e){}toast(`${n}: tempo acabou`);if(V.view==='preparo')render(true);continue;}
+    if(el)el.textContent=mmss(left);}
+  if(!Object.keys(TIMERS).length){clearInterval(timerI);timerI=null;}}
 function viewPreparo(){
   const plans=prepPlan();
-  return `<div class="stack"><div class="sub">Dois blocos de cozinha por semana. O resto do tempo é montar o prato. As quantidades saem do plano da semana.</div>
-  ${plans.map(p=>{const done=p.tasks.filter(t=>S.prep[t.id]).length;
-   return `<section class="stack"><div class="row" style="justify-content:space-between;flex-wrap:wrap"><h2 style="font-size:20px">${p.label}</h2><span class="sub">${done}/${p.tasks.length} feitos · panelas e forno ao mesmo tempo, ${p.when}</span></div>
-   <div class="list">${p.tasks.map(t=>{const on=!!S.prep[t.id];
-    return `<label class="task${on?' done':''}"><input type="checkbox" data-act="prep" data-key="${t.id}"${on?' checked':''}><span class="box">${CHECK}</span><span class="nm">${t.n}</span><span class="mn">${t.m} min</span><span class="tx">${t.t}</span></label>`;}).join('')}</div></section>`;}).join('')}
-  <div><button class="link" data-act="recipe" data-id="B4">Ver receita do azeite aromatizado</button></div></div>`;
+  /* o bloco da quarta vem primeiro a partir da quarta; o que já passou ou terminou fica recolhido */
+  if(TODAY>=BATCH2[0])plans.reverse();
+  return `<div class="stack">${plans.map(p=>{const done=p.tasks.filter(t=>S.prep[t.id]).length,all=done===p.tasks.length,past=p.days[p.days.length-1]<TODAY;
+   const tr=p.trip,miss=['frango','arroz'].filter(id=>{const it=shopping().find(x=>x.id===tr.id).items.find(i=>i.id===id);return it&&!S.shop[`${tr.id}|${id}`];});
+   const buy=`<button class="buy${miss.length?' warn':''}" data-act="gotrip" data-id="${tr.id}">${miss.length?`Falta comprar ${miss.map(id=>SN[id].replace(' cozido','')).join(' e ')} na ${tr.n.toLowerCase()} (${tr.when.toLowerCase()})`:`Compras da ${tr.n.toLowerCase()} feitas`}</button>`;
+   const tasks=p.tasks.map((t,n)=>{const on=!!S.prep[t.id],run=TIMERS[t.id];
+    return `<div class="task${on?' done':''}"><label class="tk"><input type="checkbox" data-act="prep" data-key="${t.id}"${on?' checked':''}><span class="box">${CHECK}</span>
+      <span class="tk-tx"><span class="when">${n+1} · ${t.s?`aos ${t.s} min`:'comece já'} · ${t.eq}</span><span class="nm">${t.n}</span><span class="sub">${t.k}</span></span></label>
+      <button class="timer${run?' run':''}" data-act="timer" data-id="${t.id}" data-m="${t.m}" data-n="${esc(t.n.split(':')[0])}" aria-label="${run?'Parar cronômetro':'Iniciar cronômetro de '+t.m+' min'}"><span data-timer="${t.id}">${run?mmss(run.end-Date.now()):t.m+' min'}</span></button>
+      ${t.potes||''}<details class="how"><summary>Como fazer</summary><p>${t.t}</p></details></div>`;}).join('');
+   const head=`<div class="sess-h"><h2>${p.label}</h2><span class="sub">${done}/${p.tasks.length} · ~${p.end} min</span></div><div class="pbar"><i style="width:${done/p.tasks.length*100}%"></i></div>`;
+   if(all||past)return `<details class="sess card"><summary>${head}</summary><div class="list">${tasks}</div></details>`;
+   return `<section class="sess card stack">${head}${buy}<div class="list">${tasks}</div></section>`;}).join('')}
+  <div><button class="link" data-act="recipe" data-id="B4">Receita do azeite aromatizado</button></div></div>`;
 }
 
 /* ----- AJUSTES ----- */
@@ -311,8 +330,7 @@ const ICONS=[['verde','Verde'],['preto','Preto'],['rosa','Rosa'],['claro','Claro
 function applyIcon(){const l=document.getElementById('touch-icon');if(l&&ICONS.some(i=>i[0]===S.icon))l.href=`icons/${S.icon}-180.png`;}
 function syncBlock(){
   return `<section class="card stack"><div class="eyebrow">Sincronização</div>
-   <div class="sub">Automática: todo celular ou computador que abre o app fica igual aos outros, sem configurar nada. Situação: <b id="sync-box"></b></div>
-   <div class="sub">Vai para todos: trocas, ajustes, o que cada um comeu, extras, compras, estoque, preparo e metas. Só o ícone e a escolha de ver em gramas ficam em cada aparelho.</div></section>`;
+   <div class="sub">Automática entre todos os aparelhos. Situação: <b id="sync-box"></b></div></section>`;
 }
 function numFld(label,hint,path,val,step){return `<div class="fld"><label for="n-${path}">${label}${hint?`<small>${hint}</small>`:''}</label><input id="n-${path}" type="number" inputmode="decimal" step="${step||1}" min="0" value="${val}" data-act="num" data-path="${path}"></div>`;}
 function viewAjustes(){
@@ -326,7 +344,7 @@ function viewAjustes(){
    ${numFld('Proteína de 1 dose de whey (g)','A sua referência: 24 g','r.whey',S.ref.whey,.5)}
    ${numFld('Limite da mochila (kg)','Alerta nas compras','maxkg',S.maxKg,.5)}</section>
   <section class="card stack"><div><div class="eyebrow">Ícone da tela inicial</div>
-   <div class="sub">Escolha antes de adicionar à Tela de Início: no Safari, Compartilhar e depois "Adicionar à Tela de Início". Já está na tela? Apague o ícone e adicione de novo para trocar.</div></div>
+   <div class="sub">Vale ao adicionar à Tela de Início (Safari › Compartilhar). Para trocar um já adicionado, apague e adicione de novo.</div></div>
    <div class="icons" role="radiogroup" aria-label="Ícone">${ICONS.map(i=>`<button class="icon-opt" role="radio" aria-checked="${S.icon===i[0]}" data-act="icon" data-id="${i[0]}"><img src="icons/${i[0]}-180.png" alt="" width="60" height="60"><span>${i[1]}</span></button>`).join('')}</div></section>
   <section class="card stack"><div class="eyebrow">Como as contas são feitas</div>
    <div class="note">Os totais são estimativas com valores médios de tabela (TACO e rótulos). A balança, na média da semana, é o ajuste real.</div>
@@ -340,7 +358,7 @@ function viewAjustes(){
     <tr><td class="ok-t">Morango, uva, mamão, banana firme, laranja, kiwi, abacaxi</td><td class="no-t">Manga, maçã, pera, abacate, banana muito madura</td></tr></tbody></table></div>
    <div class="sub">Tolerância varia de pessoa para pessoa e por porção. Se a Pri acompanha com nutricionista, vale alinhar esta lista com ela.</div></section>
   ${syncBlock()}
-  <section class="card stack"><div class="eyebrow">Dados</div><div class="sub">Tudo fica salvo neste aparelho e funciona sem internet. Tudo (inclusive o que cada um comeu) vai também para os outros aparelhos, sozinho.</div>${SY.url?'<div class="sub"><b>Atenção:</b> zerar tudo também zera tudo nos outros aparelhos, inclusive o que cada um comeu.</div>':''}
+  <section class="card stack"><div class="eyebrow">Dados</div><div class="sub">Fica salvo neste aparelho e funciona sem internet.</div>${SY.url?'<div class="sub"><b>Atenção:</b> zerar tudo também zera tudo nos outros aparelhos, inclusive o que cada um comeu.</div>':''}
    <div><button class="btn${conf?' warn':''}" data-act="resetall">${conf?'Toque de novo para zerar tudo':'Zerar todas as marcações'}</button></div></section></div>`;
 }
 
@@ -349,6 +367,7 @@ const VIEWS={hoje:viewHoje,semana:viewSemana,compras:viewCompras,receitas:viewRe
 function navHtml(){return `<div class="nav-in">${NAV.map(n=>`<button data-act="nav" data-v="${n[0]}"${V.view===n[0]?' aria-current="page"':''}><svg viewBox="0 0 24 24" aria-hidden="true">${n[2]}</svg><span>${n[1]}</span></button>`).join('')}</div>`;}
 function render(keep){
   const y=window.scrollY;
+  const d=dayOf(V.day);$('#hdr-t').textContent=V.view==='hoje'?(V.day===TODAY?'Hoje':`${WD_FULL[d.wd]}, ${+d.d.slice(8)}`):NAV.find(n=>n[0]===V.view)[1];
   $('#main').innerHTML=VIEWS[V.view]();
   $('#nav').innerHTML=navHtml();
   /* painel: guarda a rolagem de dentro dele entre um toque e outro */
@@ -356,6 +375,7 @@ function render(keep){
   $('#sheet').innerHTML=sheetHtml();document.body.classList.toggle('sheet-open',!!V.sheet);
   const nb=document.querySelector('.sheet-body');if(nb)nb.scrollTop=sy;
   if(keep)window.scrollTo(0,y);
+  const dc=document.querySelector('.days [aria-pressed="true"]');if(dc){const c=dc.parentNode;c.scrollLeft=dc.offsetLeft-c.clientWidth/2+dc.offsetWidth/2;}
   if(typeof syStatus==='function')syStatus();
 }
 function go(v){if(!VIEWS[v])v='hoje';V.view=v;V.confirm=null;render(false);window.scrollTo(0,0);}
@@ -376,7 +396,11 @@ document.addEventListener('click',e=>{
     case 'nav':setHash(t.dataset.v);return;
     case 'day':V.day=t.dataset.day;render(true);return;
     case 'day-go':V.day=t.dataset.day;setHash('hoje');return;
-    case 'both':{const k=t.dataset;const a1=`${k.day}|${k.slot}|L`,a2=`${k.day}|${k.slot}|P`;const on=!(S.checks[a1]&&S.checks[a2]);S.checks[a1]=on;S.checks[a2]=on;save();render(true);return;}
+    case 'slotopen':V.open[t.dataset.key]=t.getAttribute('aria-expanded')!=='true';if(!V.open[t.dataset.key]&&V.swap===t.dataset.key)V.swap=null;render(true);return;
+    case 'weekslot':{const key=`${t.dataset.day}|${t.dataset.k}`;V.day=t.dataset.day;V.open[key]=true;V.swap=key;setHash('hoje');
+      setTimeout(()=>{const el=document.getElementById('s-'+key);if(el)el.scrollIntoView({block:'start'});},60);return;}
+    case 'timer':{const id=t.dataset.id;if(TIMERS[id])delete TIMERS[id];else{TIMERS[id]={end:Date.now()+Number(t.dataset.m)*60000,n:t.dataset.n};if(!timerI)timerI=setInterval(tickTimers,1000);}render(true);return;}
+    case 'gotrip':V.trip=t.dataset.id;setHash('compras');return;
     case 'recipe':V.open[t.dataset.id]=true;V.filter='all';setHash('receitas');setTimeout(()=>{const el=document.getElementById('rec-'+t.dataset.id);if(el)el.scrollIntoView({block:'start'});},60);return;
     case 'exwho':V.extraWho=t.dataset.who;render(true);return;
     case 'exadd':case 'exdel':{const key=`${V.day}|${V.extraWho}`;const ex=S.extras[key]=S.extras[key]||{};const id=t.dataset.id;ex[id]=Math.max(0,(ex[id]||0)+(a==='exadd'?1:-1));save();render(true);return;}
@@ -419,7 +443,6 @@ window.addEventListener('hashchange',()=>go(location.hash.slice(1)));
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.classList&&e.target.classList.contains('ed-in'))e.target.blur();if(e.key==='Escape'&&V.sheet)sheetClose();});
 document.addEventListener('focusout',e=>{if(e.target.classList&&e.target.classList.contains('ed-in'))setTimeout(()=>{if(V.shIn){V.shIn=null;render(true);}},0);});
 (function init(){
-  document.getElementById('app').innerHTML=`<div class="wrap"><header class="hdr"><div><h1>Cardápio Lucas e Pri</h1><p>Semana de ${semTxt()}</p><p id="sync-st" class="sync-st" hidden></p></div>
-   <div class="who-legend"><span><span class="dot L"></span>Lucas</span><span><span class="dot P"></span>Pri</span></div></header><main id="main"></main></div><nav class="nav" id="nav" aria-label="Seções"></nav><div id="sheet"></div><div id="toast" aria-live="polite"></div>`;
+  document.getElementById('app').innerHTML=`<div class="wrap"><header class="hdr"><p class="eyebrow">Lucas e Pri · ${semTxt()}</p><h1 id="hdr-t"></h1><p id="sync-st" class="sync-st" hidden></p></header><main id="main"></main></div><nav class="nav" id="nav" aria-label="Seções"></nav><div id="sheet"></div><div id="toast" aria-live="polite"></div>`;
   const h=(location.hash||'').slice(1);V.view=VIEWS[h]?h:'hoje';applyIcon();render(false);
 })();
