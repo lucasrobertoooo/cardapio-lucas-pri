@@ -111,6 +111,13 @@ function qtyTable(day,k,mid){
    <tbody>${rows}<tr class="add"><th colspan="3"><button data-act="shopen" data-key="${key}" data-mid="${mid}">+ Adicionar item</button></th></tr></tbody>
    <tfoot><tr><th>Proteína</th><td>${R0(nL.p)} g</td><td>${R0(nP.p)} g</td></tr><tr><th>Energia</th><td>${R0(nL.k)} kcal</td><td>${R0(nP.k)} kcal</td></tr></tfoot></table>${empty('L')}${empty('P')}`;
 }
+/* Passo a passo dentro da refeição: cozinhar sem trocar de aba. Marcações valem para aquele dia. */
+function howTo(day,k,mid,lo){
+  const key=`${day.d}|${k}`,open=!!V.open['how|'+key],r=RECIPES[mid]||{steps:['Separe os itens da tabela e monte o prato de cada um.'],tips:[]};
+  const steps=lo&&lo.role==='sobra'?['Pegue a porção de cada um que ficou na geladeira.','Esquente no micro-ondas por 2 a 3 min, mexendo na metade.']:r.steps;
+  const sk=i=>`${key}|${mid}|${i}`,done=steps.filter((x,i)=>S.steps[sk(i)]).length;
+  return `<div class="howto"><button class="howto-h" data-act="howto" data-key="${key}" aria-expanded="${open}"><span><b>Como fazer</b><span class="sub"> · ${done?`${done} de ${steps.length} feitos`:`${steps.length} ${steps.length>1?'passos':'passo'}`}</span></span>${CHEV}</button>
+   ${open?`<ol class="steps">${steps.map((x,i)=>`<li class="${S.steps[sk(i)]?'done':''}" data-act="step" data-key="${sk(i)}"><span>${x}</span></li>`).join('')}</ol>${!(lo&&lo.role==='sobra')&&r.tips&&r.tips.length?`<div class="note">${r.tips.map(t=>`<div>${t}</div>`).join('')}</div>`:''}`:''}</div>`;}
 /* Próxima refeição de hoje: a primeira que ainda não foi marcada pelos dois. */
 function nextSlot(day){if(day.d!==TODAY)return null;const f=SLOTS.find(s=>day.slots[s[0]]&&!(S.checks[`${day.d}|${s[0]}|L`]&&S.checks[`${day.d}|${s[0]}|P`]));return f?f[0]:null;}
 function slotCard(day,k,label,nk){
@@ -121,12 +128,15 @@ function slotCard(day,k,label,nk){
   const dots=['L','P'].map(w=>`<span class="eat-dot ${w}${ck(w)?' on':''}" aria-label="${WHO[w]} ${ck(w)?'comeu':'ainda não'}"></span>`).join('');
   if(!open)return `<article class="slot closed${ck('L')&&ck('P')?' done':''}" id="s-${key}"><button class="slot-row" data-act="slotopen" data-key="${key}" aria-expanded="false">
      <span class="mini">${ill(mid)}</span><span class="sr-tx"><span class="tag">${label}</span><b>${m.n}</b><span class="sub">${meta}</span></span><span class="dots">${dots}</span>${CHEV}</button></article>`;
-  const eat=['L','P'].map(w=>{const on=ck(w);return `<label class="eat ${w}${on?' on':''}"><input type="checkbox" data-act="chk" data-key="${key}|${w}"${on?' checked':''}><span class="box">${CHECK}</span>${WHO[w]} ${on?'comeu':'comeu?'}</label>`;}).join('');
+  /* dono deste celular primeiro, como "Eu comi"; o outro ao lado; "Comemos juntos" marca os dois de uma vez */
+  const me=S.me==='L'||S.me==='P'?S.me:'',order=me==='P'?['P','L']:['L','P'];
+  const eat=order.map(w=>{const on=ck(w),mine=w===me;return `<label class="eat ${w}${on?' on':''}${mine?' me':''}"><input type="checkbox" data-act="chk" data-key="${key}|${w}"${on?' checked':''}><span class="box">${CHECK}</span>${mine?(on?'Eu comi':'Eu comi?'):`${WHO[w]} ${on?'comeu':'comeu?'}`}</label>`;}).join('')
+    +(!(ck('L')&&ck('P'))?`<button class="link both" data-act="both" data-key="${key}">Comemos juntos: marcar os dois</button>`:'');
   return `<article class="slot open${k===nk?' now':''}" id="s-${key}">
    <button class="hero" data-act="slotopen" data-key="${key}" aria-expanded="true" aria-label="Recolher ${label}">${ill(mid)}<span class="hero-tag">${k===nk?'Agora · ':''}${label}</span>${CHEV}</button>
    <div class="slot-b"><h3>${m.n}</h3><div class="sub">${meta}</div>
    <div class="eats">${eat}</div>
-   ${k==='ceia'?ceiaNote(day):''}${juntoBlock(mid,day,k)}${qtyTable(day,k,mid)}
+   ${k==='ceia'?ceiaNote(day):''}${juntoBlock(mid,day,k)}${qtyTable(day,k,mid)}${howTo(day,k,mid,lo)}
    <div class="slot-actions"><button class="btn small" data-act="shopen" data-key="${key}" data-mid="${mid}">Mudar itens</button><button class="btn small" data-act="swapopen" data-key="${key}" aria-expanded="${sw}">${sw?'Fechar trocas':'Trocar refeição'}</button>
    <button class="btn small" data-act="recipe" data-id="${mid}">Receita</button>
    ${mid!==base?`<button class="link" data-act="swap" data-key="${key}" data-id="${base}">Voltar ao plano</button>`:''}</div>
@@ -140,13 +150,16 @@ function extrasBlock(day){
   return `<section class="card stack"><div><div class="eyebrow">Extras do dia</div><div class="sub">Comeu algo fora do plano? Registre e o placar atualiza.</div></div>
    <div class="row">${tabs}</div><div class="pills">${pills}</div></section>`;
 }
+function meOpts(){return [['L','Lucas'],['P','Pri'],['both','Dos dois']].map(o=>`<button class="chip" data-act="me" data-id="${o[0]}" aria-pressed="${S.me===o[0]}">${o[0]!=='both'?`<span class="dot ${o[0]}"></span>`:''}${o[1]}</button>`).join('');}
 function viewHoje(){
   const day=dayOf(V.day),nk=nextSlot(day);
   const chips=WEEK.map(x=>`<button class="chip day-chip${x.d===TODAY?' today':''}" data-act="day" data-day="${x.d}" aria-pressed="${x.d===V.day}"><span>${x.wd}</span><b>${+x.d.slice(8)}</b></button>`).join('');
   const partial=!day.slots.cafe?'Dia parcial: o café e o almoço já passaram.':(!day.slots.jantar?'Dia parcial: o jantar fica para a próxima semana.':'');
   const slots=SLOTS.filter(s=>day.slots[s[0]]).map(s=>slotCard(day,s[0],s[1],nk)).join('');
   return `<div class="chips days" role="group" aria-label="Escolha o dia">${chips}</div>
-   <div class="score">${scoreCard(day,'L')}${scoreCard(day,'P')}</div>
+   <div class="score">${S.me==='P'?scoreCard(day,'P')+scoreCard(day,'L'):scoreCard(day,'L')+scoreCard(day,'P')}</div>
+   ${S.me?'':`<section class="card me-ask"><b>De quem é este celular?</b><span class="sub">Assim o “Eu comi” fica com você. Dá para mudar em Ajustes.</span>
+     <div class="me-opts">${meOpts()}</div></section>`}
    <div class="stack">${partial?`<div class="sub">${partial}</div>`:''}${advice(day)}${slots}${extrasBlock(day)}</div>`;
 }
 
@@ -357,6 +370,7 @@ function viewAjustes(){
     <tr><td class="ok-t">Cenoura, tomate, pepino, espinafre, alface, couve, pimentão vermelho; abobrinha, abóbora cabotiá, brócolis, berinjela e vagem até ¾ xícara</td><td class="no-t">Cebola, alho, cogumelo, couve-flor, beterraba, grão-de-bico</td></tr>
     <tr><td class="ok-t">Morango, uva, mamão, banana firme, laranja, kiwi, abacaxi</td><td class="no-t">Manga, maçã, pera, abacate, banana muito madura</td></tr></tbody></table></div>
    <div class="sub">Tolerância varia de pessoa para pessoa e por porção. Se a Pri acompanha com nutricionista, vale alinhar esta lista com ela.</div></section>
+  <section class="card stack"><div><div class="eyebrow">Este celular</div><div class="sub">Quem usa este aparelho. Fica só nele.</div></div><div class="me-opts">${meOpts()}</div></section>
   ${syncBlock()}
   <section class="card stack"><div class="eyebrow">Dados</div><div class="sub">Fica salvo neste aparelho e funciona sem internet.</div>${SY.url?'<div class="sub"><b>Atenção:</b> zerar tudo também zera tudo nos outros aparelhos, inclusive o que cada um comeu.</div>':''}
    <div><button class="btn${conf?' warn':''}" data-act="resetall">${conf?'Toque de novo para zerar tudo':'Zerar todas as marcações'}</button></div></section></div>`;
@@ -396,6 +410,9 @@ document.addEventListener('click',e=>{
     case 'nav':setHash(t.dataset.v);return;
     case 'day':V.day=t.dataset.day;render(true);return;
     case 'day-go':V.day=t.dataset.day;setHash('hoje');return;
+    case 'me':S.me=t.dataset.id;save();render(true);return;
+    case 'howto':V.open['how|'+t.dataset.key]=!V.open['how|'+t.dataset.key];render(true);return;
+    case 'both':{const k=t.dataset.key;S.checks[k+'|L']=true;S.checks[k+'|P']=true;save();render(true);return;}
     case 'slotopen':V.open[t.dataset.key]=t.getAttribute('aria-expanded')!=='true';if(!V.open[t.dataset.key]&&V.swap===t.dataset.key)V.swap=null;render(true);return;
     case 'weekslot':{const key=`${t.dataset.day}|${t.dataset.k}`;V.day=t.dataset.day;V.open[key]=true;V.swap=key;setHash('hoje');
       setTimeout(()=>{const el=document.getElementById('s-'+key);if(el)el.scrollIntoView({block:'start'});},60);return;}

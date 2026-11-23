@@ -1,7 +1,7 @@
 /* ===== ESTADO E CÁLCULOS ===== */
 const KEY='cardapio-lucas-pri-v1';
 const DEF={checks:{},extras:{},shop:{},stock:{atum:4,sardinha:2},pantry:{},prep:{},steps:{},
-  targets:{L:{p:160,k:2800},P:{p:125,k:1750}},ref:{iog:3.6,whey:24},maxKg:14,have:{},swap:{},icon:'verde',custom:{},unit:{},manual:{},mine:{},ing:{}};
+  targets:{L:{p:160,k:2800},P:{p:125,k:1750}},ref:{iog:3.6,whey:24},maxKg:14,have:{},swap:{},icon:'verde',custom:{},unit:{},manual:{},mine:{},ing:{},me:''};
 function clone(o){return JSON.parse(JSON.stringify(o));}
 function loadState(){
   const s=clone(DEF);

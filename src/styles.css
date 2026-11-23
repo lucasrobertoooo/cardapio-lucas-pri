@@ -395,3 +395,14 @@ body.sheet-open{overflow:hidden}
 .man-add{padding:0}
 .man-hint:empty{display:none}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* dono do celular e passo a passo na refeição */
+.eat.me{grid-column:1/-1;order:-1;min-height:52px;font-size:15px}
+.eats .both{grid-column:1/-1;justify-self:start;padding:4px 0}
+.me-ask{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.me-opts{display:flex;gap:8px;flex-wrap:wrap}
+.howto{border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.howto-h{display:flex;justify-content:space-between;align-items:center;width:100%;border:0;background:var(--surface2);padding:10px 12px;text-align:left;color:var(--ink);min-height:44px}
+.howto-h .chev{width:18px;height:18px;stroke:var(--ink2);fill:none;stroke-width:2;transition:transform .15s}
+.howto-h[aria-expanded="true"] .chev{transform:rotate(180deg)}
+.howto .steps{padding:10px}.howto .note{margin:0 10px 10px}
+.eats:has(.me) .both{grid-column:auto;align-self:center;justify-self:start;font-size:12.5px}
