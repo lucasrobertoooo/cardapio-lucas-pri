@@ -1,7 +1,7 @@
 /* ===== ESTADO E CÁLCULOS ===== */
 const KEY='cardapio-lucas-pri-v1';
 const DEF={checks:{},extras:{},shop:{},stock:{atum:4,sardinha:2},pantry:{},prep:{},steps:{},
-  targets:{L:{p:160,k:2800},P:{p:125,k:1750}},ref:{iog:3.6,whey:24},maxKg:14,have:{},swap:{},icon:'verde',custom:{},unit:{},manual:{},mine:{},ing:{},me:''};
+  targets:{L:{p:160,k:2800},P:{p:125,k:1750}},ref:{iog:3.6,whey:24},maxKg:14,have:{},swap:{},icon:'verde',custom:{},unit:{},manual:{},mine:{},ing:{},me:'',dayc:{}};
 function clone(o){return JSON.parse(JSON.stringify(o));}
 function loadState(){
   const s=clone(DEF);
@@ -121,8 +121,8 @@ function cookDate(d,k){const l=loteOf(d,k);return l&&l.role==='sobra'?l.o.d:d;}
    Não ajusta se a ceia foi mexida à mão no editor, nem em dia parcial. */
 function ceiaInfo(day,who){
   const sl=slotsOf(day),mid=sl.ceia;
-  if(!mid||!sl.cafe||!sl.jantar||(S.custom[mid]&&S.custom[mid][who]))return {f:1,auto:false};
-  let others=0;for(const s of SLOTS){if(s[0]==='ceia')continue;const m=sl[s[0]];if(m)others+=nut(itemsOf(m,who)).p;}
+  if(!mid||!sl.cafe||!sl.jantar||(S.custom[mid]&&S.custom[mid][who])||dayOver(day,'ceia',who))return {f:1,auto:false};
+  let others=0;for(const s of SLOTS){if(s[0]==='ceia')continue;const m=sl[s[0]];if(m)others+=nut(dayOver(day,s[0],who)||itemsOf(m,who)).p;}
   /* extras registrados no dia (ex.: 1 dose de whey a mais) também contam */
   const ex=S.extras[`${day.d}|${who}`]||{};for(const e of EXTRAS){const c=ex[e.id]||0;if(c)others+=nut(e.it).p*c;}
   const base=nut(itemsOf(mid,who)).p||1,gap=S.targets[who].p-others;
@@ -130,7 +130,11 @@ function ceiaInfo(day,who){
 }
 function scaleItems(its,f){if(f===1)return its;if(f===0)return [];return its.map(([id,q])=>{const st=ING[id].st||1;return [id,Math.max(st,Math.round(q*f/st)*st)];});}
 /* Ingredientes de uma refeição num dia, para uma pessoa (com ajustes do editor e a ceia completando o dia). */
-function dayItems(day,slot,who){const mid=slotsOf(day)[slot];if(!mid)return [];const its=itemsOf(mid,who);return slot==='ceia'?scaleItems(its,ceiaInfo(day,who).f):its;}
+/* Mudança só de um dia ("não tinha ovo, comi queijo"): S.dayc['data|refeição'] = {mid, L:{item:qtd}, P:{…}}. Vale se a refeição do dia ainda é a mesma. */
+function dayOver(day,slot,who){const o=S.dayc[day.d+'|'+slot];if(!o||o.mid!==slotsOf(day)[slot]||!o[who])return null;
+  const base=itemsOf(o.mid,who).map(i=>i[0]),pos=id=>{const i=base.indexOf(id);return i<0?100+ING_IDS.indexOf(id):i;};
+  return Object.keys(o[who]).filter(id=>ING[id]&&o[who][id]>0).sort((a,b)=>pos(a)-pos(b)).map(id=>[id,o[who][id]]);}
+function dayItems(day,slot,who){const mid=slotsOf(day)[slot];if(!mid)return [];const ov=dayOver(day,slot,who);if(ov)return ov;const its=itemsOf(mid,who);return slot==='ceia'?scaleItems(its,ceiaInfo(day,who).f):its;}
 function dayStats(day,who){
   const plan={p:0,k:0},done={p:0,k:0};
   const sl=slotsOf(day);for(const s of SLOTS){const mid=sl[s[0]];if(!mid)continue;const n=nut(dayItems(day,s[0],who));plan.p+=n.p;plan.k+=n.k;

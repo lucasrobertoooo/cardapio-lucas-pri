@@ -3,7 +3,7 @@
    Em comum: tudo que é do plano e da casa, inclusive o que cada um comeu (checks), extras e passos de receita.
    Só do aparelho: ícone e a escolha de ver em gramas (unit).
    A casa (…/casas/<código>) vem embutida no app (CASA, no fim deste arquivo): nada para configurar. */
-const SHARED=['swap','shop','stock','have','pantry','prep','targets','ref','maxKg','custom','manual','checks','extras','steps','mine','ing'];
+const SHARED=['swap','shop','stock','have','pantry','prep','targets','ref','maxKg','custom','manual','checks','extras','steps','mine','ing','dayc'];
 /* passaram a sincronizar depois: na 1ª conexão de um aparelho que já estava na casa, o que só ele tem sobe (nada se apaga) */
 const LATE=['checks','extras','steps'];
 const SYK='cardapio-sync';

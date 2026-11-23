@@ -112,7 +112,7 @@ const PAR=[
   'arroz quinoa macarrao batata mandioca batatadoce cuscuz','macarrao arroz quinoa batata','quinoa arroz cuscuz macarrao',
   'batata batatadoce mandioca arroz','batatadoce batata mandioca arroz','mandioca batata batatadoce arroz','aveia tapioca pao',
   'frango peixe atum camarao sardinha ovo pts','peixe frango atum camarao sardinha','camarao peixe frango atum',
-  'atum sardinha frango peixe ovo','sardinha atum frango peixe','ovo frango atum cottage minas','pts frango atum',
+  'atum sardinha frango peixe ovo','sardinha atum frango peixe','ovo minas mussarela cottage frango atum iogurte','pts frango atum',
   'iogurte leite cottage','leite iogurte','cottage minas mussarela iogurte ovo','minas cottage mussarela','mussarela minas cottage parmesao',
   'parmesao mussarela minas','feijao grao',
   'amendoim castanha','castanha amendoim','azeite','maionese azeite','mel chocolate','chocolate mel castanha',

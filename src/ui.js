@@ -124,7 +124,7 @@ function slotCard(day,k,label,nk){
   const base=day.slots[k],mid=slotsOf(day)[k],m=MEALS[mid],key=`${day.d}|${k}`,sw=V.swap===key,lo=loteOf(day.d,k);
   const open=key in V.open?V.open[key]:(k===nk||sw);
   const ck=w=>!!S.checks[`${key}|${w}`];
-  const meta=[lo&&lo.role==='sobra'?'5 min · sobra':`${m.t} min${lo?' · em dobro':''}`,mid!==base?'trocado':'',isCustom(mid)?'ajustado':'',m.user?'de vocês':''].filter(Boolean).join(' · ');
+  const meta=[lo&&lo.role==='sobra'?'5 min · sobra':`${m.t} min${lo?' · em dobro':''}`,mid!==base?'trocado':'',S.dayc[key]&&S.dayc[key].mid===mid?'mudado só neste dia':'',isCustom(mid)?'ajustado':'',m.user?'de vocês':''].filter(Boolean).join(' · ');
   const dots=['L','P'].map(w=>`<span class="eat-dot ${w}${ck(w)?' on':''}" aria-label="${WHO[w]} ${ck(w)?'comeu':'ainda não'}"></span>`).join('');
   if(!open)return `<article class="slot closed${ck('L')&&ck('P')?' done':''}" id="s-${key}"><button class="slot-row" data-act="slotopen" data-key="${key}" aria-expanded="false">
      <span class="mini">${ill(mid)}</span><span class="sr-tx"><span class="tag">${label}</span><b>${m.n}</b><span class="sub">${meta}</span></span><span class="dots">${dots}</span>${CHEV}</button></article>`;
@@ -426,7 +426,7 @@ document.addEventListener('click',e=>{
     case 'mandel':{const un=snap(),m=S.manual[V.trip]||{},nm=m[t.dataset.id];delete m[t.dataset.id];delete S.shop[`${V.trip}|m-${t.dataset.id}`];if(!Object.keys(m).length)delete S.manual[V.trip];save();render(true);toast(`${nm} saiu da lista`,un);return;}
     case 'stock':{const id=t.dataset.id;S.stock[id]=Math.max(0,(S.stock[id]||0)+Number(t.dataset.d));save();render(true);return;}
     case 'resetshop':{const un=snap();Object.keys(S.shop).forEach(x=>{if(x.indexOf(t.dataset.id+'|')===0)delete S.shop[x];});save();render(true);toast('Marcações desta compra zeradas',un);return;}
-    case 'resetall':{if(V.confirm==='all'){S.checks={};S.extras={};S.shop={};S.pantry={};S.prep={};S.steps={};S.have={};S.swap={};V.confirm=null;save();}else arm('all');render(true);return;}
+    case 'resetall':{if(V.confirm==='all'){S.checks={};S.extras={};S.shop={};S.pantry={};S.prep={};S.steps={};S.have={};S.swap={};S.dayc={};V.confirm=null;save();}else arm('all');render(true);return;}
     case 'exp':V.open[t.dataset.id]=!V.open[t.dataset.id];render(true);return;
     case 'step':S.steps[t.dataset.key]=!S.steps[t.dataset.key];save();render(true);return;
     case 'clearsteps':Object.keys(S.steps).forEach(x=>{if(x.indexOf(t.dataset.id+'|')===0)delete S.steps[x];});save();render(true);return;
