@@ -136,13 +136,14 @@ function suggest(gap){
 }
 
 /* ===== COMPRAS: calculadas a partir do plano ===== */
+const DD=WEEK.map(d=>d.d),dia=i=>+DD[i].slice(8);
 const TRIPS=[
-  {id:'T1',n:'Compra 1',when:'Dom 15',long:'Domingo 15',covers:'dom e seg, mais a despensa da semana',days:['2026-11-15','2026-11-16']},
-  {id:'T2',n:'Compra 2',when:'Ter 17',long:'Terça 17',covers:'ter a qui, mais o frango e o arroz da quarta',days:['2026-11-17','2026-11-18','2026-11-19']},
-  {id:'T3',n:'Compra 3',when:'Sex 20',long:'Sexta 20',covers:'sex a dom',days:['2026-11-20','2026-11-21','2026-11-22']}
+  {id:'T1-'+WK,k:'T1',n:'Compra 1',when:'Dom '+dia(0),long:'Domingo '+dia(0),covers:'dom e seg, mais a despensa da semana',days:DD.slice(0,2)},
+  {id:'T2-'+WK,k:'T2',n:'Compra 2',when:'Ter '+dia(2),long:'Terça '+dia(2),covers:'ter a qui, mais o frango e o arroz da quarta',days:DD.slice(2,5)},
+  {id:'T3-'+WK,k:'T3',n:'Compra 3',when:'Sex '+dia(5),long:'Sexta '+dia(5),covers:'sex e sáb',days:DD.slice(5)}
 ];
-/* O que é cozido em lote é comprado antes do dia de cozinhar: lote 1 no domingo (cobre seg e ter), lote 2 na quarta de manhã (cobre qua a dom). */
-const BATCH1=['2026-11-15','2026-11-16','2026-11-17'],BATCH2=['2026-11-18','2026-11-19','2026-11-20','2026-11-21','2026-11-22'];
+/* O que é cozido em lote é comprado antes do dia de cozinhar: lote 1 no domingo (cobre dom a ter), lote 2 na quarta de manhã (cobre qua a sáb). */
+const BATCH1=DD.slice(0,3),BATCH2=DD.slice(3);
 const ALL_DAYS=WEEK.map(d=>d.d);
 function needs(days,onlyMeals){
   const out={};
@@ -172,9 +173,9 @@ function shopping(){
   return TRIPS.map(t=>{
     const nd=needs(t.days);const items=[];let w=0;
     for(const id of ['frango','arroz','feijao'])delete nd[id];
-    const bn=needs(t.id==='T1'?BATCH1:t.id==='T2'?BATCH2:[]);
+    const bn=needs(t.k==='T1'?BATCH1:t.k==='T2'?BATCH2:[]);
     for(const id of ['frango','arroz'])if(bn[id])nd[id]=bn[id];
-    if(t.id==='T1'){const fa=needs(ALL_DAYS).feijao;if(fa)nd.feijao=fa;}
+    if(t.k==='T1'){const fa=needs(ALL_DAYS).feijao;if(fa)nd.feijao=fa;}
     for(const id in nd){const g=ING[id];if(g.pantry)continue;
       const need=nd[id].tot*(g.f||1);const have=S.have[id]?Infinity:(left[id]||0);let packs=0;
       if(have<need-1e-9)packs=Math.ceil((need-have)/g.pack-1e-9);

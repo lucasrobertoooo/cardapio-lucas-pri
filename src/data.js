@@ -160,14 +160,22 @@ const MEALS = {
   P:[['batata',225],['cenoura',60],['ovo',2],['maionese',30],['frango',80]]}
 };
 /* Pratos de panela (lote:1) seguidos no plano viram uma panela só: cozinha em dobro e a refeição seguinte é sobra (loteOf em logic.js). */
-const WEEK = [
- {d:'2026-11-15', wd:'Dom', slots:{lanche:'L1', jantar:'M1', ceia:'E1'}},
- {d:'2026-11-16', wd:'Seg', slots:{cafe:'C1', almoco:'M2', lanche:'L1', jantar:'M6', ceia:'E2'}},
- {d:'2026-11-17', wd:'Ter', slots:{cafe:'C2', almoco:'M5', lanche:'L1', jantar:'M5', ceia:'E1'}},
- {d:'2026-11-18', wd:'Qua', slots:{cafe:'C1', almoco:'M4', lanche:'L1', jantar:'M7', ceia:'E2'}},
- {d:'2026-11-19', wd:'Qui', slots:{cafe:'C2', almoco:'M7', lanche:'L1', jantar:'M2', ceia:'E1'}},
- {d:'2026-11-20', wd:'Sex', slots:{cafe:'C1', almoco:'M9', lanche:'L1', jantar:'M1', ceia:'E2'}},
- {d:'2026-11-21', wd:'Sáb', slots:{cafe:'C2', almoco:'M1', lanche:'L1', jantar:'M6', ceia:'E1'}},
- {d:'2026-11-22', wd:'Dom', slots:{cafe:'C1', almoco:'M6'}}
+/* Semana de domingo a sábado, calculada pela data de hoje: vira sozinha todo domingo.
+   PLANO é o cardápio-modelo, igual toda semana; as trocas da aba Hoje valem por data. Pratos de panela em pares. */
+const PLANO = [
+ {wd:'Dom', slots:{cafe:'C1', almoco:'M2', lanche:'L1', jantar:'M1', ceia:'E1'}},
+ {wd:'Seg', slots:{cafe:'C2', almoco:'M1', lanche:'L1', jantar:'M6', ceia:'E2'}},
+ {wd:'Ter', slots:{cafe:'C1', almoco:'M6', lanche:'L1', jantar:'M4', ceia:'E1'}},
+ {wd:'Qua', slots:{cafe:'C2', almoco:'M5', lanche:'L1', jantar:'M5', ceia:'E2'}},
+ {wd:'Qui', slots:{cafe:'C1', almoco:'M7', lanche:'L1', jantar:'M7', ceia:'E1'}},
+ {wd:'Sex', slots:{cafe:'C2', almoco:'M9', lanche:'L1', jantar:'M10', ceia:'E2'}},
+ {wd:'Sáb', slots:{cafe:'C1', almoco:'M10', lanche:'L1', jantar:'M2', ceia:'E1'}}
 ];
+const p2=n=>String(n).padStart(2,'0'),isoOf=d=>`${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}`;
+/* 'cardapio-hoje-test' (só para teste local) finge outra data */
+const HOJE=(()=>{let t='';try{t=localStorage.getItem('cardapio-hoje-test')||'';}catch(e){}return /^\d{4}-\d\d-\d\d$/.test(t)?t:isoOf(new Date());})();
+const WEEK=(()=>{const d=new Date(HOJE+'T12:00:00');d.setDate(d.getDate()-d.getDay());
+  return PLANO.map((p,i)=>{const x=new Date(d);x.setDate(d.getDate()+i);return {d:isoOf(x),wd:p.wd,slots:p.slots};});})();
+/* marca a semana nas chaves das compras e do preparo: a semana nova começa sem nada marcado (estoque, já tenho e despensa continuam) */
+const WK=WEEK[0].d.replace(/-/g,'');
 if (typeof module!=='undefined') module.exports={ING,MEALS,WEEK,AISLES};
