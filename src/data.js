@@ -59,6 +59,13 @@ const ING = {
   pts:      {n:'PTS (proteína texturizada de soja)', u:'g', p:.5, k:3.3, pack:500, pk:['pacote','pacotes'], size:'500 g', aisle:'merc'},
   paofr:    {n:'Pão francês (padaria)', u:'un', p:4.7, k:150, pack:1, loose:true, wp:50, aisle:'merc'},
   ameixa:   {n:'Ameixa fresca', u:'un', p:.5, k:37, pack:1, loose:true, wp:70, aisle:'hort'},
+  tapioca:  {n:'Goma de tapioca', u:'g', p:0, k:2.4, pack:500, pk:['pacote','pacotes'], size:'500 g', aisle:'merc'},
+  cuscuz:   {n:'Flocão de milho (cuscuz)', u:'g', p:.072, k:3.6, pack:500, pk:['pacote','pacotes'], size:'500 g', aisle:'merc'},
+  minas:    {n:'Queijo minas frescal', u:'g', p:.17, k:2.6, pack:400, pk:['peça','peças'], size:'~400 g', aisle:'lat'},
+  castanha: {n:'Castanha-do-pará', u:'g', p:.145, k:6.6, pack:100, pk:['pacote','pacotes'], size:'100 g', aisle:'merc'},
+  chocolate:{n:'Chocolate 70% cacau', u:'g', p:.08, k:5.8, pack:100, pk:['barra','barras'], size:'100 g', aisle:'merc'},
+  mel:      {n:'Mel', u:'g', p:0, k:3.1, pack:300, pk:['pote','potes'], size:'300 g', aisle:'merc'},
+  maca:     {n:'Maçã', u:'un', p:.4, k:85, pack:1, loose:true, wp:150, aisle:'hort'},
   maionese: {n:'Maionese light (pote, sem alho e cebola)', u:'g', p:.005, k:2.7, pack:500, pk:['pote','potes'], size:'500 g', aisle:'merc'}
 };
 /* Editor de refeição: st = passo do + e −, hu = medida caseira [singular, plural, g ou ml por medida],
@@ -85,9 +92,23 @@ const ADJ = {
   banana:{fp:1, st:.5, pri:1, gw:100}, laranja:{fp:1, st:1, gw:130}, kiwi:{fp:2, st:1, gw:75},
   morango:{fp:144, st:12, hu:['morango','morangos',12]}, mamao:{fp:150, st:75, hu:['fatia','fatias',150]}, uva:{fp:100, st:25, hu:['punhado','punhados',50], pri:150},
   abacaxi:{fp:120, st:40, hu:['fatia','fatias',80], pri:140}, limao:{st:.5, gw:40}, ameixa:{fp:2, st:1, pri:0, gw:70},
-  maionese:{st:15, hu:['colher de sopa','colheres de sopa',15]}
+  maionese:{st:15, hu:['colher de sopa','colheres de sopa',15]},
+  tapioca:{st:20}, cuscuz:{st:10}, minas:{st:15, hu:['fatia','fatias',30], pri:40}, castanha:{st:4, hu:['castanha','castanhas',4], pri:40},
+  chocolate:{st:5, hu:['quadradinho','quadradinhos',5], pri:30}, mel:{st:5, hu:['colher','colheres',10], pri:0}, maca:{fp:1, st:1, pri:0, gw:150}
 };
 for (const id in ADJ) Object.assign(ING[id], ADJ[id]);
+/* Categoria de cada ingrediente: a troca no editor oferece os da mesma categoria, convertidos pelo que importa nela
+   (proteína pela proteína, carboidrato e gordura pelas kcal, fruta pela porção, legume pelo peso). */
+const CATS=[['prot','Proteína','p'],['lat','Laticínios e whey','p'],['carbo','Pães, grãos e batatas','k'],['fruta','Frutas','fp'],
+  ['leg','Legumes e verduras','g'],['gord','Gorduras e doces','k'],['outro','Outros','k']];
+const CAT_OF={prot:'frango ovo atum sardinha peixe camarao pts',lat:'iogurte leite cottage mussarela parmesao whey minas',
+  carbo:'pao paofr arroz macarrao aveia batata batatadoce mandioca quinoa tapioca cuscuz',fruta:'banana morango mamao uva laranja kiwi abacaxi ameixa maca',
+  leg:'cenoura abobrinha pepino tomate espinafre abobora alface couve brocolis pimentao berinjela vagem',gord:'azeite amendoim maionese castanha chocolate mel',outro:'passata feijao grao limao'};
+for (const c in CAT_OF) CAT_OF[c].split(' ').forEach(id=>{ING[id].cat=c;});
+/* Porção típica de quem adiciona um ingrediente no editor (o Lucas; a Pri recebe ~⅔). Sem POR: 1 medida caseira, 1 porção de fruta, 100 g ou 1 unidade. */
+const POR={ovo:2,frango:120,peixe:150,camarao:120,macarrao:80,pts:30,azeite:.5,aveia:30,parmesao:10,cottage:40,mussarela:30,arroz:100,alface:30,passata:150,
+  tapioca:60,cuscuz:60,minas:30,castanha:8,chocolate:20,mel:10,tomate:50};
+for (const id in POR) ING[id].por=POR[id];
 const MEALS = {
  C1:{slot:'cafe', n:'Pão com cottage e ovos mexidos, iogurte e fruta', t:8, junto:['ovo'], jn:'Ovos mexidos',
   L:[['pao',3],['ovo',3],['cottage',60],['iogurte',100],['banana',1]],

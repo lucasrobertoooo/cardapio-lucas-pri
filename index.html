@@ -245,36 +245,14 @@ table.t th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:va
 .junto{grid-column:1/-1;background:var(--leaf-soft);border-radius:12px;padding:10px 12px;font-size:14px;line-height:1.4}
 .junto .sub{display:block;margin-top:2px}.junto .L{color:var(--lucas);font-weight:600}.junto .P{color:var(--pri);font-weight:600}
 .rec-b .junto{margin-top:14px}
-.prot{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
-.prot-t{width:100%;font-size:13px;font-weight:700}.prot-t .sub{font-weight:400}
-.prot label{flex:1 1 150px;min-width:0;display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:12px;padding:4px 4px 4px 8px;font-size:13px;font-weight:700}
-.prot label.L{background:var(--lucas-soft);color:var(--lucas)}.prot label.LP{background:var(--leaf-soft);color:var(--ink)}
-.lote-tip{color:var(--leaf);font-weight:600}.prot label.P{background:var(--pri-soft);color:var(--pri)}
-.prot select{flex:1;min-width:0;min-height:36px;border:0;border-radius:9px;background:var(--surface);color:var(--ink);font:500 13px/1.2 var(--f-body);padding:0 2px;text-overflow:ellipsis}
+.lote-tip{color:var(--leaf);font-weight:600}
 .alts-out{margin-top:6px}
 .ill img,.mini img{width:100%;height:100%;object-fit:cover;display:block}
 /* Editor de ingredientes */
-.editor{grid-column:1/-1;display:flex;flex-direction:column;gap:12px;border-top:1px dashed var(--line);padding-top:12px}
-.ed-cols{display:grid;gap:10px}
-.ed{border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;gap:2px}
-.ed.L{background:var(--lucas-soft)}.ed.P{background:var(--pri-soft)}
-.ed-h{display:flex;justify-content:space-between;align-items:baseline;padding-bottom:4px}
-.ed.L .ed-h b{color:var(--lucas)}.ed.P .ed-h b{color:var(--pri)}
-.ed-h span{font-size:12px;color:var(--ink2);font-weight:600}
-.ed-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid color-mix(in srgb,var(--ink) 8%,transparent)}
-.ed-n{display:flex;flex-direction:column;min-width:0;font-size:14px;overflow-wrap:anywhere}
 .ed-warn{font-size:11.5px;color:var(--warn);font-weight:600}
-.ed-step{display:flex;align-items:center;gap:6px;flex:0 0 auto}
-.ed-step>button{width:36px;height:36px;border-radius:50%;border:0;background:var(--surface);color:var(--ink);font-size:18px;font-weight:700;box-shadow:0 1px 2px rgba(0,0,0,.08)}
-.ed-step>button:active{transform:scale(.94)}
-.ed-q{min-width:64px;max-width:92px;text-align:center;display:flex;flex-direction:column;align-items:center;line-height:1.1}
-.ed-q b{font-size:16px}.ed-q small{font-size:11px;color:var(--ink2)}
 .ed-v{border:0;background:none;padding:2px 6px;border-radius:8px;color:var(--ink)}
 .ed-v b{font-size:16px;border-bottom:1.5px dashed color-mix(in srgb,var(--ink) 30%,transparent)}
-.ed-u{border:0;background:none;padding:2px 2px;font-size:11px;line-height:1.15;color:var(--leaf);font-weight:600;white-space:normal;text-align:center}
 .ed-in{width:64px;font:inherit;font-size:16px;font-weight:700;text-align:center;padding:4px;border:1.5px solid var(--leaf);border-radius:8px;background:var(--surface);color:var(--ink)}
-.ed-add{position:relative;display:flex;align-items:center;justify-content:center;margin-top:6px;padding:10px;border:1.5px dashed color-mix(in srgb,var(--ink) 25%,transparent);border-radius:12px;font-weight:600;font-size:14px;color:var(--ink2)}
-.ed-add select{position:absolute;inset:0;opacity:0;width:100%;font-size:16px;cursor:pointer}
 .icons{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
 .icon-opt{display:flex;flex-direction:column;align-items:center;gap:6px;border:2px solid transparent;background:none;border-radius:16px;padding:8px 4px;font-size:13px;font-weight:600;color:var(--ink2)}
 .icon-opt img{width:60px;height:60px;border-radius:14px;display:block;box-shadow:0 0 0 1px var(--line)}
@@ -284,8 +262,76 @@ table.t th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:va
   .people{display:grid;grid-template-columns:1fr 1fr}
   .alts{display:grid;grid-template-columns:1fr 1fr}
   .alts .eyebrow{grid-column:1/-1}
-  .ed-cols{grid-template-columns:1fr 1fr;align-items:start}
 }
+/* ingredientes no card: tocar troca */
+.ings{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px}
+.ing-ch{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface2);color:var(--ink);border-radius:999px;padding:7px 12px;font:500 13px/1.2 var(--f-body);min-height:36px}
+.ing-ch span{color:var(--leaf);font-size:12px}
+.ing-ch.plus{background:none;border-style:dashed;color:var(--leaf);font-weight:700}
+.ing-ch:active,.ch-add:active,.sw-ch:active{transform:scale(.97)}
+.alt.build{border:1.5px dashed var(--leaf);background:none;text-align:left;grid-template-columns:40px 1fr;color:var(--ink)}
+.plus-ic{width:40px;height:40px;border-radius:50%;background:var(--leaf);color:var(--leaf-ink);display:grid;place-items:center;font-size:22px;font-weight:700}
+.mine-tag{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--leaf);background:var(--leaf-soft);border-radius:6px;padding:1px 6px;vertical-align:2px}
+.link.danger{color:var(--pri)}
+.row.wrap{flex-wrap:wrap;gap:10px 18px}
+/* painel que sobe de baixo */
+body.sheet-open{overflow:hidden}
+.sheet-bg{position:fixed;inset:0;z-index:60;background:rgba(10,20,14,.45);animation:fade .18s ease}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:61;max-height:92vh;max-height:92dvh;display:flex;flex-direction:column;background:var(--bg);border-radius:20px 20px 0 0;box-shadow:0 -10px 40px rgba(0,0,0,.25);animation:up .22s cubic-bezier(.2,.8,.2,1);max-width:720px;margin:0 auto}
+.sheet-top{position:relative;height:28px;flex:none}
+.grab{position:absolute;left:50%;top:9px;width:40px;height:5px;margin-left:-20px;border-radius:9px;background:var(--line)}
+.sheet-x{position:absolute;right:8px;top:4px;width:44px;height:44px;border:0;background:none;font-size:28px;line-height:1;color:var(--ink2);z-index:2}
+.sheet-body{overflow-y:auto;overscroll-behavior:contain;padding:0 16px 16px;display:flex;flex-direction:column;gap:12px;-webkit-overflow-scrolling:touch}
+.sheet-body h2{font-family:var(--f-head);font-size:21px;line-height:1.2;margin:2px 44px 2px 0}
+.sheet-foot{flex:none;display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);background:var(--surface)}
+.sheet-foot .btn{min-height:44px}
+.btn[disabled]{opacity:.45}
+.tots-bar{position:sticky;top:0;z-index:1;display:flex;gap:8px;padding:8px 0;background:var(--bg)}
+.tots-bar span{flex:1;border-radius:10px;padding:7px 10px;font-size:13px}
+.tots-bar .L{background:var(--lucas-soft);color:var(--lucas)}.tots-bar .P{background:var(--pri-soft);color:var(--pri)}
+.ers{display:flex;flex-direction:column;gap:8px}
+.er{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.er.open{border-color:var(--leaf);box-shadow:inset 0 0 0 1px var(--leaf)}
+.er-h{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 8px}
+.er-h b{font-size:15px}.er-c{font-size:11.5px;color:var(--ink2)}
+.er-q{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stp{display:grid;grid-template-columns:34px minmax(0,1fr) 34px;align-items:center;gap:2px;border-radius:12px;padding:20px 4px 4px;position:relative;min-width:0}
+.stp.L{background:var(--lucas-soft)}.stp.P{background:var(--pri-soft)}
+.stp-w{position:absolute;left:10px;top:4px;font-size:11px;font-weight:700}.stp.L .stp-w{color:var(--lucas)}.stp.P .stp-w{color:var(--pri)}
+.stp>button{width:34px;height:34px;border-radius:50%;border:0;background:var(--surface);color:var(--ink);font-size:18px;font-weight:700;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.stp>button[disabled]{opacity:.35}
+.stp .ed-v{display:flex;flex-direction:column;align-items:center;min-width:0;line-height:1.1}
+.stp .ed-v{padding:2px 0;width:100%}.stp .ed-v small{font-size:10.5px;color:var(--ink2);text-align:center;hyphens:none;word-break:normal;overflow-wrap:normal;line-height:1.15}
+.stp .ed-in{width:100%;justify-self:center}
+.er-a{display:flex;gap:18px}
+.sw-list{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.sw-ch{display:flex;flex-direction:column;gap:2px;text-align:left;border:1px solid var(--line);background:var(--surface2);border-radius:12px;padding:8px 10px;color:var(--ink);min-width:0}
+.sw-ch b{font-size:14px}.sw-ch .sub{font-size:11.5px}.sw-ch .L{color:var(--lucas)}.sw-ch .P{color:var(--pri)}
+.add-box{display:flex;flex-direction:column;gap:8px;border-top:1px dashed var(--line);padding-top:12px}
+.cats{flex-wrap:nowrap;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}.cats::-webkit-scrollbar{display:none}
+.res-chips{display:flex;flex-wrap:wrap;gap:6px}
+.ch-add{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 13px;font:500 14px/1.2 var(--f-body);color:var(--ink);min-height:40px}
+.ch-add small{color:var(--ink2)}.ch-add.new{border-style:dashed;color:var(--leaf);font-weight:700}
+.res-h{margin-bottom:-2px}
+.new-ing{display:flex;flex-direction:column;gap:10px}
+.fl{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:700;color:var(--ink2);flex:1;min-width:0}
+.fl select{font:inherit;font-size:16px;font-weight:400;padding:9px 8px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink)}
+.fl-row{display:flex;gap:8px}
+@keyframes up{from{transform:translateY(100%)}to{transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+/* aviso com desfazer */
+#toast{position:fixed;left:0;right:0;bottom:calc(76px + env(safe-area-inset-bottom,0px));z-index:70;display:flex;justify-content:center;pointer-events:none;padding:0 16px}
+.toast{pointer-events:auto;display:flex;align-items:center;gap:14px;max-width:520px;background:var(--ink);color:var(--bg);border-radius:12px;padding:10px 10px 10px 14px;font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,.25);animation:up .2s ease}
+.toast button{border:0;background:none;color:var(--leaf-soft);font-weight:700;font-size:14px;padding:8px;white-space:nowrap}
+/* compras */
+.prog{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:12px;color:var(--ink2)}.prog span{white-space:nowrap}
+.pbar{flex:1;height:6px;border-radius:9px;background:var(--surface2);overflow:hidden}.pbar i{display:block;height:100%;background:var(--leaf);border-radius:9px}
+.mrow{flex-wrap:wrap}
+.xtras{flex-basis:100%;display:flex;flex-wrap:wrap;gap:6px;padding:0 12px 10px 50px}
+.xtra{display:inline-flex;align-items:center;gap:2px;background:var(--leaf-soft);color:var(--ink);border-radius:999px;padding:2px 2px 2px 10px;font-size:12.5px}
+.xtra .rm{width:30px;height:28px;font-size:18px}
+.man-add{padding:0}
+.man-hint:empty{display:none}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 
 </style></head><body>
@@ -353,6 +399,13 @@ const ING = {
   pts:      {n:'PTS (proteína texturizada de soja)', u:'g', p:.5, k:3.3, pack:500, pk:['pacote','pacotes'], size:'500 g', aisle:'merc'},
   paofr:    {n:'Pão francês (padaria)', u:'un', p:4.7, k:150, pack:1, loose:true, wp:50, aisle:'merc'},
   ameixa:   {n:'Ameixa fresca', u:'un', p:.5, k:37, pack:1, loose:true, wp:70, aisle:'hort'},
+  tapioca:  {n:'Goma de tapioca', u:'g', p:0, k:2.4, pack:500, pk:['pacote','pacotes'], size:'500 g', aisle:'merc'},
+  cuscuz:   {n:'Flocão de milho (cuscuz)', u:'g', p:.072, k:3.6, pack:500, pk:['pacote','pacotes'], size:'500 g', aisle:'merc'},
+  minas:    {n:'Queijo minas frescal', u:'g', p:.17, k:2.6, pack:400, pk:['peça','peças'], size:'~400 g', aisle:'lat'},
+  castanha: {n:'Castanha-do-pará', u:'g', p:.145, k:6.6, pack:100, pk:['pacote','pacotes'], size:'100 g', aisle:'merc'},
+  chocolate:{n:'Chocolate 70% cacau', u:'g', p:.08, k:5.8, pack:100, pk:['barra','barras'], size:'100 g', aisle:'merc'},
+  mel:      {n:'Mel', u:'g', p:0, k:3.1, pack:300, pk:['pote','potes'], size:'300 g', aisle:'merc'},
+  maca:     {n:'Maçã', u:'un', p:.4, k:85, pack:1, loose:true, wp:150, aisle:'hort'},
   maionese: {n:'Maionese light (pote, sem alho e cebola)', u:'g', p:.005, k:2.7, pack:500, pk:['pote','potes'], size:'500 g', aisle:'merc'}
 };
 /* Editor de refeição: st = passo do + e −, hu = medida caseira [singular, plural, g ou ml por medida],
@@ -379,9 +432,23 @@ const ADJ = {
   banana:{fp:1, st:.5, pri:1, gw:100}, laranja:{fp:1, st:1, gw:130}, kiwi:{fp:2, st:1, gw:75},
   morango:{fp:144, st:12, hu:['morango','morangos',12]}, mamao:{fp:150, st:75, hu:['fatia','fatias',150]}, uva:{fp:100, st:25, hu:['punhado','punhados',50], pri:150},
   abacaxi:{fp:120, st:40, hu:['fatia','fatias',80], pri:140}, limao:{st:.5, gw:40}, ameixa:{fp:2, st:1, pri:0, gw:70},
-  maionese:{st:15, hu:['colher de sopa','colheres de sopa',15]}
+  maionese:{st:15, hu:['colher de sopa','colheres de sopa',15]},
+  tapioca:{st:20}, cuscuz:{st:10}, minas:{st:15, hu:['fatia','fatias',30], pri:40}, castanha:{st:4, hu:['castanha','castanhas',4], pri:40},
+  chocolate:{st:5, hu:['quadradinho','quadradinhos',5], pri:30}, mel:{st:5, hu:['colher','colheres',10], pri:0}, maca:{fp:1, st:1, pri:0, gw:150}
 };
 for (const id in ADJ) Object.assign(ING[id], ADJ[id]);
+/* Categoria de cada ingrediente: a troca no editor oferece os da mesma categoria, convertidos pelo que importa nela
+   (proteína pela proteína, carboidrato e gordura pelas kcal, fruta pela porção, legume pelo peso). */
+const CATS=[['prot','Proteína','p'],['lat','Laticínios e whey','p'],['carbo','Pães, grãos e batatas','k'],['fruta','Frutas','fp'],
+  ['leg','Legumes e verduras','g'],['gord','Gorduras e doces','k'],['outro','Outros','k']];
+const CAT_OF={prot:'frango ovo atum sardinha peixe camarao pts',lat:'iogurte leite cottage mussarela parmesao whey minas',
+  carbo:'pao paofr arroz macarrao aveia batata batatadoce mandioca quinoa tapioca cuscuz',fruta:'banana morango mamao uva laranja kiwi abacaxi ameixa maca',
+  leg:'cenoura abobrinha pepino tomate espinafre abobora alface couve brocolis pimentao berinjela vagem',gord:'azeite amendoim maionese castanha chocolate mel',outro:'passata feijao grao limao'};
+for (const c in CAT_OF) CAT_OF[c].split(' ').forEach(id=>{ING[id].cat=c;});
+/* Porção típica de quem adiciona um ingrediente no editor (o Lucas; a Pri recebe ~⅔). Sem POR: 1 medida caseira, 1 porção de fruta, 100 g ou 1 unidade. */
+const POR={ovo:2,frango:120,peixe:150,camarao:120,macarrao:80,pts:30,azeite:.5,aveia:30,parmesao:10,cottage:40,mussarela:30,arroz:100,alface:30,passata:150,
+  tapioca:60,cuscuz:60,minas:30,castanha:8,chocolate:20,mel:10,tomate:50};
+for (const id in POR) ING[id].por=POR[id];
 const MEALS = {
  C1:{slot:'cafe', n:'Pão com cottage e ovos mexidos, iogurte e fruta', t:8, junto:['ovo'], jn:'Ovos mexidos',
   L:[['pao',3],['ovo',3],['cottage',60],['iogurte',100],['banana',1]],
@@ -476,7 +543,7 @@ const WK=WEEK[0].d.replace(/-/g,'');
 /* ===== RECEITAS E FOTOS ===== */
 const SLOTS=[['cafe','Café da manhã'],['almoco','Almoço'],['lanche','Lanche'],['jantar','Jantar'],['ceia','Ceia']];
 const SHORT={C1:'Pão com cottage',C2:'Mingau',L1:'Vitamina',E1:'Iogurte',E2:'Iogurte',M1:'Macarrão',M2:'Omelete',M3:'Peixe',M4:'Crepe',M5:'Purê',C3:'Panqueca',C4:'Queijo quente',C5:'Iogurte e ovos',L2:'Iogurte batido',L3:'Sanduíche de atum',L4:'Ovos e leite',E3:'Leite com whey',E4:'Ovos mexidos',M6:'Salada morna',M7:'Macarrão e abobrinha',M8:'Peixe ao molho',M9:'Sanduíche quente',M10:'Maionese'};
-const SN={maionese:'maionese light',ovo:'ovo',atum:'atum',sardinha:'sardinha',peixe:'filé de peixe',frango:'frango',cottage:'cottage',mussarela:'mussarela',parmesao:'parmesão',iogurte:'iogurte',leite:'leite sem lactose',whey:'whey',azeite:'azeite',pao:'pão',arroz:'arroz cozido',feijao:'feijão cozido',macarrao:'macarrão de arroz',aveia:'aveia',amendoim:'pasta de amendoim',passata:'molho de tomate',batata:'batata',cenoura:'cenoura',abobrinha:'abobrinha',pepino:'pepino',tomate:'tomate',espinafre:'espinafre',banana:'banana',morango:'morango',mamao:'mamão',uva:'uva',limao:'limão',abobora:'abóbora',alface:'alface',couve:'couve',brocolis:'brócolis',pimentao:'pimentão vermelho',berinjela:'berinjela',vagem:'vagem',batatadoce:'batata-doce',mandioca:'mandioca',laranja:'laranja',kiwi:'kiwi',abacaxi:'abacaxi',camarao:'camarão',grao:'grão-de-bico',quinoa:'quinoa cozida',pts:'PTS seca',paofr:'pão francês',ameixa:'ameixa'};
+const SN={tapioca:'tapioca',cuscuz:'cuscuz',minas:'queijo minas',castanha:'castanha-do-pará',chocolate:'chocolate 70%',mel:'mel',maca:'maçã',maionese:'maionese light',ovo:'ovo',atum:'atum',sardinha:'sardinha',peixe:'filé de peixe',frango:'frango',cottage:'cottage',mussarela:'mussarela',parmesao:'parmesão',iogurte:'iogurte',leite:'leite sem lactose',whey:'whey',azeite:'azeite',pao:'pão',arroz:'arroz cozido',feijao:'feijão cozido',macarrao:'macarrão de arroz',aveia:'aveia',amendoim:'pasta de amendoim',passata:'molho de tomate',batata:'batata',cenoura:'cenoura',abobrinha:'abobrinha',pepino:'pepino',tomate:'tomate',espinafre:'espinafre',banana:'banana',morango:'morango',mamao:'mamão',uva:'uva',limao:'limão',abobora:'abóbora',alface:'alface',couve:'couve',brocolis:'brócolis',pimentao:'pimentão vermelho',berinjela:'berinjela',vagem:'vagem',batatadoce:'batata-doce',mandioca:'mandioca',laranja:'laranja',kiwi:'kiwi',abacaxi:'abacaxi',camarao:'camarão',grao:'grão-de-bico',quinoa:'quinoa cozida',pts:'PTS seca',paofr:'pão francês',ameixa:'ameixa'};
 
 const RECIPES={
  C1:{steps:[
@@ -629,7 +696,7 @@ function ill(id){
 /* ===== ESTADO E CÁLCULOS ===== */
 const KEY='cardapio-lucas-pri-v1';
 const DEF={checks:{},extras:{},shop:{},stock:{atum:4,sardinha:2},pantry:{},prep:{},steps:{},
-  targets:{L:{p:160,k:2800},P:{p:125,k:1750}},ref:{iog:3.6,whey:24},maxKg:14,have:{},swap:{},icon:'verde',custom:{},unit:{},manual:{}};
+  targets:{L:{p:160,k:2800},P:{p:125,k:1750}},ref:{iog:3.6,whey:24},maxKg:14,have:{},swap:{},icon:'verde',custom:{},unit:{},manual:{},mine:{},ing:{}};
 function clone(o){return JSON.parse(JSON.stringify(o));}
 function loadState(){
   const s=clone(DEF);
@@ -642,6 +709,23 @@ function loadState(){
   return s;
 }
 let S=loadState();
+/* Ingredientes e refeições criados por vocês (S.ing, S.mine) entram em ING e MEALS como os do app e sincronizam.
+   Chamado ao abrir e sempre que chega mudança de outro aparelho. */
+const BASE_ING=new Set(Object.keys(ING)),BASE_MEALS=new Set(Object.keys(MEALS)),SLOT_OK={cafe:1,ref:1,lanche:1,ceia:1};
+let ING_IDS=Object.keys(ING);
+function applyUser(){
+  for(const id in ING)if(!BASE_ING.has(id))delete ING[id];
+  for(const id in MEALS)if(!BASE_MEALS.has(id))delete MEALS[id];
+  for(const id in S.ing){const u=S.ing[id];if(!u||!u.n)continue;const un=u.u==='un';
+    ING[id]={n:u.n,u:un?'un':'g',p:+u.p||0,k:+u.k||0,pack:1,loose:true,wp:un?(+u.wp||100):1,aisle:u.aisle||'merc',cat:u.cat||'outro',st:un?1:10,por:un?1:100,user:1};
+    SN[id]=u.n.toLowerCase();}
+  for(const id in S.mine){const m=S.mine[id];if(!m||!m.n||!SLOT_OK[m.slot])continue;
+    const its=w=>Object.keys(m[w]||{}).filter(i=>ING[i]&&m[w][i]>0).map(i=>[i,+m[w][i]]);
+    MEALS[id]={slot:m.slot,n:m.n,t:+m.t||10,user:1,L:its('L'),P:its('P')};}
+  ING_IDS=Object.keys(ING);
+}
+applyUser();
+const shortOf=id=>SHORT[id]||(MEALS[id]||{n:''}).n;
 let saveT=null;
 let dirty=false;
 /* Só grava se houve toque desde a última gravação: uma aba antiga aberta não pode sobrescrever o que outra salvou. */
@@ -674,7 +758,7 @@ function fq(id,q){
     case 'pao': return `${n} ${pl?'fatias':'fatia'} de pão`;
     case 'paofr': return `${n} ${pl?'pães franceses':'pão francês'}`;
     case 'ameixa': return `${n} ${pl?'ameixas':'ameixa'}`;
-    case 'laranja': case 'kiwi': return `${n} ${SN[id]}${pl?'s':''}`;
+    case 'laranja': case 'kiwi': case 'maca': return `${n} ${SN[id]}${pl?'s':''}`;
     default:{const h=ING[id].hu;if(h){const m=q/h[2],u=ING[id].u==='ml'?'ml':'g',w=m>1.01?h[1]:h[0];
       /* "¾ tomate", não "¾ tomate de tomate" */
       const same=h[0].split(/[ -]/)[0]===SN[id].split(/[ -]/)[0];return `${frac(m)} ${w}${same?'':' de '+SN[id]} (${fmt(q,0)} ${u})`;}
@@ -683,7 +767,6 @@ function fq(id,q){
 }
 
 /* Ingredientes de uma refeição para uma pessoa, já com os ajustes feitos no editor (valem para todos os dias). */
-const ING_IDS=Object.keys(ING);
 function itemsOf(mid,who){
   const c=S.custom[mid]&&S.custom[mid][who];if(!c)return MEALS[mid][who];
   const base=MEALS[mid][who].map(i=>i[0]),pos=id=>{const i=base.indexOf(id);return i<0?100+ING_IDS.indexOf(id):i;};
@@ -779,7 +862,7 @@ function needs(days,onlyMeals){
     for(const s of SLOTS){const mid=sl[s[0]];if(!mid||!days.includes(cookDate(day.d,s[0])))continue;
       for(const who of ['L','P']){for(const it of dayItems(day,s[0],who)){
         const o=out[it[0]]||(out[it[0]]={tot:0,L:0,P:0,uses:[]});
-        o.tot+=it[1];o[who]+=it[1];const sh=SHORT[mid];if(!o.uses.includes(sh))o.uses.push(sh);}}}}
+        o.tot+=it[1];o[who]+=it[1];const sh=shortOf(mid);if(!o.uses.includes(sh))o.uses.push(sh);}}}}
   return out;
 }
 function buyText(it){
@@ -812,9 +895,82 @@ function shopping(){
         items.push({id,packs,qty,need:nd[id].tot,who:{L:nd[id].L>0,P:nd[id].P>0},uses:nd[id].uses,wt});}
       else if(nd[id].tot>0){/* coberto pelo estoque ou por sobra da compra anterior */}
     }
+    /* Itens digitados que o app reconhece ("2 kg batata"): entram na compra, no peso da mochila e, o que sobrar, abate da próxima. */
+    const man=S.manual[t.id]||{};
+    for(const mk in man){const m=parseManual(man[mk]);if(!m.id)continue;const g=ING[m.id];
+      const packs=Math.max(1,Math.ceil(m.q/g.pack-1e-9)),qty=packs*g.pack,wt=qty*(g.wp||1);
+      left[m.id]=(left[m.id]||0)+qty;w+=wt;
+      const it=items.find(i=>i.id===m.id),ex={k:mk,t:m.t,packs,qty};
+      if(it){it.packs+=packs;it.qty+=qty;it.wt+=wt;(it.extra=it.extra||[]).push(ex);}
+      else items.push({id:m.id,packs,qty,need:0,who:{L:false,P:false},uses:[],wt,extra:[ex]});}
     items.sort((a,b)=>ING[a.id].n.localeCompare(ING[b.id].n,'pt-BR'));
     return Object.assign({},t,{items,kg:w/1000});
   });
+}
+
+/* ===== ITEM DIGITADO NAS COMPRAS: "2 kg batata", "3 iogurtes", "1 dúzia de ovos", "papel toalha" =====
+   parseManual devolve o ingrediente reconhecido (id) e a quantidade em unidade de compra (q), ou só o corredor provável.
+   O texto fica salvo como foi digitado (S.manual), e a leitura é refeita a cada vez: melhora sozinha quando o app aprende palavras novas. */
+function norm(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9%.,½ ]/g,' ').replace(/\s+/g,' ').trim();}
+/* plural simples do português: ovos -> ovo, pães -> pao, limões -> limao, maçãs -> maca */
+function sing(w){return w.length>3?w.replace(/(oes|aes)$/,'ao').replace(/res$/,'r').replace(/s$/,''):w;}
+const singAll=t=>t.split(' ').map(sing).join(' ');
+const ALIAS={'peito de frango':'frango','sassami':'frango','file de frango':'frango','tilapia':'peixe','merluza':'peixe','file de peixe':'peixe',
+  'pao de forma':'pao','pao frances':'paofr','pao de sal':'paofr','muçarela':'mussarela','mucarela':'mussarela','mozarela':'mussarela','queijo mussarela':'mussarela',
+  'batata doce':'batatadoce','aipim':'mandioca','macaxeira':'mandioca','tomate pelado':'passata','molho de tomate':'passata','passata':'passata',
+  'pasta de amendoim':'amendoim','grao de bico':'grao','flocao':'cuscuz','goma':'tapioca','queijo minas':'minas','iogurte natural':'iogurte','leite zero lactose':'leite',
+  'whey protein':'whey','proteina de soja':'pts','soja texturizada':'pts','macarrao de arroz':'macarrao','ameixa':'ameixa','castanha do para':'castanha'};
+let MIDX=null;
+function ingIndex(){
+  if(MIDX&&MIDX.n===ING_IDS.length)return MIDX;
+  const list=ING_IDS.map(id=>{const names=[ING[id].n.split(/[(,]/)[0],SN[id]||''].map(x=>singAll(norm(x))).filter(Boolean);return {id,names};});
+  return MIDX={n:ING_IDS.length,list};
+}
+function matchIng(name){
+  const q=singAll(norm(name));if(!q)return null;
+  for(const a in ALIAS)if(q===singAll(norm(a)))return ING[ALIAS[a]]?ALIAS[a]:null;
+  const words=q.split(' ');let best=null;
+  for(const c of ingIndex().list)for(const nm of c.names){
+    if(nm===q)return c.id;
+    const nw=nm.split(' ');
+    /* todas as palavras digitadas aparecem no nome ("iogurte" -> iogurte natural…), o nome mais curto ganha */
+    if(words.every(w=>nw.includes(w))&&(!best||nm.length<best.l))best={id:c.id,l:nm.length};
+  }
+  if(best)return best.id;
+  for(const a in ALIAS){const an=singAll(norm(a));if(q.includes(an))return ING[ALIAS[a]]?ALIAS[a]:null;}
+  return null;
+}
+const NUMW={um:1,uma:1,dois:2,duas:2,tres:3,quatro:4,cinco:5,seis:6,sete:7,oito:8,dez:10,doze:12,meia:.5,meio:.5};
+const UNITW=[[/^(kg|kgs|quilos?|kilos?)$/,'kg'],[/^(g|gr|grs|gramas?)$/,'g'],[/^(l|lt|litros?)$/,'l'],[/^ml$/,'ml'],[/^(un|und|unid|unidades?)$/,'un'],
+  [/^duzias?$/,'dz'],[/^(pct|pcts|pacotes?|caixas?|cx|latas?|bandejas?|potes?|macos?|garrafas?|pencas?|cachos?|barras?|pecas?|sacos?|vidros?|saquinhos?)$/,'pk']];
+/* corredor provável do que não é ingrediente do app */
+const KW=[['casa','detergente sabao amaciante desinfetante sanitaria esponja papel toalha higienico guardanapo lixo aluminio filme vassoura pano alcool multiuso lustra limpador'],
+  ['hig','shampoo xampu condicionador sabonete dente escova desodorante absorvente fio algodao cotonete barbeador lamina hidratante protetor'],
+  ['beb','cafe cha suco refrigerante agua cerveja vinho kombucha energetico'],
+  ['hort','alface fruta verdura legume salsinha cebolinha hortela manjericao melancia melao manga pera abacate gengibre'],
+  ['lat','queijo requeijao manteiga creme nata coalhada iogurte leite'],['prot','carne salmao camarao lombo'],
+  ['merc','biscoito bolacha granola cereal farinha acucar sal oleo vinagre tempero massa arroz feijao molho fermento adocante gelatina']];
+const MAN_AISLES={casa:'Limpeza e casa',hig:'Higiene',beb:'Bebidas',out:'Outros itens'};
+function guessAisle(name){const ws=singAll(norm(name)).split(' ');for(const [a,l] of KW){const ks=l.split(' ');if(ws.some(w=>ks.includes(w)))return a;}return 'out';}
+function parseManual(text){
+  const t=String(text||'').trim();let ws=norm(t).replace(/^(\d+(?:[.,]\d+)?)(kg|g|ml|l|un)\b/,'$1 $2').split(' ').filter(Boolean);
+  let n=null,u=null;
+  if(ws.length&&/^\d+([.,]\d+)?$/.test(ws[0])){n=parseFloat(ws[0].replace(',','.'));ws.shift();}
+  else if(ws.length&&ws[0]==='½'){n=.5;ws.shift();}
+  else if(ws.length&&NUMW[ws[0]]!=null&&ws.length>1){n=NUMW[ws[0]];ws.shift();}
+  if(ws.length>1){const f=UNITW.find(x=>x[0].test(ws[0]));if(f){u=f[1];ws.shift();}}
+  if(ws[0]==='de'&&ws.length>1)ws.shift();
+  const name=ws.join(' '),id=matchIng(name);
+  if(!id)return {t,id:null,aisle:guessAisle(name)};
+  const g=ING[id],pkd=!!g.pk&&!g.loose,unitW=g.hu?g.hu[2]:g.wp||g.gw||150;
+  let q;
+  if(u==='kg'||u==='g'||u==='l'||u==='ml'){const gr=n==null?1:n*(u==='kg'||u==='l'?1000:1);q=g.u==='g'||g.u==='g cozido'||g.u==='ml'?gr:gr/(g.wp||g.gw||1);}
+  else if(u==='dz')q=(n||1)*12;
+  else if(u==='pk')q=(n||1)*g.pack;
+  else if(g.u==='un'||g.u==='lata')q=n!=null?n:(pkd?g.pack:1);
+  else if(pkd)q=(n||1)*g.pack;
+  else q=n!=null?n*unitW*(g.f||1):500*(g.f||1);
+  return {t,id,q:Math.max(0,q)};
 }
 
 /* ===== SINCRONIZAÇÃO ENTRE OS APARELHOS (celulares e computadores, quantos forem) =====
@@ -822,7 +978,7 @@ function shopping(){
    Em comum: tudo que é do plano e da casa, inclusive o que cada um comeu (checks), extras e passos de receita.
    Só do aparelho: ícone e a escolha de ver em gramas (unit).
    A casa (…/casas/<código>) vem embutida no app (CASA, no fim deste arquivo): nada para configurar. */
-const SHARED=['swap','shop','stock','have','pantry','prep','targets','ref','maxKg','custom','manual','checks','extras','steps'];
+const SHARED=['swap','shop','stock','have','pantry','prep','targets','ref','maxKg','custom','manual','checks','extras','steps','mine','ing'];
 /* passaram a sincronizar depois: na 1ª conexão de um aparelho que já estava na casa, o que só ele tem sobe (nada se apaga) */
 const LATE=['checks','extras','steps'];
 const SYK='cardapio-sync';
@@ -890,6 +1046,7 @@ function syApply(){
     else if(f==='stock')S.stock=Object.assign(clone(DEF.stock),sh.stock);
     else S[f]=sh[f]||{};
   }
+  applyUser();
   SY.base=flat(sharedOf(S));SY.based=true;
   try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}
   const a=document.activeElement;
@@ -936,6 +1093,159 @@ syListen();
 /* Voltou para o app (celular tira a conexão em segundo plano): reconecta e pega o que mudou nos outros aparelhos. */
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&SY.url&&SY.state!=='erro'){saveNow();syListen();}});
 window.addEventListener('online',()=>{if(SY.url){if(!SY.es||SY.es.readyState===2)syListen();else syFlush();}});
+
+/* ===== PAINEL DE REFEIÇÃO (sobe de baixo): mudar os itens de uma refeição ou montar uma nova =====
+   V.sheet = {mode:'edit', mid, key}            muda a refeição em todos os dias (S.custom, ou S.mine se foi montada por vocês)
+           = {mode:'build', key, slot, n, L, P}  rascunho de refeição nova; ao salvar vira S.mine e entra no lugar desta
+   Uma receita só para os dois: adicionar ou trocar um item vale para os dois; só a quantidade de cada um muda. */
+const CAT_BY=Object.fromEntries(CATS.map(c=>[c[0],c[2]])),CAT_N=Object.fromEntries(CATS.map(c=>[c[0],c[1]]));
+const cap=t=>t?t[0].toUpperCase()+t.slice(1):t;
+function shItems(sh,w){if(sh.mode==='edit')return itemsOf(sh.mid,w);const o=sh[w];return Object.keys(o).filter(i=>ING[i]&&o[i]>0).map(i=>[i,o[i]]);}
+function shQ(sh,w,id){return (shItems(sh,w).find(i=>i[0]===id)||[0,0])[1];}
+function shSet(sh,w,id,q){q=Math.max(0,Math.round(q*1000)/1000);
+  if(sh.mode==='build'){if(q)sh[w][id]=q;else delete sh[w][id];return;}
+  if(MEALS[sh.mid].user){const u=S.mine[sh.mid];u[w]=u[w]||{};if(q)u[w][id]=q;else delete u[w][id];applyUser();}
+  else customOf(sh.mid,w)[id]=q;}
+/* passo do + e −; em gramas, 5 g nos itens pequenos, 10 g no resto, 25 em leite e iogurte */
+function stepOf(id){const g=ING[id];return inGrams(id)?(g.u==='ml'||id==='iogurte'?25:(g.st||1)<=15&&g.hu?5:10)/(g.hu?1:(g.gw||1)):(g.st||1);}
+function porOf(id){const g=ING[id];return g.por!=null?g.por:g.fp?g.fp:g.hu?g.hu[2]:(g.u==='g'||g.u==='ml'||g.u==='g cozido')?100:1;}
+/* porção ao adicionar: a típica para o Lucas, ~⅔ para a Pri, dentro do limite FODMAP dela */
+function addQty(id,w){const g=ING[id],st=g.st||1,r=q=>Math.max(st,Math.round(q/st)*st);let q=r(porOf(id));
+  if(w==='P'){if(g.pri===0)return 0;q=r(q*.65);if(g.pri>0&&q>g.pri)q=Math.max(st,Math.floor(g.pri/st)*st);}return q;}
+/* troca convertida pelo que importa na categoria: 120 g de frango ≈ 4 ovos; 1 banana ≈ 12 morangos; pão por kcal */
+function cvOf(id,by){const g=ING[id];return by==='p'?pOf(id):by==='fp'?(g.fp?1/g.fp:g.k/95):by==='g'?(g.u==='un'?(g.gw||g.wp||100):1):g.k;}
+function conv(from,q,to){const by=CAT_BY[ING[from].cat]||'k';let a=cvOf(from,by),b=cvOf(to,by);if(!(a>0&&b>0)){a=ING[from].k;b=ING[to].k;}
+  const st=ING[to].st||1;if(!(b>0))return Math.max(st,Math.round(porOf(to)/st)*st);return Math.max(st,Math.round(a*q/b/st)*st);}
+function capPri(id,q){const g=ING[id],st=g.st||1;if(g.pri===0)return 0;return g.pri>0&&q>g.pri?Math.max(st,Math.floor(g.pri/st)*st):q;}
+/* recentes (deste aparelho): aparecem primeiro na hora de adicionar */
+function recents(){try{return JSON.parse(localStorage.getItem('cardapio-recentes')||'[]').filter(id=>ING[id]);}catch(e){return [];}}
+function pushRecent(id){try{const r=recents().filter(x=>x!==id);r.unshift(id);localStorage.setItem('cardapio-recentes',JSON.stringify(r.slice(0,10)));}catch(e){}}
+
+function sheetOpen(o){V.sheet=o;V.sw=o.sw||null;V.shq='';V.shcat='';V.newIng=null;V.shIn=null;
+  try{history.pushState({sheet:1},'');}catch(e){}render(true);
+  if(o.sw)setTimeout(()=>{const el=document.getElementById('er-'+o.sw);if(el)el.scrollIntoView({block:'center'});},30);}
+function sheetClose(fromPop){if(!V.sheet)return;V.sheet=null;V.newIng=null;
+  if(!fromPop){try{if(history.state&&history.state.sheet)history.back();}catch(e){}}render(true);}
+window.addEventListener('popstate',()=>{if(V.sheet)sheetClose(true);});
+
+function amtHtml(sh,w,id,q){const a=amtOf(id,q),k=`${w}|${id}`;
+  if(V.shIn===k)return `<input class="ed-in" type="text" inputmode="decimal" autocomplete="off" data-act="shset" data-w="${w}" data-id="${id}" value="${inGrams(id)?fmt(gramsOf(id,q),0):ING[id].hu?fmt(q/ING[id].hu[2],2):fmt(q,2)}" aria-label="Quantidade de ${SN[id]} para ${WHO[w]}">`;
+  return `<button class="ed-v" data-act="shtype" data-key="${k}" aria-label="Digitar quantidade de ${SN[id]} para ${WHO[w]}"><b>${q?a.big:'0'}</b><small>${q?a.small:'não come'}</small></button>`;}
+function stepHtml(sh,w,id,q){
+  return `<div class="stp ${w}"><span class="stp-w">${WHO[w]}</span><button data-act="shq" data-w="${w}" data-id="${id}" data-d="-1" aria-label="Menos ${SN[id]} para ${WHO[w]}"${q?'':' disabled'}>−</button>
+    ${amtHtml(sh,w,id,q)}<button data-act="shq" data-w="${w}" data-id="${id}" data-d="1" aria-label="Mais ${SN[id]} para ${WHO[w]}">+</button></div>`;}
+function swapChips(sh,from,qL,qP){
+  const cat=ING[from].cat,present=new Set(shItems(sh,'L').concat(shItems(sh,'P')).map(i=>i[0]));
+  const nL=nut(shItems(sh,'L')).p;
+  const opts=ING_IDS.filter(id=>ING[id].cat===cat&&!present.has(id)&&!(ING[id].outros));
+  if(!opts.length)return `<div class="sub sw-none">Não há outro item de ${CAT_N[cat].toLowerCase()} cadastrado. Use a busca abaixo para adicionar.</div>`;
+  return `<div class="sw-list" role="list">${opts.map(id=>{const g=ING[id],aL=qL?conv(from,qL,id):0,aP=qP&&g.pri!==0?capPri(id,conv(from,qP,id)):0;
+    const byP=CAT_BY[cat]==='p',dL=R0(byP?pOf(id)*aL-pOf(from)*qL:ING[id].k*aL-ING[from].k*qL);
+    return `<button class="sw-ch" role="listitem" data-act="shswap" data-from="${from}" data-to="${id}"><b>${cap(SN[id])}</b>
+      <span class="sub"><span class="L">${aL?trq(id,aL):'—'}</span> · <span class="P">${g.pri===0?'Pri evita':aP?trq(id,aP):'—'}</span></span>
+      <span class="sub">Lucas ${dL>0?'+':dL<0?'−':'±'}${Math.abs(dL)} ${byP?'g de proteína':'kcal'}</span></button>`;}).join('')}</div>`;}
+function trq(id,q){return fq(id,q).replace(/ \(.*\)$/,'').replace(' de '+SN[id],'');}
+function resultsHtml(sh){
+  const present=new Set(shItems(sh,'L').concat(shItems(sh,'P')).map(i=>i[0]));let ids,head='';
+  const q=singAll(norm(V.shq||''));
+  if(q){ids=ING_IDS.filter(id=>{const n=singAll(norm(ING[id].n+' '+(SN[id]||'')));return q.split(' ').every(w=>n.includes(w));});}
+  else if(V.shcat)ids=ING_IDS.filter(id=>ING[id].cat===V.shcat);
+  else{ids=recents();if(ids.length)head='<div class="sub res-h">Usados por último</div>';else ids=['ovo','iogurte','whey','banana','pao','aveia','cottage','amendoim','tapioca','mussarela'];}
+  ids=ids.filter(id=>!present.has(id)).slice(0,24);
+  const chips=ids.map(id=>`<button class="ch-add" data-act="shadd" data-id="${id}">+ ${cap(SN[id]||ING[id].n)}${ING[id].pri===0?' <small>(Pri evita)</small>':''}</button>`).join('');
+  const exact=q&&ING_IDS.some(id=>singAll(norm(SN[id]||''))===q||singAll(norm(ING[id].n))===q);
+  const nw=q&&!exact&&!chips?`<button class="ch-add new" data-act="shnew">+ Cadastrar “${esc(V.shq.trim())}”</button>`:'';
+  return head+(chips||nw?`<div class="res-chips">${chips}${nw}</div>`:'<div class="sub">Nada encontrado.</div>');}
+function newIngForm(){const f=V.newIng;
+  return `<form class="new-ing card" data-act="ingsave"><div class="eyebrow">Ingrediente novo</div>
+   <div class="sub">Olhe a tabela do rótulo. Ele passa a valer no app todo: montar, trocar e compras.</div>
+   <label class="fl">Nome<input class="in-text" name="n" maxlength="40" required value="${esc(f.n)}"></label>
+   <div class="fl-row"><label class="fl">Conta por<select name="u"><option value="g">100 g</option><option value="un">unidade</option></select></label>
+   <label class="fl">Categoria<select name="cat">${CATS.map(c=>`<option value="${c[0]}"${c[0]===f.cat?' selected':''}>${c[1]}</option>`).join('')}</select></label></div>
+   <div class="fl-row"><label class="fl">Proteína (g)<input class="in-text" name="p" inputmode="decimal" required placeholder="ex.: 6"></label>
+   <label class="fl">Energia (kcal)<input class="in-text" name="k" inputmode="decimal" required placeholder="ex.: 90"></label></div>
+   <div class="row"><button class="btn" type="button" data-act="shnewx">Cancelar</button><button class="btn primary" type="submit">Cadastrar e adicionar</button></div></form>`;}
+function sheetHtml(){
+  const sh=V.sheet;if(!sh)return '';
+  if(sh.mode==='edit'&&!MEALS[sh.mid]){V.sheet=null;return '';}
+  const iL=shItems(sh,'L'),iP=shItems(sh,'P'),nL=nut(iL),nP=nut(iP);
+  const ids=[...new Set(iL.map(i=>i[0]).concat(iP.map(i=>i[0])))];
+  const rows=ids.map(id=>{const g=ING[id],qL=shQ(sh,'L',id),qP=shQ(sh,'P',id),open=V.sw===id;
+    const warn=qP&&g.pri!=null&&qP>g.pri?`<span class="ed-warn">${g.pri===0?'A Pri evita (FODMAP)':'Acima do limite FODMAP da Pri'}</span>`:'';
+    return `<div class="er${open?' open':''}" id="er-${id}"><div class="er-h"><b>${cap(SN[id]||g.n)}</b><span class="er-c">${CAT_N[g.cat]||''}</span>${warn}</div>
+     <div class="er-q">${stepHtml(sh,'L',id,qL)}${stepHtml(sh,'P',id,qP)}</div>
+     <div class="er-a"><button class="link" data-act="shsw" data-id="${id}" aria-expanded="${open}">${open?'Fechar troca':'Trocar por…'}</button><button class="link danger" data-act="shrm" data-id="${id}">Tirar</button></div>
+     ${open?swapChips(sh,id,qL,qP):''}</div>`;}).join('');
+  const mealN=sh.mode==='edit'?MEALS[sh.mid].n:'';
+  const head=sh.mode==='edit'?`<div class="eyebrow">Mudar itens</div><h2>${mealN}</h2><div class="sub">Vale para esta refeição em todos os dias. Compras, preparo e placar se recalculam.</div>`
+    :`<div class="eyebrow">Montar refeição · ${SLOT_N[sh.slot]}</div><label class="fl">Nome<input class="in-text" id="sh-name" data-act="shname" maxlength="50" value="${esc(sh.n)}"></label>
+      <div class="sub">Comece do que já tem ou do zero. Ao salvar, ela entra no lugar desta refeição hoje e fica nas trocas para outros dias.${ids.length?' <button class="link" data-act="shzero">Começar do zero</button>':''}</div>`;
+  const cats=`<div class="chips cats"><button class="chip" data-act="shcat" data-c="" aria-pressed="${!V.shcat}">Sugestões</button>${CATS.map(c=>`<button class="chip" data-act="shcat" data-c="${c[0]}" aria-pressed="${V.shcat===c[0]}">${c[1]}</button>`).join('')}</div>`;
+  const foot=sh.mode==='edit'
+    ?`${isCustom(sh.mid)?`<button class="btn" data-act="edreset" data-mid="${sh.mid}">Voltar ao original</button>`:''}${MEALS[sh.mid].user?'':`<button class="btn" data-act="shasnew">Salvar como refeição nova</button>`}<button class="btn primary" data-act="shclose">Pronto</button>`
+    :`<button class="btn" data-act="shclose">Cancelar</button><button class="btn primary" data-act="shsave"${ids.length?'':' disabled'}>Salvar e usar</button>`;
+  return `<div class="sheet-bg" data-act="shclose"></div><section class="sheet" role="dialog" aria-modal="true" aria-label="${sh.mode==='edit'?'Mudar itens':'Montar refeição'}">
+   <div class="sheet-top"><span class="grab"></span><button class="sheet-x" data-act="shclose" aria-label="Fechar">×</button></div>
+   <div class="sheet-body">${head}
+    <div class="tots-bar"><span class="L">Lucas <b>${R0(nL.p)} g</b> · ${R0(nL.k)} kcal</span><span class="P">Pri <b>${R0(nP.p)} g</b> · ${R0(nP.k)} kcal</span></div>
+    <div class="ers">${rows||'<div class="sub">Nenhum item ainda. Adicione abaixo.</div>'}</div>
+    <div class="add-box"><div class="eyebrow">Adicionar item</div>
+     <input class="in-text" id="sh-q" type="search" data-act="shq-in" placeholder="Buscar: ovo, tapioca, queijo…" autocomplete="off" enterkeyhint="search" value="${esc(V.shq||'')}">
+     ${cats}<div id="sh-res">${V.newIng?newIngForm():resultsHtml(sh)}</div></div></div>
+   <div class="sheet-foot">${foot}</div></section>`;
+}
+const SLOT_N={cafe:'café da manhã',ref:'almoço ou jantar',lanche:'lanche',ceia:'ceia'};
+/* ações do painel (chamadas pelo clique em ui.js) */
+function shAct(a,t){const sh=V.sheet;if(!sh)return false;const d=t.dataset;
+  switch(a){
+    case 'shclose':sheetClose();return true;
+    case 'shq':{const q=shQ(sh,d.w,d.id),st=stepOf(d.id);shSet(sh,d.w,d.id,Math.max(0,q+Number(d.d)*st));save();render(true);return true;}
+    case 'shtype':V.shIn=d.key;render(true);{const i=document.querySelector('.sheet .ed-in');if(i){i.focus();i.select();}}return true;
+    case 'shsw':V.sw=V.sw===d.id?null:d.id;render(true);return true;
+    case 'shrm':{const un=snap();['L','P'].forEach(w=>shSet(sh,w,d.id,0));if(V.sw===d.id)V.sw=null;save();render(true);toast(`${cap(SN[d.id])} saiu da refeição`,un);return true;}
+    case 'shswap':{const un=snap(),from=d.from,to=d.to;
+      for(const w of ['L','P']){const q=shQ(sh,w,from);if(!q)continue;if(w==='P'&&ING[to].pri===0)continue;
+        const add=w==='P'?capPri(to,conv(from,q,to)):conv(from,q,to);shSet(sh,w,from,0);shSet(sh,w,to,shQ(sh,w,to)+add);}
+      V.sw=null;pushRecent(to);save();render(true);toast(`Trocado: ${SN[from]} → ${SN[to]}`,un);return true;}
+    case 'shadd':{const id=d.id;['L','P'].forEach(w=>{if(!shQ(sh,w,id))shSet(sh,w,id,addQty(id,w));});pushRecent(id);V.shq='';save();render(true);return true;}
+    case 'shcat':V.shcat=d.c;V.shq='';V.newIng=null;render(true);return true;
+    case 'shnew':V.newIng={n:cap((V.shq||'').trim()),cat:V.shcat||'outro'};render(true);return true;
+    case 'shnewx':V.newIng=null;render(true);return true;
+    case 'shzero':if(sh.mode==='build'){sh.L={};sh.P={};render(true);}return true;
+    case 'shasnew':{const items={L:{},P:{}};['L','P'].forEach(w=>shItems(sh,w).forEach(([i,q])=>{items[w][i]=q;}));
+      const mid=sh.mid,key=sh.key,kind=MEALS[mid].slot;delete S.custom[mid];save();
+      V.sheet={mode:'build',key,slot:kind,n:`${shortOf(mid)} do nosso jeito`,L:items.L,P:items.P};V.sw=null;render(true);return true;}
+    case 'shsave':{const n=(sh.n||'').trim()||cap(SLOT_N[sh.slot]);const id='U'+Date.now().toString(36);
+      S.mine[id]={n,slot:sh.slot,t:10,L:Object.assign({},sh.L),P:Object.assign({},sh.P)};applyUser();
+      if(sh.key){S.swap[sh.key]=id;delete S.checks[sh.key+'|L'];delete S.checks[sh.key+'|P'];}
+      save();sheetClose();toast(`“${n}” salva e já está no cardápio`);return true;}
+  }
+  return false;}
+function shInput(t){
+  if(t.dataset.act==='shq-in'){V.shq=t.value;V.newIng=null;const r=document.getElementById('sh-res');if(r&&V.sheet)r.innerHTML=resultsHtml(V.sheet);return true;}
+  if(t.dataset.act==='shname'&&V.sheet&&V.sheet.mode==='build'){V.sheet.n=t.value;return true;}
+  return false;}
+function shChange(t){
+  if(t.dataset.act!=='shset'||!V.sheet)return false;V.shIn=null;const d=t.dataset,g=ING[d.id],v=parseQty(t.value);
+  if(v!=null){const q=inGrams(d.id)?(g.hu?v:v/(g.gw||1)):(g.hu?v*g.hu[2]:v);shSet(V.sheet,d.w,d.id,q);save();}
+  render(true);return true;}
+function shSubmit(f){
+  if(f.dataset.act!=='ingsave'||!V.sheet)return false;const x=new FormData(f),num=v=>parseFloat(String(v||'').replace(',','.'));
+  const n=String(x.get('n')||'').trim().slice(0,40),u=x.get('u')==='un'?'un':'g',p=num(x.get('p')),k=num(x.get('k'));
+  if(!n||!(p>=0)||!(k>=0))return true;
+  const id='x'+Date.now().toString(36),ai=guessAisle(n),cat=String(x.get('cat')||'outro');
+  S.ing[id]={n,u,p:u==='g'?p/100:p,k:u==='g'?k/100:k,cat,aisle:['hort','prot','lat','merc'].includes(ai)?ai:(cat==='fruta'||cat==='leg'?'hort':cat==='lat'?'lat':'merc')};
+  applyUser();V.newIng=null;V.shq='';['L','P'].forEach(w=>shSet(V.sheet,w,id,u==='g'?(w==='L'?100:70):1));pushRecent(id);save();render(true);
+  toast(`${n} cadastrado`);return true;}
+
+/* ===== DESFAZER: ação na hora + aviso com "Desfazer" por 6 s (em vez de "toque de novo para confirmar") ===== */
+const SNAP_F=['custom','mine','ing','swap','checks','manual','shop'];
+function snap(){const o={};SNAP_F.forEach(f=>{o[f]=clone(S[f]);});return o;}
+let toastT=null;
+function toast(msg,undo){V.toast={msg,undo};clearTimeout(toastT);toastT=setTimeout(()=>{V.toast=null;drawToast();},6000);drawToast();}
+function drawToast(){const el=document.getElementById('toast');if(!el)return;const t=V.toast;
+  el.innerHTML=t?`<div class="toast" role="status"><span>${esc(t.msg)}</span>${t.undo?'<button data-act="undo">Desfazer</button>':''}</div>`:'';}
+function doUndo(){const t=V.toast;if(!t||!t.undo)return;Object.assign(S,clone(t.undo));applyUser();V.toast=null;clearTimeout(toastT);save();render(true);drawToast();}
 
 /* ===== INTERFACE ===== */
 const $=(s,r)=>(r||document).querySelector(s);
@@ -1008,41 +1318,16 @@ function juntoBlock(mid,day,slot){
   return `<div class="junto"><b>${m.jn} para os dois, de uma vez:</b> ${ids.map(id=>fq(id,tot(id))).join(', ')}.
     <span class="sub">Divida: <span class="L">Lucas ~${sL}%</span>, <span class="P">Pri ~${100-sL}%</span>.</span></div>`;
 }
-/* Trocas rápidas no card: proteína (convertida pela proteína: 120 g de frango ≈ 1 lata de atum ≈ 4 ovos),
-   pão e fruta (convertidos pelas kcal). Gravam em S.custom, como o editor: valem para todos os dias com a refeição e sincronizam. */
-const PROT=['frango','ovo','atum','sardinha','peixe','camarao','pts'];
-const TROCAS=[{g:'prot',t:'Proteína',ids:PROT,by:'p'},{g:'pao',t:'Pão',ids:['pao','paofr'],by:'k'},
-  {g:'fruta',t:'Fruta',ids:['banana','morango','mamao','uva','laranja','kiwi','abacaxi','ameixa'],by:'fp'}];
-/* fruta troca por porção (fp = 1 porção na unidade da receita), não por kcal: 1 banana = 12 morangos, não 37 */
-function trV(T,id){return T.by==='fp'?1/ING[id].fp:ING[id][T.by];}
-const TR=Object.fromEntries(TROCAS.map(x=>[x.g,x]));
-/* O que vai no preparo único, contando o que entrou no lugar de um item dele pela troca (morango no lugar da banana da vitamina). */
+/* O que vai no preparo único, contando o que entrou no lugar de um item dele (morango no lugar da banana da vitamina). */
 function juntoIds(mid){const m=MEALS[mid],J=new Set(m.junto||[]);if(!m.junto)return J;
-  const inBase=new Set(m.L.concat(m.P).map(i=>i[0]));
-  for(const T of TROCAS){const b=mainOf(T,m.L);if(b&&J.has(b[0]))T.ids.forEach(id=>{if(!inBase.has(id))J.add(id);});}return J;}
-function mainOf(T,its){const c=its.filter(i=>T.ids.includes(i[0]));if(!c.length)return null;
-  const o=T.g==='prot'?c.filter(i=>i[0]!=='ovo'):c,l=o.length?o:c;return l.reduce((a,b)=>trV(T,b[0])*b[1]>trV(T,a[0])*a[1]?b:a);}
-/* Voltar ao item original do prato restaura as quantidades do plano (sem erro de arredondamento). */
-function trBase(T,mid,w){const b=MEALS[mid][w],m=mainOf(T,b);return m?{id:m[0],items:b}:null;}
-function trConv(T,from,q,to){const st=ING[to].st||1;return Math.max(st,Math.round(trV(T,from)*q/trV(T,to)/st)*st);}
-const PN={frango:'Frango',ovo:'Ovos',atum:'Atum',sardinha:'Sardinha',peixe:'Peixe',camarao:'Camarão',pts:'PTS'};
-function trLabel(id,q){const u=ING[id].u;if(id==='pao'||id==='paofr')return `${frac(q)} ${id==='pao'?(q>1.01?'fatias':'fatia'):(q>1.01?'franceses':'francês')}`;
-  if(!PN[id]){const t=fq(id,q).replace(/ \(.*\)$/,'');return t[0].toUpperCase()+t.slice(1);}
-  return u==='un'?`${fmt(q)} ${q===1?'ovo':'ovos'}`:u==='lata'?`${PN[id]} ${frac(q)} ${q>1?'latas':'lata'}`:`${PN[id]} ${fmt(q,0)} g${id==='pts'?' seca':''}`;}
-function trocaBlock(mid){
-  const J=juntoIds(mid);
-  return TROCAS.map((T,n)=>{
-    /* mesmo item nos dois pratos: uma troca só, para os dois. A receita é uma; só a quantidade muda. */
-    const mL=mainOf(T,itemsOf(mid,'L')),mP=mainOf(T,itemsOf(mid,'P'));
-    if(mL&&mP&&mL[0]===mP[0]){const cur=mL[0],bL=trBase(T,mid,'L'),bP=trBase(T,mid,'P');
-      const qv=(w,mm,b,id)=>{const its=itemsOf(mid,w);if(id===cur)return mm[1];if(b&&id===b.id)return (b.items.find(i=>i[0]===id)||[0,0])[1];return (its.find(i=>i[0]===id)||[0,0])[1]+trConv(T,cur,mm[1],id);};
-      const opts=T.ids.filter(id=>ING[id].pri!==0||id===cur).map(id=>`<option value="${id}"${id===cur?' selected':''}>${trLabel(id,qv('L',mL,bL,id)+qv('P',mP,bP,id))}</option>`).join('');
-      return `<div class="prot"><div class="prot-t">${T.t}${n===0?' <span class="sub">· troca nesta refeição em todos os dias</span>':''}</div><label class="LP"><span>Os dois</span><select data-act="troca" data-g="${T.g}" data-mid="${mid}" data-who="LP" data-from="${cur}" aria-label="${T.t} dos dois">${opts}</select></label></div>`;}
-    const sel=['L','P'].map(w=>{const its=itemsOf(mid,w),mp=mainOf(T,its);if(!mp)return '';const [cur,q]=mp,has=id=>(its.find(i=>i[0]===id)||[0,0])[1],pb=trBase(T,mid,w);
-    const opts=T.ids.filter(id=>!(w==='P'&&ING[id].pri===0)||id===cur).map(id=>`<option value="${id}"${id===cur?' selected':''}>${trLabel(id,id===cur?q:pb&&id===pb.id?(pb.items.find(i=>i[0]===id)||[0,0])[1]:has(id)+trConv(T,cur,q,id))}</option>`).join('');
-    return `<label class="${w}"><span>${WHO[w]}</span><select data-act="troca" data-g="${T.g}" data-mid="${mid}" data-who="${w}" data-from="${cur}" aria-label="${T.t} de ${WHO[w]}">${opts}</select></label>`;}).join('');
-  return sel?`<div class="prot"><div class="prot-t">${T.t}${n===0?' <span class="sub">· troca nesta refeição em todos os dias</span>':''}</div>${sel}</div>`:'';}).join('');
-}
+  const now=itemsOf(mid,'L').concat(itemsOf(mid,'P')),has=new Set(now.map(i=>i[0])),inBase=new Set(m.L.concat(m.P).map(i=>i[0]));
+  const gone=new Set([...J].filter(id=>!has.has(id)).map(id=>ING[id].cat));
+  now.forEach(([id])=>{if(!inBase.has(id)&&gone.has(ING[id].cat))J.add(id);});return J;}
+/* Ingredientes no card: tocar em um abre o painel já na troca dele (dois toques para trocar). */
+function ingChips(day,k,mid){
+  const ids=[...new Set(itemsOf(mid,'L').concat(itemsOf(mid,'P')).map(i=>i[0]))],key=`${day.d}|${k}`;
+  return `<div class="ings" aria-label="Itens da refeição: toque para trocar">${ids.map(id=>`<button class="ing-ch" data-act="shopen" data-key="${key}" data-mid="${mid}" data-id="${id}">${cap(SN[id]||ING[id].n)}<span aria-hidden="true">⇄</span></button>`).join('')}
+    <button class="ing-ch plus" data-act="shopen" data-key="${key}" data-mid="${mid}">+ Item</button></div>`;}
 function ceiaNote(day){
   const i={L:ceiaInfo(day,'L'),P:ceiaInfo(day,'P')};if(!i.L.auto&&!i.P.auto)return '';
   const t=w=>{const x=i[w];if(!x.auto)return `${WHO[w]}: como ajustada no editor`;return x.gap<=3?`${WHO[w]}: hoje não precisa, a meta já fechou`:`${WHO[w]}: faltam ~${R0(x.gap)} g`;};
@@ -1057,44 +1342,24 @@ function altsBlock(day,k,mid){
   if(prev){all.splice(all.indexOf(prev.mid),1);all.unshift(prev.mid);}
   const row=id=>{const m=MEALS[id],iL=itemsOf(id,'L'),iP=itemsOf(id,'P'),l=nut(iL).p,p=nut(iP).p;
     const extra=[...new Set(iL.concat(iP).map(it=>it[0]))].filter(i=>!have.has(i)).map(i=>SN[i]);
-    return `<div class="alt"><div class="mini">${ill(id)}</div><div class="alt-tx"><b>${m.n}</b>
+    return `<div class="alt"><div class="mini">${ill(id)}</div><div class="alt-tx"><b>${m.n}${m.user?' <span class="mine-tag">de vocês</span>':''}</b>
       <span class="sub">${m.t} min · <span class="L">Lucas ${R0(l)} g (${sgn(l-cur.L)})</span> · <span class="P">Pri ${R0(p)} g (${sgn(p-cur.P)})</span></span>
       ${prev&&id===prev.mid?`<span class="sub lote-tip">Repete o prato de ${relWhen(day.d,prev)}: faz em dobro lá e aqui só esquenta</span>`:''}
       <span class="sub">${extra.length?`Compra a mais: ${extra.join(', ')}`:'Só com o que já está na lista'}</span></div>
       <button class="btn small primary" data-act="swap" data-key="${key}" data-id="${id}">Usar</button></div>`;};
   const main=all.filter(id=>!MEALS[id].outros),out=all.filter(id=>MEALS[id].outros);
-  return `<div class="alts"><div class="eyebrow">Trocar por</div>${main.map(row).join('')}
+  return `<div class="alts"><div class="eyebrow">Trocar por</div>
+    <button class="alt build" data-act="shbuild" data-key="${key}" data-mid="${mid}"><span class="plus-ic" aria-hidden="true">+</span><span class="alt-tx"><b>Montar uma do nosso jeito</b><span class="sub">Escolha os itens; ela fica salva para outros dias</span></span></button>${main.map(row).join('')}
     ${out.length?`<div class="eyebrow alts-out">Outros · quando comprar peixe</div>${out.map(row).join('')}`:''}</div>`;
 }
-/* ----- Editor de ingredientes: vale para a refeição em todos os dias ----- */
+/* Quantidade para mostrar: medida caseira grande e o detalhe embaixo */
 function amtOf(id,q){const g=ING[id],h=g.hu;
   if(inGrams(id))return {big:fmt(gramsOf(id,q),0),small:gUnit(id)};
   if(h){const n=q/h[2];return {big:frac(n),small:`${n>1.01?h[1]:h[0]} · ${fmt(q,0)} ${g.u==='ml'?'ml':'g'}`};}
   if(g.u==='g'||g.u==='ml'||g.u==='g cozido')return {big:fmt(q,0),small:g.u==='ml'?'ml':g.u};
   const t=fq(id,q);return {big:frac(q),small:t.replace(/^[\d,½¼¾]+\s*/,'').replace(/ de .*/,'')};}
-function editPane(mid,w){
-  const its=itemsOf(mid,w),n=nut(its);
-  const rows=its.map(([id,q])=>{const a=amtOf(id,q),g=ING[id];
-    const warn=w==='P'&&g.pri!=null&&q>g.pri?`<span class="ed-warn">${g.pri===0?'A Pri evita (FODMAP)':`FODMAP: para a Pri, até ${g.hu||g.u==='g'||g.u==='g cozido'?fmt(g.pri,0)+' g':fq(id,g.pri)}`}</span>`:'';
-    return `<div class="ed-row"><div class="ed-n"><b>${SN[id][0].toUpperCase()+SN[id].slice(1)}</b>${warn}</div>
-      <div class="ed-step"><button data-act="edqty" data-mid="${mid}" data-who="${w}" data-id="${id}" data-d="-1" aria-label="Menos ${SN[id]}">${q-(g.st||1)<=0?'×':'−'}</button>
-      <span class="ed-q">${V.edIn===`${mid}|${w}|${id}`?`<input class="ed-in" type="text" inputmode="decimal" autocomplete="off" data-act="edset" data-mid="${mid}" data-who="${w}" data-id="${id}" value="${inGrams(id)?fmt(gramsOf(id,q),0):g.hu?fmt(q/g.hu[2],2):fmt(q,2)}" aria-label="Quantidade de ${SN[id]}">`:`<button class="ed-v" data-act="edtype" data-key="${mid}|${w}|${id}" aria-label="Digitar quantidade de ${SN[id]}"><b>${a.big}</b></button>`}
-        ${canGrams(id)?`<button class="ed-u" data-act="edunit" data-id="${id}" aria-label="Trocar unidade de ${SN[id]}">${a.small} ⇄</button>`:`<small>${a.small}</small>`}</span>
-      <button data-act="edqty" data-mid="${mid}" data-who="${w}" data-id="${id}" data-d="1" aria-label="Mais ${SN[id]}">+</button></div></div>`;}).join('');
-  const present=new Set(its.map(i=>i[0]));
-  const groups=Object.keys(AISLES).map(a=>{const ids=ING_IDS.filter(id=>ING[id].aisle===a&&!present.has(id));
-    return ids.length?`<optgroup label="${AISLES[a].split(' (')[0]}">${ids.map(id=>`<option value="${id}">${ING[id].n.split(' (')[0]}${w==='P'&&ING[id].pri===0?' (a Pri evita)':''}</option>`).join('')}</optgroup>`:'';}).join('');
-  return `<div class="ed ${w}"><div class="ed-h"><b>${WHO[w]}</b><span>${R0(n.p)} g · ${R0(n.k)} kcal</span></div>${rows||'<div class="sub">Nenhum ingrediente.</div>'}
-    <label class="ed-add"><span>+ Adicionar ingrediente</span><select data-act="edadd" data-mid="${mid}" data-who="${w}" aria-label="Adicionar ingrediente para ${WHO[w]}"><option value="">Escolher…</option>${groups}</select></label></div>`;
-}
-function editBlock(mid){
-  return `<div class="editor"><div class="ed-top"><div class="eyebrow">Ajustar ${MEALS[mid].n.toLowerCase()}</div>
-    <div class="sub">Vale para todos os dias com esta refeição. Compras, preparo e placar se recalculam.</div></div>
-    <div class="ed-cols">${editPane(mid,'L')}${editPane(mid,'P')}</div>
-    <div class="row wrap">${isCustom(mid)?`<button class="btn" data-act="edreset" data-mid="${mid}">Voltar ao original</button>`:''}<button class="btn primary" data-act="editopen" data-key="">Pronto</button></div></div>`;
-}
 function slotCard(day,k,label){
-  const base=day.slots[k],mid=slotsOf(day)[k],m=MEALS[mid],key=`${day.d}|${k}`,open=V.swap===key,ed=V.edit===key;
+  const base=day.slots[k],mid=slotsOf(day)[k],m=MEALS[mid],key=`${day.d}|${k}`,open=V.swap===key;
   const people=['L','P'].map(w=>{
     const key=`${day.d}|${k}|${w}`,its=dayItems(day,k,w),n=nut(its),on=!!S.checks[key];
     return `<label class="person ${w}${on?' done':''}"><input type="checkbox" data-act="chk" data-key="${key}"${on?' checked':''}><span class="box">${CHECK}</span>
@@ -1102,13 +1367,13 @@ function slotCard(day,k,label){
   }).join('');
   const both=S.checks[`${day.d}|${k}|L`]&&S.checks[`${day.d}|${k}|P`],lo=loteOf(day.d,k);
   return `<article class="slot"><div class="ill">${ill(mid)}</div>
-   <div><div class="slot-top"><span class="tag">${label}</span><span class="sub">${lo&&lo.role==='sobra'?'5 min · sobra':`${m.t} min${lo?' · em dobro':''}`}${mid!==base?' · trocado':''}${isCustom(mid)?' · ajustado':''}</span></div><h3>${m.n}</h3>
+   <div><div class="slot-top"><span class="tag">${label}</span><span class="sub">${lo&&lo.role==='sobra'?'5 min · sobra':`${m.t} min${lo?' · em dobro':''}`}${mid!==base?' · trocado':''}${isCustom(mid)?' · ajustado':''}${m.user?' · de vocês':''}</span></div><h3>${m.n}</h3>
    <div class="slot-actions"><button class="link" data-act="recipe" data-id="${mid}">Ver receita</button>
    <button class="link" data-act="both" data-day="${day.d}" data-slot="${k}">${both?'Desmarcar os dois':'Os dois comeram'}</button>
-   <button class="link" data-act="editopen" data-key="${key}" aria-expanded="${ed}">${ed?'Fechar ajuste':'Ajustar'}</button>
+   <button class="link" data-act="shopen" data-key="${key}" data-mid="${mid}">Mudar itens</button>
    <button class="link" data-act="swapopen" data-key="${key}" aria-expanded="${open}">${open?'Fechar trocas':'Trocar'}</button>
    ${mid!==base?`<button class="link" data-act="swap" data-key="${key}" data-id="${base}">Voltar ao plano</button>`:''}</div></div>
-   ${k==='ceia'?ceiaNote(day):''}${juntoBlock(mid,day,k)}${trocaBlock(mid)}${open?altsBlock(day,k,mid):''}${ed?editBlock(mid):''}<div class="people">${people}</div></article>`;
+   ${k==='ceia'?ceiaNote(day):''}${juntoBlock(mid,day,k)}${ingChips(day,k,mid)}${open?altsBlock(day,k,mid):''}<div class="people">${people}</div></article>`;
 }
 function extrasBlock(day){
   const w=V.extraWho,key=`${day.d}|${w}`,ex=S.extras[key]||{};
@@ -1157,7 +1422,7 @@ function viewSemana(){
       <div class="tots"><span class="tot L">Lucas ${R0(l.p)} g · ${R0(l.k)} kcal</span><span class="tot P">Pri ${R0(p.p)} g · ${R0(p.k)} kcal</span></div><ul>${rows}</ul></button>`;}).join('');
   const counts={};let nS=0;WEEK.forEach(d=>{const sl=slotsOf(d);for(const k in sl){const m=sl[k];if(MEALS[m].slot!=='ref')continue;if((loteOf(d.d,k)||{}).role==='sobra'){nS++;continue;}counts[m]=(counts[m]||0)+1;}});
   const nAlt=k=>Object.keys(MEALS).filter(id=>MEALS[id].slot===k&&!MEALS[id].outros).length;
-  const rod=Object.keys(counts).sort().map(m=>`${SHORT[m]} ${counts[m]}×`).join(' · ');
+  const rod=Object.keys(counts).sort().map(m=>`${shortOf(m)} ${counts[m]}×`).join(' · ');
   return `<div class="stack"><section class="card stack"><div><div class="eyebrow">Plano da semana, ${semTxt()}</div>
    <div class="sub">Média dos dias completos: Lucas ${R0(avg('L'))} g de proteína (meta ${S.targets.L.p}), Pri ${R0(avg('P'))} g (meta ${S.targets.P.p}). O plano já inclui uma folga para os dias em que algo escapar. As barras mostram a proteína planejada em % da meta de cada um.</div></div>
    <div class="chart">${chartSvg()}</div><div class="who-legend"><span><span class="dot L"></span>Lucas</span><span><span class="dot P"></span>Pri</span></div>
@@ -1170,24 +1435,33 @@ function esc(t){return String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;',
 function viewCompras(){
   const trips=shopping();const t=trips.find(x=>x.id===V.trip);
   const man=id=>Object.keys(S.manual[id]||{});
-  const tabs=trips.map(x=>{const m=man(x.id),done=x.items.filter(i=>S.shop[`${x.id}|${i.id}`]).length+m.filter(k=>S.shop[`${x.id}|m-${k}`]).length;
-    return `<button class="trip" data-act="trip" data-id="${x.id}" aria-pressed="${x.id===V.trip}"><b>${x.n}</b><span class="sub">${x.long}</span><span class="sub">${done}/${x.items.length+m.length} itens · ${fmt(x.kg,1)} kg</span></button>`;}).join('');
-  const max=S.maxKg,scale=Math.max(max*1.4,t.kg*1.05),over=t.kg>max;
-  const groups={};t.items.forEach(i=>{(groups[ING[i.id].aisle]=groups[ING[i.id].aisle]||[]).push(i);});
-  const order=['hort','prot','lat','merc'];
-  const aisles=order.filter(a=>groups[a]).map(a=>{
-    const its=groups[a];const done=its.filter(i=>S.shop[`${t.id}|${i.id}`]).length;
-    const rows=its.map(i=>{const key=`${t.id}|${i.id}`,on=!!S.shop[key],g=ING[i.id];
-      return `<label class="item${on?' done':''}"><input type="checkbox" data-act="shop" data-key="${key}"${on?' checked':''}><span class="box">${CHECK}</span>
-       <span class="nm">${g.n}</span><span class="qt">${buyText(i)}</span>
-       <span class="meta">${i.who.L?'<span class="mini-tag L">L</span>':''}${i.who.P?'<span class="mini-tag P">P</span>':''}<span>precisa de ${needText(i.id,i.need)} · ${i.uses.join(', ')}</span></span></label>`;}).join('');
-    return `<section class="aisle"><h3>${AISLES[a]}<span class="sub">${done}/${its.length}</span></h3><div class="list">${rows}</div></section>`;}).join('');
-  /* Itens adicionados à mão: ficam nesta compra, sincronizam e não entram no peso. */
-  const mk=man(t.id),mdone=mk.filter(k=>S.shop[`${t.id}|m-${k}`]).length;
-  const mrows=mk.map(k=>{const key=`${t.id}|m-${k}`,on=!!S.shop[key],n=esc(S.manual[t.id][k]);
-    return `<div class="mrow"><label class="item${on?' done':''}"><input type="checkbox" data-act="shop" data-key="${key}"${on?' checked':''}><span class="box">${CHECK}</span><span class="nm">${n}</span></label><button class="rm" data-act="mandel" data-id="${k}" aria-label="Tirar ${n} da lista">×</button></div>`;}).join('');
-  const manual=`<section class="aisle"><h3>Outros itens<span class="sub">${mk.length?`${mdone}/${mk.length}`:'adicionados por vocês'}</span></h3><div class="list">${mrows}
-    <form class="man-add" data-act="manadd"><input id="man-in" class="in-text" type="text" maxlength="60" autocomplete="off" enterkeyhint="done" placeholder="Ex.: papel toalha, detergente" aria-label="Item para adicionar"><button class="btn primary" type="submit">Adicionar</button></form></div></section>`;
+  /* itens digitados que o app não reconhece como ingrediente: vão para o corredor provável (limpeza, higiene, bebidas…) */
+  const loose=id=>man(id).map(k=>({k,m:parseManual(S.manual[id][k])})).filter(x=>!x.m.id);
+  const cnt=x=>{const L=loose(x.id);return {n:x.items.length+L.length,d:x.items.filter(i=>S.shop[`${x.id}|${i.id}`]).length+L.filter(o=>S.shop[`${x.id}|m-${o.k}`]).length};};
+  const tabs=trips.map(x=>{const c=cnt(x);
+    return `<button class="trip" data-act="trip" data-id="${x.id}" aria-pressed="${x.id===V.trip}"><b>${x.n}</b><span class="sub">${x.long}</span><span class="sub">${c.d}/${c.n} itens · ${fmt(x.kg,1)} kg</span></button>`;}).join('');
+  const max=S.maxKg,scale=Math.max(max*1.4,t.kg*1.05),over=t.kg>max,ct=cnt(t);
+  const rowsBy={};
+  t.items.forEach(i=>{const key=`${t.id}|${i.id}`,on=!!S.shop[key],g=ING[i.id];
+    const ex=(i.extra||[]).map(e=>`<span class="xtra">+ ${esc(e.t)} <button class="rm" data-act="mandel" data-id="${e.k}" aria-label="Tirar ${esc(e.t)}">×</button></span>`).join('');
+    const why=i.need>0?`${i.who.L?'<span class="mini-tag L">L</span>':''}${i.who.P?'<span class="mini-tag P">P</span>':''}<span>precisa de ${needText(i.id,i.need)} · ${i.uses.join(', ')}</span>`:'<span>adicionado por vocês</span>';
+    (rowsBy[g.aisle]=rowsBy[g.aisle]||[]).push({on,html:`<div class="mrow"><label class="item${on?' done':''}"><input type="checkbox" data-act="shop" data-key="${key}"${on?' checked':''}><span class="box">${CHECK}</span>
+       <span class="nm">${g.n}</span><span class="qt">${buyText(i)}</span><span class="meta">${why}</span></label>${ex?`<div class="xtras">${ex}</div>`:''}</div>`});});
+  loose(t.id).forEach(({k,m})=>{const key=`${t.id}|m-${k}`,on=!!S.shop[key],n=esc(m.t);
+    (rowsBy[m.aisle]=rowsBy[m.aisle]||[]).push({on,html:`<div class="mrow"><label class="item${on?' done':''}"><input type="checkbox" data-act="shop" data-key="${key}"${on?' checked':''}><span class="box">${CHECK}</span><span class="nm">${n}</span></label><button class="rm" data-act="mandel" data-id="${k}" aria-label="Tirar ${n} da lista">×</button></div>`});});
+  /* comprado desce para o fim do grupo, sem sumir */
+  const order=['hort','prot','lat','merc','beb','hig','casa','out'],AN=Object.assign({},AISLES,MAN_AISLES);
+  const aisles=order.filter(a=>rowsBy[a]).map(a=>{const rs=rowsBy[a].slice().sort((x,y)=>x.on-y.on),done=rs.filter(r=>r.on).length;
+    return `<section class="aisle"><h3>${AN[a]}<span class="sub">${done}/${rs.length}</span></h3><div class="list">${rs.map(r=>r.html).join('')}</div></section>`;}).join('');
+  /* adicionar: entende "2 kg batata", "3 iogurtes", "papel toalha"; o que já foi digitado antes vira atalho */
+  const seen=new Set(man(t.id).map(k=>norm(S.manual[t.id][k])));
+  const past=[...new Set(Object.values(S.manual).flatMap(o=>Object.values(o||{})).map(String))].filter(x=>!seen.has(norm(x))).slice(-8).reverse();
+  const manual=`<section class="card stack add-shop"><div><div class="eyebrow">Adicionar à ${t.n.toLowerCase()}</div>
+    <div class="sub">Escreva como falaria: “2 kg batata”, “3 iogurtes”, “1 dúzia de ovos”, “detergente”. Comida que o app conhece entra no corredor certo e na mochila, e o que sobrar abate da próxima compra.</div></div>
+    <form class="man-add" data-act="manadd"><input id="man-in" class="in-text" type="text" list="ing-list" data-act="manin" maxlength="60" autocomplete="off" enterkeyhint="done" placeholder="Ex.: 2 kg batata" aria-label="Item para adicionar"><button class="btn primary" type="submit">Adicionar</button></form>
+    <div id="man-hint" class="sub man-hint"></div>
+    <datalist id="ing-list">${ING_IDS.map(id=>`<option value="${esc(cap(SN[id]||ING[id].n))}">`).join('')}</datalist>
+    ${past.length?`<div class="pills">${past.map(x=>`<button class="chip" data-act="manpick" data-t="${esc(x)}">+ ${esc(x)}</button>`).join('')}</div>`:''}</section>`;
   let pantry='';
   if(t.k==='T1'){
     const pn=needs(ALL_DAYS);
@@ -1203,22 +1477,27 @@ function viewCompras(){
   const havePills=HAVE.map(id=>`<button class="chip" data-act="have" data-id="${id}" aria-pressed="${!!S.have[id]}">${S.have[id]?'Tenho: ':'Já tenho '}${ING[id].n.split(' (')[0].toLowerCase()}</button>`).join('');
   const stock=t.k==='T1'?`<section class="card stack"><div><div class="eyebrow">Estoque em casa</div><div class="sub">O que já tem entra na conta e some da lista de compras. Atum e sardinha em unidades, o resto é só marcar.</div></div><div class="pills">${havePills}</div><div class="stock">
     ${['atum','sardinha'].map(id=>`<div class="stepper"><button data-act="stock" data-id="${id}" data-d="-1" aria-label="Menos ${ING[id].n}">−</button><span>${S.stock[id]||0}</span><button data-act="stock" data-id="${id}" data-d="1" aria-label="Mais ${ING[id].n}">+</button><span class="sub">${ING[id].n}</span></div>`).join('')}</div></section>`:'';
-  const conf=V.confirm==='shop:'+t.id;
   return `<div class="stack"><div class="trips">${tabs}</div>
    <section class="card"><div class="eyebrow">${t.n} · ${t.long}</div><div class="sub">Cobre ${t.covers}. Peso estimado na mochila: <b>${fmt(t.kg,1)} kg</b> (limite ${max} kg).</div>
+   <div class="prog"><span>${ct.d} de ${ct.n} no carrinho</span><div class="pbar"><i style="width:${ct.n?ct.d/ct.n*100:0}%"></i></div></div>
    <div class="meter${over?' over':''}" role="img" aria-label="${fmt(t.kg,1)} kg de ${max} kg"><i style="width:${Math.min(100,t.kg/scale*100)}%"></i><u style="left:${max/scale*100}%"></u></div>
    ${over?'<div class="tip" style="margin-top:8px">Passou do limite da mochila. Se puder, marque em Estoque o que já tem em casa, ou aumente o limite em Ajustes.</div>':''}</section>
-   ${stock}${aisles}${manual}${pantry}
-   <div><button class="btn${conf?' warn':''}" data-act="resetshop" data-id="${t.id}">${conf?'Toque de novo para zerar':'Zerar marcações desta compra'}</button></div></div>`;
+   ${manual}${stock}${aisles}${pantry}
+   <div><button class="btn" data-act="resetshop" data-id="${t.id}">Zerar marcações desta compra</button></div></div>`;
 }
+
+function manHint(v){if(!String(v||'').trim())return '';const m=parseManual(v);
+  if(!m.id)return `Vai para <b>${(MAN_AISLES[m.aisle]||AISLES[m.aisle]||'Outros itens')}</b>.`;
+  const g=ING[m.id],packs=Math.max(1,Math.ceil(m.q/g.pack-1e-9));
+  return `Reconhecido: <b>${g.n}</b> · ${buyText({id:m.id,packs,qty:packs*g.pack})}. Entra em ${AISLES[g.aisle]} e no peso da mochila.`;}
 
 /* ----- RECEITAS ----- */
 function whereUsed(id){const out=[];WEEK.forEach(d=>{const sl=slotsOf(d);SLOTS.forEach(s=>{if(sl[s[0]]===id)out.push(`${d.wd} ${d.d.slice(8)} (${s[1].split(' ')[0].toLowerCase()})`);});});return out.length?out.join(', '):'nenhum dia. Use o botão Trocar na aba Hoje para colocar no plano.';}
 function recCard(id){
-  const m=MEALS[id]||BASES[id],open=!!V.open[id],r=RECIPES[id];
+  const m=MEALS[id]||BASES[id],open=!!V.open[id],r=RECIPES[id]||{steps:['Separe os itens do quadro e monte na proporção de cada um.'],tips:[]};
   const isMeal=!!MEALS[id];
   const head=`<button class="rec-h" data-act="exp" data-id="${id}" aria-expanded="${open}" id="rec-${id}"><div class="ill">${ill(id)}</div>
-   <div><span class="tag">${isMeal?(m.outros?'Outros · almoço ou jantar':m.slot==='cafe'?'Café':m.slot==='ref'?'Almoço ou jantar':m.slot==='lanche'?'Lanche':'Ceia'):'Preparo base'}</span><h3>${m.n}</h3>
+   <div><span class="tag">${m.user?'De vocês · ':''}${isMeal?(m.outros?'Outros · almoço ou jantar':m.slot==='cafe'?'Café':m.slot==='ref'?'Almoço ou jantar':m.slot==='lanche'?'Lanche':'Ceia'):'Preparo base'}</span><h3>${m.n}</h3>
    <div class="sub">${m.t} min${isMeal?` · Lucas ${R0(nut(itemsOf(id,'L')).p)} g · Pri ${R0(nut(itemsOf(id,'P')).p)} g de proteína${isCustom(id)?' · ajustada por vocês':''}`:''}</div></div>${CHEV}</button>`;
   let body='';
   if(open){
@@ -1227,7 +1506,7 @@ function recCard(id){
     const tt=(m.lote?['Prato de panela: faça em dobro. Quando ele aparece em duas refeições seguidas, o quadro já soma as duas e a segunda é só esquentar (até 3 dias na geladeira).']:[]).concat(r.tips);
     const tips=tt.length?`<div class="note">${tt.map(t=>`<div>${t}</div>`).join('')}</div>`:'';
     const wh=isMeal?`<div class="where">Na semana: ${whereUsed(id)}</div>`:'';
-    body=`<div class="rec-b">${isMeal?juntoBlock(id):''}${cols}${steps}${tips}${wh}<div><button class="link" data-act="clearsteps" data-id="${id}">Limpar passos marcados</button></div></div>`;
+    body=`<div class="rec-b">${isMeal?juntoBlock(id):''}${cols}${steps}${tips}${wh}<div class="row wrap"><button class="link" data-act="clearsteps" data-id="${id}">Limpar passos marcados</button>${m.user?`<button class="link danger" data-act="mealdel" data-id="${id}">Apagar esta refeição</button>`:''}</div></div>`;
   }
   return `<article class="rec">${head}${body}</article>`;
 }
@@ -1321,6 +1600,10 @@ function render(keep){
   const y=window.scrollY;
   $('#main').innerHTML=VIEWS[V.view]();
   $('#nav').innerHTML=navHtml();
+  /* painel: guarda a rolagem de dentro dele entre um toque e outro */
+  const sb=document.querySelector('.sheet-body'),sy=sb?sb.scrollTop:0;
+  $('#sheet').innerHTML=sheetHtml();document.body.classList.toggle('sheet-open',!!V.sheet);
+  const nb=document.querySelector('.sheet-body');if(nb)nb.scrollTop=sy;
   if(keep)window.scrollTo(0,y);
   if(typeof syStatus==='function')syStatus();
 }
@@ -1332,7 +1615,13 @@ document.addEventListener('click',e=>{
   const t=e.target.closest('[data-act]');if(!t)return;
   const a=t.dataset.act;
   if(['chk','shop','pantry','prep','num'].indexOf(a)>=0)return;
+  if(a.startsWith('sh')&&a!=='shop'&&shAct(a,t))return;
   switch(a){
+    case 'undo':doUndo();return;
+    case 'shopen':sheetOpen({mode:'edit',mid:t.dataset.mid,key:t.dataset.key,sw:t.dataset.id||null});return;
+    case 'shbuild':{const mid=t.dataset.mid,it={L:{},P:{}};['L','P'].forEach(w=>itemsOf(mid,w).forEach(([i,q])=>{it[w][i]=q;}));
+      V.swap=null;sheetOpen({mode:'build',key:t.dataset.key,slot:MEALS[mid].slot,n:'',L:it.L,P:it.P});return;}
+    case 'mealdel':{const un=snap(),id=t.dataset.id,n=MEALS[id].n;delete S.mine[id];delete S.custom[id];Object.keys(S.swap).forEach(k=>{if(S.swap[k]===id)delete S.swap[k];});applyUser();save();render(true);toast(`“${n}” apagada`,un);return;}
     case 'nav':setHash(t.dataset.v);return;
     case 'day':V.day=t.dataset.day;render(true);return;
     case 'day-go':V.day=t.dataset.day;setHash('hoje');return;
@@ -1342,61 +1631,45 @@ document.addEventListener('click',e=>{
     case 'exadd':case 'exdel':{const key=`${V.day}|${V.extraWho}`;const ex=S.extras[key]=S.extras[key]||{};const id=t.dataset.id;ex[id]=Math.max(0,(ex[id]||0)+(a==='exadd'?1:-1));save();render(true);return;}
     case 'have':S.have[t.dataset.id]=!S.have[t.dataset.id];save();render(true);return;
     case 'trip':V.trip=t.dataset.id;V.confirm=null;render(true);return;
-    case 'mandel':{const m=S.manual[V.trip]||{};delete m[t.dataset.id];delete S.shop[`${V.trip}|m-${t.dataset.id}`];if(!Object.keys(m).length)delete S.manual[V.trip];save();render(true);return;}
+    case 'mandel':{const un=snap(),m=S.manual[V.trip]||{},nm=m[t.dataset.id];delete m[t.dataset.id];delete S.shop[`${V.trip}|m-${t.dataset.id}`];if(!Object.keys(m).length)delete S.manual[V.trip];save();render(true);toast(`${nm} saiu da lista`,un);return;}
     case 'stock':{const id=t.dataset.id;S.stock[id]=Math.max(0,(S.stock[id]||0)+Number(t.dataset.d));save();render(true);return;}
-    case 'resetshop':{const k='shop:'+t.dataset.id;if(V.confirm===k){Object.keys(S.shop).forEach(x=>{if(x.indexOf(t.dataset.id+'|')===0)delete S.shop[x];});V.confirm=null;save();}else arm(k);render(true);return;}
+    case 'resetshop':{const un=snap();Object.keys(S.shop).forEach(x=>{if(x.indexOf(t.dataset.id+'|')===0)delete S.shop[x];});save();render(true);toast('Marcações desta compra zeradas',un);return;}
     case 'resetall':{if(V.confirm==='all'){S.checks={};S.extras={};S.shop={};S.pantry={};S.prep={};S.steps={};S.have={};S.swap={};V.confirm=null;save();}else arm('all');render(true);return;}
     case 'exp':V.open[t.dataset.id]=!V.open[t.dataset.id];render(true);return;
     case 'step':S.steps[t.dataset.key]=!S.steps[t.dataset.key];save();render(true);return;
     case 'clearsteps':Object.keys(S.steps).forEach(x=>{if(x.indexOf(t.dataset.id+'|')===0)delete S.steps[x];});save();render(true);return;
     case 'filter':V.filter=t.dataset.f;render(true);return;
     case 'icon':S.icon=t.dataset.id;applyIcon();save();render(true);return;
-    case 'swapopen':V.swap=V.swap===t.dataset.key?null:t.dataset.key;V.edit=null;render(true);return;
-    case 'editopen':V.edit=t.dataset.key&&V.edit!==t.dataset.key?t.dataset.key:null;V.swap=null;render(true);return;
-    case 'edqty':{const d=t.dataset,c=customOf(d.mid,d.who),g=ING[d.id];
-      /* em gramas o passo é menor: 5 g nos itens pequenos, 10 g no resto, 25 ml/g em leite e iogurte */
-      const st=inGrams(d.id)?(g.u==='ml'||d.id==='iogurte'?25:(g.st||1)<=15&&g.hu?5:10)/(g.hu?1:(g.gw||1)):(g.st||1);
-      c[d.id]=Math.max(0,Math.round(((c[d.id]||0)+Number(d.d)*st)*1000)/1000);save();render(true);return;}
-    case 'edtype':V.edIn=t.dataset.key;render(true);{const i=document.querySelector('.ed-in');if(i){i.focus();i.select();}}return;
-    case 'edunit':if(inGrams(t.dataset.id))delete S.unit[t.dataset.id];else S.unit[t.dataset.id]='g';save();render(true);return;
-    case 'edreset':delete S.custom[t.dataset.mid];save();render(true);return;
+    case 'swapopen':V.swap=V.swap===t.dataset.key?null:t.dataset.key;render(true);return;
+    case 'edreset':{const un=snap();delete S.custom[t.dataset.mid];save();render(true);toast('Voltou à receita original',un);return;}
     case 'swap':{const k=t.dataset.key,id=t.dataset.id,d=dayOf(k.split('|')[0]);
       if(id===d.slots[k.split('|')[1]])delete S.swap[k];else S.swap[k]=id;
       delete S.checks[k+'|L'];delete S.checks[k+'|P'];V.swap=null;save();render(true);return;}
+    case 'manpick':{const i=document.getElementById('man-in');if(i){i.value=t.dataset.t;i.dispatchEvent(new Event('input',{bubbles:true}));i.form.requestSubmit();}return;}
   }
 });
 document.addEventListener('change',e=>{
   const t=e.target.closest('[data-act]');if(!t)return;const a=t.dataset.act;
   if(a==='chk'){S.checks[t.dataset.key]=t.checked;save();render(true);}
-  else if(a==='edset'){V.edIn=null;const d=t.dataset,g=ING[d.id],v=parseQty(t.value);
-    if(v!=null){const q=inGrams(d.id)?(g.hu?v:v/(g.gw||1)):(g.hu?v*g.hu[2]:v);customOf(d.mid,d.who)[d.id]=Math.max(0,Math.round(q*1000)/1000);save();}
-    render(true);}
-  else if(a==='edadd'){const id=t.value;if(!id||!ING[id])return;const g=ING[id],st=g.st||1;
-    let q=g.hu?g.hu[2]:(g.u==='g'||g.u==='ml'||g.u==='g cozido')?Math.max(st,Math.round(50/st)*st):Math.max(st,g.u==='cs'?.5:1);
-    /* para a Pri, começa dentro do limite FODMAP */
-    if(t.dataset.who==='P'&&g.pri>0&&q>g.pri)q=Math.max(st,Math.floor(g.pri/st)*st);
-    customOf(t.dataset.mid,t.dataset.who)[id]=q;save();render(true);}
-  else if(a==='troca'){const d=t.dataset,T=TR[d.g],to=t.value,from=d.from;if(!T||!ING[to]||to===from)return;
-    for(const w of d.who.split('')){const c=customOf(d.mid,w),pb=trBase(T,d.mid,w);
-      if(pb&&to===pb.id)T.ids.forEach(id=>{const b=pb.items.find(i=>i[0]===id);if(b)c[id]=b[1];else if(c[id])c[id]=0;});
-      else{const add=trConv(T,from,c[from]||0,to);c[from]=0;c[to]=Math.round(((c[to]||0)+add)*1000)/1000;}}
-    save();render(true);}
+  else if(shChange(t)){}
   else if(a==='shop'){S.shop[t.dataset.key]=t.checked;save();render(true);}
   else if(a==='pantry'){S.pantry[t.dataset.key]=t.checked;save();render(true);}
   else if(a==='prep'){S.prep[t.dataset.key]=t.checked;save();render(true);}
   else if(a==='num'){const v=Number(t.value);if(!isFinite(v)||v<0)return;const p=t.dataset.path.split('.');
     if(p[0]==='t')S.targets[p[1]][p[2]]=v;else if(p[0]==='r')S.ref[p[1]]=v;else if(p[0]==='maxkg')S.maxKg=v;save();render(true);}
 });
-document.addEventListener('submit',e=>{const f=e.target;if(f.dataset.act!=='manadd')return;e.preventDefault();
+document.addEventListener('input',e=>{const t=e.target.closest('[data-act]');if(!t)return;if(shInput(t))return;
+  if(t.dataset.act==='manin'){const h=document.getElementById('man-hint');if(h)h.innerHTML=manHint(t.value);}});
+document.addEventListener('submit',e=>{const f=e.target;if(shSubmit(f)){e.preventDefault();return;}if(f.dataset.act!=='manadd')return;e.preventDefault();
   const i=f.querySelector('input'),v=(i.value||'').trim().slice(0,60);if(!v)return;
   (S.manual[V.trip]=S.manual[V.trip]||{})[Date.now().toString(36)+Math.random().toString(36).slice(2,5)]=v;save();render(true);
   const n=document.getElementById('man-in');if(n)n.focus();});
 window.addEventListener('hashchange',()=>go(location.hash.slice(1)));
-document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.classList&&e.target.classList.contains('ed-in'))e.target.blur();});
-document.addEventListener('focusout',e=>{if(e.target.classList&&e.target.classList.contains('ed-in'))setTimeout(()=>{if(V.edIn){V.edIn=null;render(true);}},0);});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.classList&&e.target.classList.contains('ed-in'))e.target.blur();if(e.key==='Escape'&&V.sheet)sheetClose();});
+document.addEventListener('focusout',e=>{if(e.target.classList&&e.target.classList.contains('ed-in'))setTimeout(()=>{if(V.shIn){V.shIn=null;render(true);}},0);});
 (function init(){
   document.getElementById('app').innerHTML=`<div class="wrap"><header class="hdr"><div><h1>Cardápio Lucas e Pri</h1><p>Semana de ${semTxt()}</p><p id="sync-st" class="sync-st" hidden></p></div>
-   <div class="who-legend"><span><span class="dot L"></span>Lucas</span><span><span class="dot P"></span>Pri</span></div></header><main id="main"></main></div><nav class="nav" id="nav" aria-label="Seções"></nav>`;
+   <div class="who-legend"><span><span class="dot L"></span>Lucas</span><span><span class="dot P"></span>Pri</span></div></header><main id="main"></main></div><nav class="nav" id="nav" aria-label="Seções"></nav><div id="sheet"></div><div id="toast" aria-live="polite"></div>`;
   const h=(location.hash||'').slice(1);V.view=VIEWS[h]?h:'hoje';applyIcon();render(false);
 })();
 

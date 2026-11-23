@@ -1,7 +1,7 @@
 /* ===== ESTADO E CÁLCULOS ===== */
 const KEY='cardapio-lucas-pri-v1';
 const DEF={checks:{},extras:{},shop:{},stock:{atum:4,sardinha:2},pantry:{},prep:{},steps:{},
-  targets:{L:{p:160,k:2800},P:{p:125,k:1750}},ref:{iog:3.6,whey:24},maxKg:14,have:{},swap:{},icon:'verde',custom:{},unit:{},manual:{}};
+  targets:{L:{p:160,k:2800},P:{p:125,k:1750}},ref:{iog:3.6,whey:24},maxKg:14,have:{},swap:{},icon:'verde',custom:{},unit:{},manual:{},mine:{},ing:{}};
 function clone(o){return JSON.parse(JSON.stringify(o));}
 function loadState(){
   const s=clone(DEF);
@@ -14,6 +14,23 @@ function loadState(){
   return s;
 }
 let S=loadState();
+/* Ingredientes e refeições criados por vocês (S.ing, S.mine) entram em ING e MEALS como os do app e sincronizam.
+   Chamado ao abrir e sempre que chega mudança de outro aparelho. */
+const BASE_ING=new Set(Object.keys(ING)),BASE_MEALS=new Set(Object.keys(MEALS)),SLOT_OK={cafe:1,ref:1,lanche:1,ceia:1};
+let ING_IDS=Object.keys(ING);
+function applyUser(){
+  for(const id in ING)if(!BASE_ING.has(id))delete ING[id];
+  for(const id in MEALS)if(!BASE_MEALS.has(id))delete MEALS[id];
+  for(const id in S.ing){const u=S.ing[id];if(!u||!u.n)continue;const un=u.u==='un';
+    ING[id]={n:u.n,u:un?'un':'g',p:+u.p||0,k:+u.k||0,pack:1,loose:true,wp:un?(+u.wp||100):1,aisle:u.aisle||'merc',cat:u.cat||'outro',st:un?1:10,por:un?1:100,user:1};
+    SN[id]=u.n.toLowerCase();}
+  for(const id in S.mine){const m=S.mine[id];if(!m||!m.n||!SLOT_OK[m.slot])continue;
+    const its=w=>Object.keys(m[w]||{}).filter(i=>ING[i]&&m[w][i]>0).map(i=>[i,+m[w][i]]);
+    MEALS[id]={slot:m.slot,n:m.n,t:+m.t||10,user:1,L:its('L'),P:its('P')};}
+  ING_IDS=Object.keys(ING);
+}
+applyUser();
+const shortOf=id=>SHORT[id]||(MEALS[id]||{n:''}).n;
 let saveT=null;
 let dirty=false;
 /* Só grava se houve toque desde a última gravação: uma aba antiga aberta não pode sobrescrever o que outra salvou. */
@@ -46,7 +63,7 @@ function fq(id,q){
     case 'pao': return `${n} ${pl?'fatias':'fatia'} de pão`;
     case 'paofr': return `${n} ${pl?'pães franceses':'pão francês'}`;
     case 'ameixa': return `${n} ${pl?'ameixas':'ameixa'}`;
-    case 'laranja': case 'kiwi': return `${n} ${SN[id]}${pl?'s':''}`;
+    case 'laranja': case 'kiwi': case 'maca': return `${n} ${SN[id]}${pl?'s':''}`;
     default:{const h=ING[id].hu;if(h){const m=q/h[2],u=ING[id].u==='ml'?'ml':'g',w=m>1.01?h[1]:h[0];
       /* "¾ tomate", não "¾ tomate de tomate" */
       const same=h[0].split(/[ -]/)[0]===SN[id].split(/[ -]/)[0];return `${frac(m)} ${w}${same?'':' de '+SN[id]} (${fmt(q,0)} ${u})`;}
@@ -55,7 +72,6 @@ function fq(id,q){
 }
 
 /* Ingredientes de uma refeição para uma pessoa, já com os ajustes feitos no editor (valem para todos os dias). */
-const ING_IDS=Object.keys(ING);
 function itemsOf(mid,who){
   const c=S.custom[mid]&&S.custom[mid][who];if(!c)return MEALS[mid][who];
   const base=MEALS[mid][who].map(i=>i[0]),pos=id=>{const i=base.indexOf(id);return i<0?100+ING_IDS.indexOf(id):i;};
@@ -151,7 +167,7 @@ function needs(days,onlyMeals){
     for(const s of SLOTS){const mid=sl[s[0]];if(!mid||!days.includes(cookDate(day.d,s[0])))continue;
       for(const who of ['L','P']){for(const it of dayItems(day,s[0],who)){
         const o=out[it[0]]||(out[it[0]]={tot:0,L:0,P:0,uses:[]});
-        o.tot+=it[1];o[who]+=it[1];const sh=SHORT[mid];if(!o.uses.includes(sh))o.uses.push(sh);}}}}
+        o.tot+=it[1];o[who]+=it[1];const sh=shortOf(mid);if(!o.uses.includes(sh))o.uses.push(sh);}}}}
   return out;
 }
 function buyText(it){
@@ -184,6 +200,14 @@ function shopping(){
         items.push({id,packs,qty,need:nd[id].tot,who:{L:nd[id].L>0,P:nd[id].P>0},uses:nd[id].uses,wt});}
       else if(nd[id].tot>0){/* coberto pelo estoque ou por sobra da compra anterior */}
     }
+    /* Itens digitados que o app reconhece ("2 kg batata"): entram na compra, no peso da mochila e, o que sobrar, abate da próxima. */
+    const man=S.manual[t.id]||{};
+    for(const mk in man){const m=parseManual(man[mk]);if(!m.id)continue;const g=ING[m.id];
+      const packs=Math.max(1,Math.ceil(m.q/g.pack-1e-9)),qty=packs*g.pack,wt=qty*(g.wp||1);
+      left[m.id]=(left[m.id]||0)+qty;w+=wt;
+      const it=items.find(i=>i.id===m.id),ex={k:mk,t:m.t,packs,qty};
+      if(it){it.packs+=packs;it.qty+=qty;it.wt+=wt;(it.extra=it.extra||[]).push(ex);}
+      else items.push({id:m.id,packs,qty,need:0,who:{L:false,P:false},uses:[],wt,extra:[ex]});}
     items.sort((a,b)=>ING[a.id].n.localeCompare(ING[b.id].n,'pt-BR'));
     return Object.assign({},t,{items,kg:w/1000});
   });
