@@ -1280,13 +1280,15 @@ function swChip(from,id,qL,qP,present){const cat=ING[from].cat;
       <span class="sub">${present.has(id)?'Já está no prato: soma':`Lucas ${dL>0?'+':dL<0?'−':'±'}${Math.abs(dL)} ${byP?'g de proteína':'kcal'}`}</span></button>`;}}
 function trq(id,q){return fq(id,q).replace(/ \(.*\)$/,'').replace(' de '+SN[id],'');}
 function resultsHtml(sh){
-  const present=new Set(shItems(sh,'L').concat(shItems(sh,'P')).map(i=>i[0]));let ids,head='';
+  /* some da lista só o que os dois já têm: se só um tem, o botão adiciona para o outro */
+  const has=w=>new Set(shItems(sh,w).map(i=>i[0])),hL=has('L'),hP=has('P');let ids,head='';
   const q=singAll(norm(V.shq||''));
   if(q){ids=ING_IDS.filter(id=>{const n=singAll(norm(ING[id].n+' '+(SN[id]||'')));return q.split(' ').every(w=>n.includes(w));});}
   else if(V.shcat)ids=ING_IDS.filter(id=>ING[id].cat===V.shcat);
   else{ids=recents();if(ids.length)head='<div class="sub res-h">Usados por último</div>';else ids=['ovo','iogurte','whey','banana','pao','aveia','cottage','amendoim','tapioca','mussarela'];}
-  ids=ids.filter(id=>!present.has(id)).slice(0,24);
-  const chips=ids.map(id=>`<button class="ch-add" data-act="shadd" data-id="${id}">+ ${cap(SN[id]||ING[id].n)}${ING[id].pri===0?' <small>(Pri evita)</small>':''}</button>`).join('');
+  ids=ids.filter(id=>!(hL.has(id)&&hP.has(id))).slice(0,24);
+  const chips=ids.map(id=>{const fw=hP.has(id)?' para o Lucas':hL.has(id)?' para a Pri':'';
+    return `<button class="ch-add" data-act="shadd" data-id="${id}">+ ${cap(SN[id]||ING[id].n)}${fw}${ING[id].pri===0&&!hP.has(id)?' <small>(Pri evita)</small>':''}</button>`;}).join('');
   const exact=q&&ING_IDS.some(id=>singAll(norm(SN[id]||''))===q||singAll(norm(ING[id].n))===q);
   const nw=q&&!exact&&!chips?`<button class="ch-add new" data-act="shnew">+ Cadastrar “${esc(V.shq.trim())}”</button>`:'';
   return head+(chips||nw?`<div class="res-chips">${chips}${nw}</div>`:'<div class="sub">Nada encontrado.</div>');}
