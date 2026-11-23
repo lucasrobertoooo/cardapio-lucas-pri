@@ -41,6 +41,10 @@ window.addEventListener('popstate',()=>{if(V.sheet)sheetClose(true);});
 function amtHtml(sh,w,id,q){const a=amtOf(id,q),k=`${w}|${id}`;
   if(V.shIn===k)return `<input class="ed-in" type="text" inputmode="decimal" autocomplete="off" data-act="shset" data-w="${w}" data-id="${id}" value="${inGrams(id)?fmt(gramsOf(id,q),0):ING[id].hu?fmt(q/ING[id].hu[2],2):fmt(q,2)}" aria-label="Quantidade de ${SN[id]} para ${WHO[w]}">`;
   return `<button class="ed-v" data-act="shtype" data-key="${k}" aria-label="Digitar quantidade de ${SN[id]} para ${WHO[w]}"><b>${q?a.big:'0'}</b><small>${q?a.small:'não come'}</small></button>`;}
+/* pesar em gramas o que é contado por medida (lata de atum, ovo, fatia): só muda como este celular mostra e digita */
+function unitBtn(id){const g=ING[id];if(!canGrams(id)||g.u==='g'&&!g.hu||g.u==='ml'&&!g.hu)return '';
+  const m=g.hu?g.hu[1]:g.u==='lata'?'latas':g.u==='un'?'unidades':g.u==='dose'?'doses':g.u==='cs'?'colheres':'medida';
+  return `<button class="link" data-act="shunit" data-id="${id}">${inGrams(id)?'Usar '+m:g.u==='ml'?'Medir em ml':'Pesar em gramas'}</button>`;}
 function stepHtml(sh,w,id,q){
   return `<div class="stp ${w}"><span class="stp-w">${WHO[w]}</span><button data-act="shq" data-w="${w}" data-id="${id}" data-d="-1" aria-label="Menos ${SN[id]} para ${WHO[w]}"${q?'':' disabled'}>−</button>
     ${amtHtml(sh,w,id,q)}<button data-act="shq" data-w="${w}" data-id="${id}" data-d="1" aria-label="Mais ${SN[id]} para ${WHO[w]}">+</button></div>`;}
@@ -95,7 +99,7 @@ function sheetHtml(){
     const warn=qP&&g.pri!=null&&qP>g.pri?`<span class="ed-warn">${g.pri===0?'A Pri evita (FODMAP)':'Acima do limite FODMAP da Pri'}</span>`:'';
     return `<div class="er${open?' open':''}" id="er-${id}"><div class="er-h"><b>${cap(SN[id]||g.n)}</b><span class="er-c">${CAT_N[g.cat]||''}</span>${warn}</div>
      <div class="er-q">${stepHtml(sh,'L',id,qL)}${stepHtml(sh,'P',id,qP)}</div>
-     <div class="er-a"><button class="link" data-act="shsw" data-id="${id}" aria-expanded="${open}">${open?'Fechar troca':'Trocar por…'}</button><button class="link danger" data-act="shrm" data-id="${id}">Tirar</button></div>
+     <div class="er-a"><button class="link" data-act="shsw" data-id="${id}" aria-expanded="${open}">${open?'Fechar troca':'Trocar por…'}</button>${unitBtn(id)}<button class="link danger" data-act="shrm" data-id="${id}">Tirar</button></div>
      ${open?swapChips(sh,id,qL,qP):''}</div>`;}).join('');
   const mealN=sh.mode==='edit'?MEALS[sh.mid].n:'';
   const dd=sh.key?dayOf(sh.key.split('|')[0]):null,dn=dd?(dd.d===TODAY?'hoje':`${WD_FULL[dd.wd].toLowerCase()} ${+dd.d.slice(8)}`):'';
@@ -130,6 +134,7 @@ function shAct(a,t){const sh=V.sheet;if(!sh)return false;const d=t.dataset;
     case 'shscope':sh.scope=d.s;render(true);return true;
     case 'shdayreset':{const un=snap();delete S.dayc[sh.key];save();render(true);toast('Este dia voltou ao normal',un);return true;}
     case 'shnewsw':V.newIng={n:cap((V.swq||'').trim()),cat:ING[V.sw]?ING[V.sw].cat:'outro'};render(true);{const f=document.querySelector('.new-ing');if(f)f.scrollIntoView({block:'center'});}return true;
+    case 'shunit':{if(inGrams(d.id))delete S.unit[d.id];else S.unit[d.id]='g';V.shIn=null;save();render(true);return true;}
     case 'shrm':{const un=snap();['L','P'].forEach(w=>shSet(sh,w,d.id,0));if(V.sw===d.id)V.sw=null;save();render(true);toast(`${cap(SN[d.id])} saiu da refeição`,un);return true;}
     case 'shswap':{const un=snap(),from=d.from,to=d.to;
       /* troca sempre para os dois; se a Pri evita o item novo, troca do mesmo jeito e só avisa (quem decide são vocês) */

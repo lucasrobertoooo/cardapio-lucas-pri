@@ -66,7 +66,8 @@ const ING = {
   chocolate:{n:'Chocolate 70% cacau', u:'g', p:.08, k:5.8, pack:100, pk:['barra','barras'], size:'100 g', aisle:'merc'},
   mel:      {n:'Mel', u:'g', p:0, k:3.1, pack:300, pk:['pote','potes'], size:'300 g', aisle:'merc'},
   maca:     {n:'Maçã', u:'un', p:.4, k:85, pack:1, loose:true, wp:150, aisle:'hort'},
-  maionese: {n:'Maionese light (pote, sem alho e cebola)', u:'g', p:.005, k:2.7, pack:500, pk:['pote','potes'], size:'500 g', aisle:'merc'}
+  maionese: {n:'Maionese light (pote, sem alho e cebola)', u:'g', p:.005, k:2.7, pack:500, pk:['pote','potes'], size:'500 g', aisle:'merc'},
+  nescau:   {n:'Nescau (achocolatado em pó)', u:'g', p:.045, k:3.85, pack:370, pk:['pote','potes'], size:'370 g', aisle:'merc'}
 };
 /* Editor de refeição: st = passo do + e −, hu = medida caseira [singular, plural, g ou ml por medida],
    pri = máximo por refeição para a Pri ficar no FODMAP baixo (0 = evitar).
@@ -92,7 +93,7 @@ const ADJ = {
   banana:{fp:1, st:.5, pri:1, gw:100}, laranja:{fp:1, st:.5, gw:130}, kiwi:{fp:2, st:.5, gw:75},
   morango:{fp:144, st:12, hu:['morango','morangos',12]}, mamao:{fp:150, st:75, hu:['fatia','fatias',150]}, uva:{fp:100, st:25, hu:['punhado','punhados',50], pri:150},
   abacaxi:{fp:120, st:40, hu:['fatia','fatias',80], pri:140}, limao:{st:.5, gw:40}, ameixa:{fp:2, st:.5, pri:0, gw:70},
-  maionese:{st:15, hu:['colher de sopa','colheres de sopa',15]},
+  maionese:{st:15, hu:['colher de sopa','colheres de sopa',15]}, nescau:{st:5, hu:['colher de sopa','colheres de sopa',10]},
   tapioca:{st:20}, cuscuz:{st:10}, minas:{st:15, hu:['fatia','fatias',30], pri:40}, castanha:{st:4, hu:['castanha','castanhas',4], pri:40},
   chocolate:{st:5, hu:['quadradinho','quadradinhos',5], pri:30}, mel:{st:5, hu:['colher','colheres',10], pri:0}, maca:{fp:1, st:.5, pri:0, gw:150}
 };
@@ -103,7 +104,7 @@ const CATS=[['prot','Proteína','p'],['lat','Laticínios e whey','p'],['carbo','
   ['leg','Legumes e verduras','g'],['gord','Gorduras e doces','k'],['outro','Outros','k']];
 const CAT_OF={prot:'frango ovo atum sardinha peixe camarao pts',lat:'iogurte leite cottage mussarela parmesao whey minas',
   carbo:'pao paofr arroz macarrao aveia batata batatadoce mandioca quinoa tapioca cuscuz',fruta:'banana morango mamao uva laranja kiwi abacaxi ameixa maca',
-  leg:'cenoura abobrinha pepino tomate espinafre abobora alface couve brocolis pimentao berinjela vagem',gord:'azeite amendoim maionese castanha chocolate mel',outro:'passata feijao grao limao'};
+  leg:'cenoura abobrinha pepino tomate espinafre abobora alface couve brocolis pimentao berinjela vagem',gord:'azeite amendoim maionese castanha chocolate mel nescau',outro:'passata feijao grao limao'};
 for (const c in CAT_OF) CAT_OF[c].split(' ').forEach(id=>{ING[id].cat=c;});
 /* Substitutos de verdade, do mais parecido ao menos: aparecem primeiro na troca de um item.
    O resto da mesma categoria fica em "Ver mais" (ninguém troca pão de forma por arroz). */
@@ -115,14 +116,14 @@ const PAR=[
   'atum sardinha frango peixe ovo','sardinha atum frango peixe','ovo minas mussarela cottage frango atum iogurte','pts frango atum',
   'iogurte leite cottage','leite iogurte','cottage minas mussarela iogurte ovo','minas cottage mussarela','mussarela minas cottage parmesao',
   'parmesao mussarela minas','feijao grao',
-  'amendoim castanha','castanha amendoim','azeite','maionese azeite','mel chocolate','chocolate mel castanha',
+  'amendoim castanha','castanha amendoim','azeite','maionese azeite','mel chocolate nescau','chocolate mel castanha nescau','nescau chocolate mel',
   'alface couve espinafre pepino tomate','couve espinafre alface brocolis','espinafre couve alface brocolis','tomate pepino cenoura pimentao',
   'pepino tomate cenoura alface','cenoura abobrinha abobora vagem brocolis','abobrinha berinjela abobora cenoura vagem','abobora abobrinha cenoura batatadoce',
   'brocolis vagem couve espinafre abobrinha','vagem brocolis abobrinha cenoura','berinjela abobrinha pimentao','pimentao tomate berinjela'
 ].reduce((o,l)=>{const [k,...r]=l.split(' ');o[k]=r;return o;},{});
 /* Porção típica de quem adiciona um ingrediente no editor (o Lucas; a Pri recebe ~⅔). Sem POR: 1 medida caseira, 1 porção de fruta, 100 g ou 1 unidade. */
 const POR={ovo:2,frango:120,peixe:150,camarao:120,macarrao:80,pts:30,azeite:.5,aveia:30,parmesao:10,cottage:40,mussarela:30,arroz:100,alface:30,passata:150,
-  tapioca:60,cuscuz:60,minas:30,castanha:8,chocolate:20,mel:10,tomate:50};
+  tapioca:60,cuscuz:60,minas:30,castanha:8,chocolate:20,mel:10,tomate:50,nescau:20};
 for (const id in POR) ING[id].por=POR[id];
 const MEALS = {
  C1:{slot:'cafe', n:'Pão com cottage e ovos mexidos, iogurte e fruta', t:8, junto:['ovo'], jn:'Ovos mexidos',
@@ -151,7 +152,7 @@ const MEALS = {
   P:[['pao',1],['atum',.5],['mussarela',15],['tomate',50],['leite',200],['banana',.5]]},
  L4:{slot:'lanche', n:'Ovos cozidos, pão com pasta de amendoim, leite e fruta', t:3, oc:1,
   L:[['ovo',3],['leite',300],['banana',1],['pao',2],['amendoim',30]],
-  P:[['ovo',2],['leite',250],['banana',1],['pao',1],['amendoim',15]]},
+  P:[['ovo',2],['leite',250],['nescau',25],['banana',1],['pao',1],['amendoim',15]]},
  E1:{slot:'ceia', n:'Tigela de iogurte com aveia e mamão', t:1,
   L:[['iogurte',250],['aveia',10],['mamao',150]],
   P:[['iogurte',150],['aveia',10],['mamao',150]]},
