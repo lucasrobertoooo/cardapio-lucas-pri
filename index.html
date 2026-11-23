@@ -521,12 +521,12 @@ const ADJ = {
   berinjela:{st:20, hu:['xícara','xícaras',80], pri:75}, vagem:{st:25, hu:['xícara','xícaras',100], pri:75},
   couve:{st:20, hu:['xícara','xícaras',40]}, espinafre:{st:15, hu:['xícara','xícaras',30]}, alface:{st:10, hu:['folha','folhas',10]},
   pimentao:{st:37.5, hu:['pimentão','pimentões',150]}, pepino:{st:50, hu:['pepino','pepinos',200]}, tomate:{st:25, hu:['tomate','tomates',100]},
-  banana:{fp:1, st:.5, pri:1, gw:100}, laranja:{fp:1, st:1, gw:130}, kiwi:{fp:2, st:1, gw:75},
+  banana:{fp:1, st:.5, pri:1, gw:100}, laranja:{fp:1, st:.5, gw:130}, kiwi:{fp:2, st:.5, gw:75},
   morango:{fp:144, st:12, hu:['morango','morangos',12]}, mamao:{fp:150, st:75, hu:['fatia','fatias',150]}, uva:{fp:100, st:25, hu:['punhado','punhados',50], pri:150},
-  abacaxi:{fp:120, st:40, hu:['fatia','fatias',80], pri:140}, limao:{st:.5, gw:40}, ameixa:{fp:2, st:1, pri:0, gw:70},
+  abacaxi:{fp:120, st:40, hu:['fatia','fatias',80], pri:140}, limao:{st:.5, gw:40}, ameixa:{fp:2, st:.5, pri:0, gw:70},
   maionese:{st:15, hu:['colher de sopa','colheres de sopa',15]},
   tapioca:{st:20}, cuscuz:{st:10}, minas:{st:15, hu:['fatia','fatias',30], pri:40}, castanha:{st:4, hu:['castanha','castanhas',4], pri:40},
-  chocolate:{st:5, hu:['quadradinho','quadradinhos',5], pri:30}, mel:{st:5, hu:['colher','colheres',10], pri:0}, maca:{fp:1, st:1, pri:0, gw:150}
+  chocolate:{st:5, hu:['quadradinho','quadradinhos',5], pri:30}, mel:{st:5, hu:['colher','colheres',10], pri:0}, maca:{fp:1, st:.5, pri:0, gw:150}
 };
 for (const id in ADJ) Object.assign(ING[id], ADJ[id]);
 /* Categoria de cada ingrediente: a troca no editor oferece os da mesma categoria, convertidos pelo que importa nela
@@ -824,7 +824,7 @@ function applyUser(){
   for(const id in ING)if(!BASE_ING.has(id))delete ING[id];
   for(const id in MEALS)if(!BASE_MEALS.has(id))delete MEALS[id];
   for(const id in S.ing){const u=S.ing[id];if(!u||!u.n)continue;const un=u.u==='un';
-    ING[id]={n:u.n,u:un?'un':'g',p:+u.p||0,k:+u.k||0,pack:1,loose:true,wp:un?(+u.wp||100):1,aisle:u.aisle||'merc',cat:u.cat||'outro',st:un?1:10,por:un?1:100,user:1};
+    ING[id]={n:u.n,u:un?'un':'g',p:+u.p||0,k:+u.k||0,pack:1,loose:true,wp:un?(+u.wp||100):1,aisle:u.aisle||'merc',cat:u.cat||'outro',st:un?.5:10,por:un?1:100,user:1};
     SN[id]=u.n.toLowerCase();}
   for(const id in S.mine){const m=S.mine[id];if(!m||!m.n||!SLOT_OK[m.slot])continue;
     const its=w=>Object.keys(m[w]||{}).filter(i=>ING[i]&&m[w][i]>0).map(i=>[i,+m[w][i]]);
@@ -1227,9 +1227,9 @@ function shSet(sh,w,id,q){q=Math.max(0,Math.round(q*1000)/1000);
 /* passo do + e −; em gramas, 5 g nos itens pequenos, 10 g no resto, 25 em leite e iogurte */
 function stepOf(id){const g=ING[id];return inGrams(id)?(g.u==='ml'||id==='iogurte'?25:(g.st||1)<=15&&g.hu?5:10)/(g.hu?1:(g.gw||1)):(g.st||1);}
 function porOf(id){const g=ING[id];return g.por!=null?g.por:g.fp?g.fp:g.hu?g.hu[2]:(g.u==='g'||g.u==='ml'||g.u==='g cozido')?100:1;}
-/* porção ao adicionar: a típica para o Lucas, ~⅔ para a Pri, dentro do limite FODMAP dela */
+/* porção ao adicionar: a típica para o Lucas, ~⅔ para a Pri, dentro do limite FODMAP dela (item que ela evita entra igual, com aviso) */
 function addQty(id,w){const g=ING[id],st=g.st||1,r=q=>Math.max(st,Math.round(q/st)*st);let q=r(porOf(id));
-  if(w==='P'){if(g.pri===0)return 0;q=r(q*.65);if(g.pri>0&&q>g.pri)q=Math.max(st,Math.floor(g.pri/st)*st);}return q;}
+  if(w==='P'){q=r(q*.65);if(g.pri>0&&q>g.pri)q=Math.max(st,Math.floor(g.pri/st)*st);}return q;}
 /* troca convertida pelo que importa na categoria: 120 g de frango ≈ 4 ovos; 1 banana ≈ 12 morangos; pão por kcal */
 function cvOf(id,by){const g=ING[id];return by==='p'?pOf(id):by==='fp'?(g.fp?1/g.fp:g.k/95):by==='g'?(g.u==='un'?(g.gw||g.wp||100):1):g.k;}
 function conv(from,q,to){const by=CAT_BY[ING[from].cat]||'k';let a=cvOf(from,by),b=cvOf(to,by);if(!(a>0&&b>0)){a=ING[from].k;b=ING[to].k;}

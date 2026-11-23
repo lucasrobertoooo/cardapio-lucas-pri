@@ -22,7 +22,7 @@ function applyUser(){
   for(const id in ING)if(!BASE_ING.has(id))delete ING[id];
   for(const id in MEALS)if(!BASE_MEALS.has(id))delete MEALS[id];
   for(const id in S.ing){const u=S.ing[id];if(!u||!u.n)continue;const un=u.u==='un';
-    ING[id]={n:u.n,u:un?'un':'g',p:+u.p||0,k:+u.k||0,pack:1,loose:true,wp:un?(+u.wp||100):1,aisle:u.aisle||'merc',cat:u.cat||'outro',st:un?1:10,por:un?1:100,user:1};
+    ING[id]={n:u.n,u:un?'un':'g',p:+u.p||0,k:+u.k||0,pack:1,loose:true,wp:un?(+u.wp||100):1,aisle:u.aisle||'merc',cat:u.cat||'outro',st:un?.5:10,por:un?1:100,user:1};
     SN[id]=u.n.toLowerCase();}
   for(const id in S.mine){const m=S.mine[id];if(!m||!m.n||!SLOT_OK[m.slot])continue;
     const its=w=>Object.keys(m[w]||{}).filter(i=>ING[i]&&m[w][i]>0).map(i=>[i,+m[w][i]]);

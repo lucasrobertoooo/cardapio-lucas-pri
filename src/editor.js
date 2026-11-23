@@ -19,9 +19,9 @@ function shSet(sh,w,id,q){q=Math.max(0,Math.round(q*1000)/1000);
 /* passo do + e −; em gramas, 5 g nos itens pequenos, 10 g no resto, 25 em leite e iogurte */
 function stepOf(id){const g=ING[id];return inGrams(id)?(g.u==='ml'||id==='iogurte'?25:(g.st||1)<=15&&g.hu?5:10)/(g.hu?1:(g.gw||1)):(g.st||1);}
 function porOf(id){const g=ING[id];return g.por!=null?g.por:g.fp?g.fp:g.hu?g.hu[2]:(g.u==='g'||g.u==='ml'||g.u==='g cozido')?100:1;}
-/* porção ao adicionar: a típica para o Lucas, ~⅔ para a Pri, dentro do limite FODMAP dela */
+/* porção ao adicionar: a típica para o Lucas, ~⅔ para a Pri, dentro do limite FODMAP dela (item que ela evita entra igual, com aviso) */
 function addQty(id,w){const g=ING[id],st=g.st||1,r=q=>Math.max(st,Math.round(q/st)*st);let q=r(porOf(id));
-  if(w==='P'){if(g.pri===0)return 0;q=r(q*.65);if(g.pri>0&&q>g.pri)q=Math.max(st,Math.floor(g.pri/st)*st);}return q;}
+  if(w==='P'){q=r(q*.65);if(g.pri>0&&q>g.pri)q=Math.max(st,Math.floor(g.pri/st)*st);}return q;}
 /* troca convertida pelo que importa na categoria: 120 g de frango ≈ 4 ovos; 1 banana ≈ 12 morangos; pão por kcal */
 function cvOf(id,by){const g=ING[id];return by==='p'?pOf(id):by==='fp'?(g.fp?1/g.fp:g.k/95):by==='g'?(g.u==='un'?(g.gw||g.wp||100):1):g.k;}
 function conv(from,q,to){const by=CAT_BY[ING[from].cat]||'k';let a=cvOf(from,by),b=cvOf(to,by);if(!(a>0&&b>0)){a=ING[from].k;b=ING[to].k;}

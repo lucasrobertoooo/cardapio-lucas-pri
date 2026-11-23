@@ -89,12 +89,12 @@ const ADJ = {
   berinjela:{st:20, hu:['xícara','xícaras',80], pri:75}, vagem:{st:25, hu:['xícara','xícaras',100], pri:75},
   couve:{st:20, hu:['xícara','xícaras',40]}, espinafre:{st:15, hu:['xícara','xícaras',30]}, alface:{st:10, hu:['folha','folhas',10]},
   pimentao:{st:37.5, hu:['pimentão','pimentões',150]}, pepino:{st:50, hu:['pepino','pepinos',200]}, tomate:{st:25, hu:['tomate','tomates',100]},
-  banana:{fp:1, st:.5, pri:1, gw:100}, laranja:{fp:1, st:1, gw:130}, kiwi:{fp:2, st:1, gw:75},
+  banana:{fp:1, st:.5, pri:1, gw:100}, laranja:{fp:1, st:.5, gw:130}, kiwi:{fp:2, st:.5, gw:75},
   morango:{fp:144, st:12, hu:['morango','morangos',12]}, mamao:{fp:150, st:75, hu:['fatia','fatias',150]}, uva:{fp:100, st:25, hu:['punhado','punhados',50], pri:150},
-  abacaxi:{fp:120, st:40, hu:['fatia','fatias',80], pri:140}, limao:{st:.5, gw:40}, ameixa:{fp:2, st:1, pri:0, gw:70},
+  abacaxi:{fp:120, st:40, hu:['fatia','fatias',80], pri:140}, limao:{st:.5, gw:40}, ameixa:{fp:2, st:.5, pri:0, gw:70},
   maionese:{st:15, hu:['colher de sopa','colheres de sopa',15]},
   tapioca:{st:20}, cuscuz:{st:10}, minas:{st:15, hu:['fatia','fatias',30], pri:40}, castanha:{st:4, hu:['castanha','castanhas',4], pri:40},
-  chocolate:{st:5, hu:['quadradinho','quadradinhos',5], pri:30}, mel:{st:5, hu:['colher','colheres',10], pri:0}, maca:{fp:1, st:1, pri:0, gw:150}
+  chocolate:{st:5, hu:['quadradinho','quadradinhos',5], pri:30}, mel:{st:5, hu:['colher','colheres',10], pri:0}, maca:{fp:1, st:.5, pri:0, gw:150}
 };
 for (const id in ADJ) Object.assign(ING[id], ADJ[id]);
 /* Categoria de cada ingrediente: a troca no editor oferece os da mesma categoria, convertidos pelo que importa nela
