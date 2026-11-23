@@ -127,8 +127,11 @@ input:focus-visible + .box{outline:2px solid var(--leaf);outline-offset:2px}
 .qtab td{width:31%}
 .qtab td b{font-weight:700;font-size:15px}.qtab td small{display:block;font-size:11.5px;color:var(--ink2);line-height:1.25}
 .qtab td.none{color:var(--ink2)}
-.qtab tbody th button{border:0;background:none;padding:0;text-align:left;font-weight:500;font-size:14px;color:var(--ink);text-decoration:underline dotted color-mix(in srgb,var(--ink) 35%,transparent);text-underline-offset:4px}
-.qtab tr.add th{border-bottom:0}.qtab tr.add button{color:var(--leaf);font-weight:700;text-decoration:none}
+.qtab tbody th button{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface2);border-radius:999px;padding:6px 10px;min-height:34px;text-align:left;font-weight:600;font-size:13.5px;line-height:1.2;color:var(--ink)}
+.qtab tbody th button span{color:var(--leaf);font-size:13px}
+.qtab tbody th button:active{transform:scale(.97)}
+.qtab tbody th{vertical-align:middle}
+.qtab tr.add th{border-bottom:0}.qtab tr.add button{color:var(--leaf);font-weight:700;background:none;border-style:dashed}
 .qtab tfoot th,.qtab tfoot td{border-bottom:0;font-size:12.5px;color:var(--ink2);padding-top:4px;padding-bottom:0}
 .qtab tfoot td{font-weight:700;color:var(--ink)}
 .qtab tfoot tr:first-child th,.qtab tfoot tr:first-child td{border-top:1px solid var(--line);padding-top:8px}

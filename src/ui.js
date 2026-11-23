@@ -105,9 +105,9 @@ function qtyCell(id,q){if(!q)return '<td class="none">—</td>';const a=amtOf(id
 function qtyTable(day,k,mid){
   const key=`${day.d}|${k}`,iL=dayItems(day,k,'L'),iP=dayItems(day,k,'P'),q=(its,id)=>(its.find(i=>i[0]===id)||[0,0])[1];
   const ids=[...new Set(iL.concat(iP).map(i=>i[0]))],nL=nut(iL),nP=nut(iP);
-  const rows=ids.map(id=>`<tr><th><button data-act="shopen" data-key="${key}" data-mid="${mid}" data-id="${id}">${cap(SN[id]||ING[id].n)}</button></th>${qtyCell(id,q(iL,id))}${qtyCell(id,q(iP,id))}</tr>`).join('');
+  const rows=ids.map(id=>`<tr><th><button data-act="shopen" data-key="${key}" data-mid="${mid}" data-id="${id}" aria-label="Trocar ${cap(SN[id]||ING[id].n)}">${cap(SN[id]||ING[id].n)}<span aria-hidden="true">⇄</span></button></th>${qtyCell(id,q(iL,id))}${qtyCell(id,q(iP,id))}</tr>`).join('');
   const empty=w=>!(w==='L'?iL:iP).length?'<div class="sub">Não precisa hoje. Se der fome, metade da receita.</div>':'';
-  return `<table class="qtab"><thead><tr><th><span class="sub">Toque num item para trocar</span></th><th class="L">Lucas</th><th class="P">Pri</th></tr></thead>
+  return `<table class="qtab"><thead><tr><th><span class="sub">Toque no item para trocar</span></th><th class="L">Lucas</th><th class="P">Pri</th></tr></thead>
    <tbody>${rows}<tr class="add"><th colspan="3"><button data-act="shopen" data-key="${key}" data-mid="${mid}">+ Adicionar item</button></th></tr></tbody>
    <tfoot><tr><th>Proteína</th><td>${R0(nL.p)} g</td><td>${R0(nP.p)} g</td></tr><tr><th>Energia</th><td>${R0(nL.k)} kcal</td><td>${R0(nP.k)} kcal</td></tr></tfoot></table>${empty('L')}${empty('P')}`;
 }
@@ -127,7 +127,7 @@ function slotCard(day,k,label,nk){
    <div class="slot-b"><h3>${m.n}</h3><div class="sub">${meta}</div>
    <div class="eats">${eat}</div>
    ${k==='ceia'?ceiaNote(day):''}${juntoBlock(mid,day,k)}${qtyTable(day,k,mid)}
-   <div class="slot-actions"><button class="btn small" data-act="swapopen" data-key="${key}" aria-expanded="${sw}">${sw?'Fechar trocas':'Trocar refeição'}</button>
+   <div class="slot-actions"><button class="btn small" data-act="shopen" data-key="${key}" data-mid="${mid}">Mudar itens</button><button class="btn small" data-act="swapopen" data-key="${key}" aria-expanded="${sw}">${sw?'Fechar trocas':'Trocar refeição'}</button>
    <button class="btn small" data-act="recipe" data-id="${mid}">Receita</button>
    ${mid!==base?`<button class="link" data-act="swap" data-key="${key}" data-id="${base}">Voltar ao plano</button>`:''}</div>
    ${sw?altsBlock(day,k,mid):''}</div></article>`;
@@ -253,7 +253,7 @@ function recCard(id){
     const tt=(m.lote?['Prato de panela: faça em dobro. Quando ele aparece em duas refeições seguidas, o quadro já soma as duas e a segunda é só esquentar (até 3 dias na geladeira).']:[]).concat(r.tips);
     const tips=tt.length?`<div class="note">${tt.map(t=>`<div>${t}</div>`).join('')}</div>`:'';
     const wh=isMeal?`<div class="where">Na semana: ${whereUsed(id)}</div>`:'';
-    body=`<div class="rec-b">${isMeal?juntoBlock(id):''}${cols}${steps}${tips}${wh}<div class="row wrap"><button class="link" data-act="clearsteps" data-id="${id}">Limpar passos marcados</button>${m.user?`<button class="link danger" data-act="mealdel" data-id="${id}">Apagar esta refeição</button>`:''}</div></div>`;
+    body=`<div class="rec-b">${isMeal?juntoBlock(id):''}${cols}${steps}${tips}${wh}<div class="row wrap">${isMeal?`<button class="btn small" data-act="shopen" data-mid="${id}">Mudar itens</button>`:''}<button class="link" data-act="clearsteps" data-id="${id}">Limpar passos marcados</button>${m.user?`<button class="link danger" data-act="mealdel" data-id="${id}">Apagar esta refeição</button>`:''}</div></div>`;
   }
   return `<article class="rec">${head}${body}</article>`;
 }
