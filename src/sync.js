@@ -63,7 +63,7 @@ async function syFlush(){
 function syApply(){
   const merged=flat(SY.remote||{});
   for(const k in SY.pend){if(SY.pend[k]===null){for(const m in merged)if(m===k||m.indexOf(k+'/')===0)delete merged[m];}else merged[k]=SY.pend[k];}
-  const sh=unflat(merged);
+  const sh=unflat(merged),before=JSON.stringify(sharedOf(S));
   for(const f of SHARED){
     if(f==='targets'){const t=sh.targets||{};S.targets={L:Object.assign({},DEF.targets.L,t.L),P:Object.assign({},DEF.targets.P,t.P)};}
     else if(f==='ref')S.ref=Object.assign({},DEF.ref,sh.ref);
@@ -74,6 +74,7 @@ function syApply(){
   applyUser();
   SY.base=flat(sharedOf(S));SY.based=true;
   try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}
+  if(JSON.stringify(sharedOf(S))===before)return;
   const a=document.activeElement;
   if(!(a&&a.tagName==='INPUT'&&a.type!=='checkbox'))render(true);
 }

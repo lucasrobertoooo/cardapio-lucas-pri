@@ -323,8 +323,10 @@ table.t th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:va
 .row.wrap{flex-wrap:wrap;gap:10px 18px}
 /* painel que sobe de baixo */
 body.sheet-open{overflow:hidden}
-.sheet-bg{position:fixed;inset:0;z-index:60;background:rgba(10,20,14,.45);animation:fade .18s ease}
-.sheet{position:fixed;left:0;right:0;bottom:0;z-index:61;max-height:92vh;max-height:92dvh;display:flex;flex-direction:column;background:var(--bg);border-radius:20px 20px 0 0;box-shadow:0 -10px 40px rgba(0,0,0,.25);animation:up .22s cubic-bezier(.2,.8,.2,1);max-width:720px;margin:0 auto}
+.sheet-bg{position:fixed;inset:0;z-index:60;background:rgba(10,20,14,.45)}
+.sheet-bg.in{animation:fade .18s ease}
+.sheet.in{animation:up .22s cubic-bezier(.2,.8,.2,1)}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:61;max-height:92vh;max-height:92dvh;display:flex;flex-direction:column;background:var(--bg);border-radius:20px 20px 0 0;box-shadow:0 -10px 40px rgba(0,0,0,.25);max-width:720px;margin:0 auto}
 .sheet-top{position:relative;height:28px;flex:none}
 .grab{position:absolute;left:50%;top:9px;width:40px;height:5px;margin-left:-20px;border-radius:9px;background:var(--line)}
 .sheet-x{position:absolute;right:8px;top:4px;width:44px;height:44px;border:0;background:none;font-size:28px;line-height:1;color:var(--ink2);z-index:2}
@@ -1147,7 +1149,7 @@ async function syFlush(){
 function syApply(){
   const merged=flat(SY.remote||{});
   for(const k in SY.pend){if(SY.pend[k]===null){for(const m in merged)if(m===k||m.indexOf(k+'/')===0)delete merged[m];}else merged[k]=SY.pend[k];}
-  const sh=unflat(merged);
+  const sh=unflat(merged),before=JSON.stringify(sharedOf(S));
   for(const f of SHARED){
     if(f==='targets'){const t=sh.targets||{};S.targets={L:Object.assign({},DEF.targets.L,t.L),P:Object.assign({},DEF.targets.P,t.P)};}
     else if(f==='ref')S.ref=Object.assign({},DEF.ref,sh.ref);
@@ -1158,6 +1160,7 @@ function syApply(){
   applyUser();
   SY.base=flat(sharedOf(S));SY.based=true;
   try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}
+  if(JSON.stringify(sharedOf(S))===before)return;
   const a=document.activeElement;
   if(!(a&&a.tagName==='INPUT'&&a.type!=='checkbox'))render(true);
 }
@@ -1215,8 +1218,10 @@ function shItems(sh,w){const d=shDay(sh);if(d)return dayItems(d,sh.key.split('|'
 function shQ(sh,w,id){return (shItems(sh,w).find(i=>i[0]===id)||[0,0])[1];}
 function shSet(sh,w,id,q){q=Math.max(0,Math.round(q*1000)/1000);
   if(sh.mode==='build'){if(q)sh[w][id]=q;else delete sh[w][id];return;}
-  const d=shDay(sh);if(d){const o=S.dayc[sh.key];if(!o||o.mid!==sh.mid){const n={mid:sh.mid};['L','P'].forEach(x=>{n[x]={};shItems(sh,x).forEach(([i,v])=>{n[x][i]=v;});});S.dayc[sh.key]=n;}
-    const t=S.dayc[sh.key][w]=S.dayc[sh.key][w]||{};if(q)t[id]=q;else delete t[id];return;}
+  const d=shDay(sh);if(d){let o=S.dayc[sh.key];if(!o||o.mid!==sh.mid)o=S.dayc[sh.key]={mid:sh.mid};
+    /* cada pessoa começa do que já tinha naquele dia; '_' mantém a lista mesmo vazia (o banco apaga objeto vazio) */
+    ['L','P'].forEach(x=>{if(!o[x]){const n={_:0};shItems(sh,x).forEach(([i,v])=>{n[i]=v;});o[x]=n;}});
+    if(q)o[w][id]=q;else delete o[w][id];return;}
   if(MEALS[sh.mid].user){const u=S.mine[sh.mid];u[w]=u[w]||{};if(q)u[w][id]=q;else delete u[w][id];applyUser();}
   else customOf(sh.mid,w)[id]=q;}
 /* passo do + e −; em gramas, 5 g nos itens pequenos, 10 g no resto, 25 em leite e iogurte */
@@ -1234,7 +1239,7 @@ function capPri(id,q){const g=ING[id],st=g.st||1;if(g.pri===0)return 0;return g.
 function recents(){try{return JSON.parse(localStorage.getItem('cardapio-recentes')||'[]').filter(id=>ING[id]);}catch(e){return [];}}
 function pushRecent(id){try{const r=recents().filter(x=>x!==id);r.unshift(id);localStorage.setItem('cardapio-recentes',JSON.stringify(r.slice(0,10)));}catch(e){}}
 
-function sheetOpen(o){if(o.mode==='edit')o.scope=o.key?'dia':'sempre';V.sheet=o;V.sw=o.sw||null;V.shq='';V.swq='';V.shcat='';V.newIng=null;V.shIn=null;
+function sheetOpen(o){if(o.mode==='edit')o.scope=o.key?'dia':'sempre';V.sheet=o;V.sheetIn=true;V.sw=o.sw||null;V.shq='';V.swq='';V.shcat='';V.newIng=null;V.shIn=null;
   try{history.pushState({sheet:1},'');}catch(e){}render(true);
   if(o.sw)setTimeout(()=>{const el=document.getElementById('er-'+o.sw);if(el)el.scrollIntoView({block:'center'});},30);}
 function sheetClose(fromPop){if(!V.sheet)return;V.sheet=null;V.newIng=null;
@@ -1263,10 +1268,10 @@ function swapList(sh,from,qL,qP){
   if(!opts.length)return `<div class="sub sw-none">Não há outro item de ${CAT_N[cat].toLowerCase()} cadastrado. Busque acima.</div>`;
   return `<div class="sw-list" role="list">${opts.map(id=>swChip(from,id,qL,qP,present)).join('')}</div>`;}
 function swChip(from,id,qL,qP,present){const cat=ING[from].cat;
-  {const g=ING[id],aL=qL?conv(from,qL,id):0,aP=qP&&g.pri!==0?capPri(id,conv(from,qP,id)):0;
+  {const g=ING[id],aL=qL?conv(from,qL,id):0,aP=qP?(g.pri>0?capPri(id,conv(from,qP,id)):conv(from,qP,id)):0;
     const byP=CAT_BY[cat]==='p',dL=R0(byP?pOf(id)*aL-pOf(from)*qL:ING[id].k*aL-ING[from].k*qL);
     return `<button class="sw-ch" role="listitem" data-act="shswap" data-from="${from}" data-to="${id}"><b>${cap(SN[id])}</b>
-      <span class="sub"><span class="L">${aL?trq(id,aL):'—'}</span> · <span class="P">${g.pri===0?'Pri evita':aP?trq(id,aP):'—'}</span></span>
+      <span class="sub"><span class="L">${aL?trq(id,aL):'—'}</span> · <span class="P">${aP?trq(id,aP)+(g.pri===0?' (evita)':''):'—'}</span></span>
       <span class="sub">${present.has(id)?'Já está no prato: soma':`Lucas ${dL>0?'+':dL<0?'−':'±'}${Math.abs(dL)} ${byP?'g de proteína':'kcal'}`}</span></button>`;}}
 function trq(id,q){return fq(id,q).replace(/ \(.*\)$/,'').replace(' de '+SN[id],'');}
 function resultsHtml(sh){
@@ -1311,7 +1316,8 @@ function sheetHtml(){
   const foot=sh.mode==='edit'
     ?`${shDay(sh)?(S.dayc[sh.key]?`<button class="btn" data-act="shdayreset">Voltar ao normal ${dn}</button>`:''):isCustom(sh.mid)?`<button class="btn" data-act="edreset" data-mid="${sh.mid}">Voltar ao original</button>`:''}${MEALS[sh.mid].user?'':`<button class="btn" data-act="shasnew">Salvar como refeição nova</button>`}<button class="btn primary" data-act="shclose">Pronto</button>`
     :`<button class="btn" data-act="shclose">Cancelar</button><button class="btn primary" data-act="shsave"${ids.length?'':' disabled'}>Salvar e usar</button>`;
-  return `<div class="sheet-bg" data-act="shclose"></div><section class="sheet" role="dialog" aria-modal="true" aria-label="${sh.mode==='edit'?'Mudar itens':'Montar refeição'}">
+  const anim=V.sheetIn?' in':'';V.sheetIn=false;
+  return `<div class="sheet-bg${anim}" data-act="shclose"></div><section class="sheet${anim}" role="dialog" aria-modal="true" aria-label="${sh.mode==='edit'?'Mudar itens':'Montar refeição'}">
    <div class="sheet-top"><span class="grab"></span><button class="sheet-x" data-act="shclose" aria-label="Fechar">×</button></div>
    <div class="sheet-body">${head}
     <div class="tots-bar"><span class="L">Lucas <b>${R0(nL.p)} g</b> · ${R0(nL.k)} kcal</span><span class="P">Pri <b>${R0(nP.p)} g</b> · ${R0(nP.k)} kcal</span></div>
@@ -1334,9 +1340,11 @@ function shAct(a,t){const sh=V.sheet;if(!sh)return false;const d=t.dataset;
     case 'shnewsw':V.newIng={n:cap((V.swq||'').trim()),cat:ING[V.sw]?ING[V.sw].cat:'outro'};render(true);{const f=document.querySelector('.new-ing');if(f)f.scrollIntoView({block:'center'});}return true;
     case 'shrm':{const un=snap();['L','P'].forEach(w=>shSet(sh,w,d.id,0));if(V.sw===d.id)V.sw=null;save();render(true);toast(`${cap(SN[d.id])} saiu da refeição`,un);return true;}
     case 'shswap':{const un=snap(),from=d.from,to=d.to;
-      for(const w of ['L','P']){const q=shQ(sh,w,from);if(!q)continue;if(w==='P'&&ING[to].pri===0)continue;
-        const add=w==='P'?capPri(to,conv(from,q,to)):conv(from,q,to);shSet(sh,w,from,0);shSet(sh,w,to,shQ(sh,w,to)+add);}
-      V.sw=null;V.swq='';pushRecent(to);save();render(true);toast(`Trocado${shDay(sh)?' só '+(sh.key.split('|')[0]===TODAY?'hoje':'neste dia'):''}: ${SN[from]} → ${SN[to]}`,un);return true;}
+      /* troca sempre para os dois; se a Pri evita o item novo, troca do mesmo jeito e só avisa (quem decide são vocês) */
+      for(const w of ['L','P']){const q=shQ(sh,w,from);if(!q)continue;
+        const c=conv(from,q,to),add=w==='P'&&ING[to].pri>0?capPri(to,c):c;shSet(sh,w,from,0);shSet(sh,w,to,shQ(sh,w,to)+add);}
+      const ev=shQ(sh,'P',to)&&ING[to].pri===0?` · a Pri costuma evitar ${SN[to]} (FODMAP)`:'';
+      V.sw=null;V.swq='';pushRecent(to);save();render(true);toast(`Trocado${shDay(sh)?' só '+(sh.key.split('|')[0]===TODAY?'hoje':'neste dia'):''}: ${SN[from]} → ${SN[to]}${ev}`,un);return true;}
     case 'shadd':{const id=d.id;['L','P'].forEach(w=>{if(!shQ(sh,w,id))shSet(sh,w,id,addQty(id,w));});pushRecent(id);V.shq='';save();render(true);return true;}
     case 'shcat':V.shcat=d.c;V.shq='';V.newIng=null;render(true);return true;
     case 'shnew':V.newIng={n:cap((V.shq||'').trim()),cat:V.shcat||'outro'};render(true);return true;
