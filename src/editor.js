@@ -40,14 +40,18 @@ function stepHtml(sh,w,id,q){
     ${amtHtml(sh,w,id,q)}<button data-act="shq" data-w="${w}" data-id="${id}" data-d="1" aria-label="Mais ${SN[id]} para ${WHO[w]}">+</button></div>`;}
 function swapChips(sh,from,qL,qP){
   const cat=ING[from].cat,present=new Set(shItems(sh,'L').concat(shItems(sh,'P')).map(i=>i[0]));
-  const nL=nut(shItems(sh,'L')).p;
-  const opts=ING_IDS.filter(id=>ING[id].cat===cat&&!present.has(id)&&!(ING[id].outros));
+  const ok=id=>ING[id]&&id!==from&&!present.has(id)&&!ING[id].outros;
+  /* primeiro os substitutos parecidos (PAR), depois o resto da categoria só se pedir */
+  const near=(PAR[from]||[]).filter(ok),rest=cat==='outro'||from==='whey'?[]:ING_IDS.filter(id=>ING[id].cat===cat&&ok(id)&&!near.includes(id));
+  const more=V.swMore===from||!near.length,opts=near.concat(more?rest:[]);
   if(!opts.length)return `<div class="sub sw-none">Não há outro item de ${CAT_N[cat].toLowerCase()} cadastrado. Use a busca abaixo para adicionar.</div>`;
-  return `<div class="sw-list" role="list">${opts.map(id=>{const g=ING[id],aL=qL?conv(from,qL,id):0,aP=qP&&g.pri!==0?capPri(id,conv(from,qP,id)):0;
+  const chip=id=>{const g=ING[id],aL=qL?conv(from,qL,id):0,aP=qP&&g.pri!==0?capPri(id,conv(from,qP,id)):0;
     const byP=CAT_BY[cat]==='p',dL=R0(byP?pOf(id)*aL-pOf(from)*qL:ING[id].k*aL-ING[from].k*qL);
     return `<button class="sw-ch" role="listitem" data-act="shswap" data-from="${from}" data-to="${id}"><b>${cap(SN[id])}</b>
       <span class="sub"><span class="L">${aL?trq(id,aL):'—'}</span> · <span class="P">${g.pri===0?'Pri evita':aP?trq(id,aP):'—'}</span></span>
-      <span class="sub">Lucas ${dL>0?'+':dL<0?'−':'±'}${Math.abs(dL)} ${byP?'g de proteína':'kcal'}</span></button>`;}).join('')}</div>`;}
+      <span class="sub">Lucas ${dL>0?'+':dL<0?'−':'±'}${Math.abs(dL)} ${byP?'g de proteína':'kcal'}</span></button>`;};
+  return `<div class="sw-list" role="list">${opts.map(chip).join('')}</div>
+    ${!more&&rest.length?`<button class="link" data-act="shmore" data-id="${from}">Ver mais ${rest.length} de ${CAT_N[cat].toLowerCase()}</button>`:''}`;}
 function trq(id,q){return fq(id,q).replace(/ \(.*\)$/,'').replace(' de '+SN[id],'');}
 function resultsHtml(sh){
   const present=new Set(shItems(sh,'L').concat(shItems(sh,'P')).map(i=>i[0]));let ids,head='';
@@ -106,6 +110,7 @@ function shAct(a,t){const sh=V.sheet;if(!sh)return false;const d=t.dataset;
     case 'shq':{const q=shQ(sh,d.w,d.id),st=stepOf(d.id);shSet(sh,d.w,d.id,Math.max(0,q+Number(d.d)*st));save();render(true);return true;}
     case 'shtype':V.shIn=d.key;render(true);{const i=document.querySelector('.sheet .ed-in');if(i){i.focus();i.select();}}return true;
     case 'shsw':V.sw=V.sw===d.id?null:d.id;render(true);return true;
+    case 'shmore':V.swMore=d.id;render(true);return true;
     case 'shrm':{const un=snap();['L','P'].forEach(w=>shSet(sh,w,d.id,0));if(V.sw===d.id)V.sw=null;save();render(true);toast(`${cap(SN[d.id])} saiu da refeição`,un);return true;}
     case 'shswap':{const un=snap(),from=d.from,to=d.to;
       for(const w of ['L','P']){const q=shQ(sh,w,from);if(!q)continue;if(w==='P'&&ING[to].pri===0)continue;

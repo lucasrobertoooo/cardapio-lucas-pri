@@ -105,6 +105,21 @@ const CAT_OF={prot:'frango ovo atum sardinha peixe camarao pts',lat:'iogurte lei
   carbo:'pao paofr arroz macarrao aveia batata batatadoce mandioca quinoa tapioca cuscuz',fruta:'banana morango mamao uva laranja kiwi abacaxi ameixa maca',
   leg:'cenoura abobrinha pepino tomate espinafre abobora alface couve brocolis pimentao berinjela vagem',gord:'azeite amendoim maionese castanha chocolate mel',outro:'passata feijao grao limao'};
 for (const c in CAT_OF) CAT_OF[c].split(' ').forEach(id=>{ING[id].cat=c;});
+/* Substitutos de verdade, do mais parecido ao menos: aparecem primeiro na troca de um item.
+   O resto da mesma categoria fica em "Ver mais" (ninguém troca pão de forma por arroz). */
+const PAR=[
+  'pao paofr tapioca cuscuz','paofr pao tapioca cuscuz','tapioca pao paofr cuscuz','cuscuz tapioca pao paofr arroz',
+  'arroz quinoa macarrao batata mandioca batatadoce cuscuz','macarrao arroz quinoa batata','quinoa arroz cuscuz macarrao',
+  'batata batatadoce mandioca arroz','batatadoce batata mandioca arroz','mandioca batata batatadoce arroz','aveia tapioca pao',
+  'frango peixe atum camarao sardinha ovo pts','peixe frango atum camarao sardinha','camarao peixe frango atum',
+  'atum sardinha frango peixe ovo','sardinha atum frango peixe','ovo frango atum cottage minas','pts frango atum',
+  'iogurte leite cottage','leite iogurte','cottage minas mussarela iogurte ovo','minas cottage mussarela','mussarela minas cottage parmesao',
+  'parmesao mussarela minas','feijao grao',
+  'amendoim castanha','castanha amendoim','azeite','maionese azeite','mel chocolate','chocolate mel castanha',
+  'alface couve espinafre pepino tomate','couve espinafre alface brocolis','espinafre couve alface brocolis','tomate pepino cenoura pimentao',
+  'pepino tomate cenoura alface','cenoura abobrinha abobora vagem brocolis','abobrinha berinjela abobora cenoura vagem','abobora abobrinha cenoura batatadoce',
+  'brocolis vagem couve espinafre abobrinha','vagem brocolis abobrinha cenoura','berinjela abobrinha pimentao','pimentao tomate berinjela'
+].reduce((o,l)=>{const [k,...r]=l.split(' ');o[k]=r;return o;},{});
 /* Porção típica de quem adiciona um ingrediente no editor (o Lucas; a Pri recebe ~⅔). Sem POR: 1 medida caseira, 1 porção de fruta, 100 g ou 1 unidade. */
 const POR={ovo:2,frango:120,peixe:150,camarao:120,macarrao:80,pts:30,azeite:.5,aveia:30,parmesao:10,cottage:40,mussarela:30,arroz:100,alface:30,passata:150,
   tapioca:60,cuscuz:60,minas:30,castanha:8,chocolate:20,mel:10,tomate:50};
