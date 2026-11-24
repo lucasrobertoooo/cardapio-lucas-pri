@@ -9,7 +9,7 @@ const ALIAS={'peito de frango':'frango','sassami':'frango','file de frango':'fra
   'pao de forma':'pao','pao frances':'paofr','pao de sal':'paofr','muçarela':'mussarela','mucarela':'mussarela','mozarela':'mussarela','queijo mussarela':'mussarela',
   'batata doce':'batatadoce','aipim':'mandioca','macaxeira':'mandioca','tomate pelado':'passata','molho de tomate':'passata','passata':'passata',
   'pasta de amendoim':'amendoim','grao de bico':'grao','flocao':'cuscuz','goma':'tapioca','queijo minas':'minas','iogurte natural':'iogurte','leite zero lactose':'leite',
-  'whey protein':'whey','proteina de soja':'pts','soja texturizada':'pts','macarrao de arroz':'macarrao','ameixa':'ameixa','castanha do para':'castanha','queijo parmesao':'parmesao','queijo ralado':'parmesao','queijo coalho':'minas','queijo branco':'minas','achocolatado':'nescau','toddy':'nescau'};
+  'whey protein':'whey','proteina de soja':'pts','soja texturizada':'pts','macarrao de arroz':'macarrao','ameixa':'ameixa','castanha do para':'castanha','queijo parmesao':'parmesao','queijo ralado':'parmesao','queijo coalho':'minas','queijo branco':'minas','achocolatado':'nescau','toddy':'nescau','leite':'leite','leite em po':'leitepo','leite po':'leitepo','ninho':'leitepo','requeijao cremoso':'requeijao','catupiry':'requeijao','ricota fresca':'ricota'};
 let MIDX=null;
 function ingIndex(){
   if(MIDX&&MIDX.n===ING_IDS.length)return MIDX;

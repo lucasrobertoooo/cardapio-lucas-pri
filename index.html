@@ -524,7 +524,10 @@ const ING = {
   mel:      {n:'Mel', u:'g', p:0, k:3.1, pack:300, pk:['pote','potes'], size:'300 g', aisle:'merc'},
   maca:     {n:'Maçã', u:'un', p:.4, k:85, pack:1, loose:true, wp:150, aisle:'hort'},
   maionese: {n:'Maionese light (pote, sem alho e cebola)', u:'g', p:.005, k:2.7, pack:500, pk:['pote','potes'], size:'500 g', aisle:'merc'},
-  nescau:   {n:'Nescau (achocolatado em pó)', u:'g', p:.045, k:3.85, pack:370, pk:['pote','potes'], size:'370 g', aisle:'merc'}
+  nescau:   {n:'Nescau (achocolatado em pó)', u:'g', p:.045, k:3.85, pack:370, pk:['pote','potes'], size:'370 g', aisle:'merc'},
+  requeijao:{n:'Requeijão cremoso', u:'g', p:.11, k:2.2, pack:200, pk:['copo','copos'], size:'200 g', aisle:'lat'},
+  ricota:   {n:'Ricota fresca', u:'g', p:.126, k:1.4, pack:400, pk:['peça','peças'], size:'~400 g', aisle:'lat'},
+  leitepo:  {n:'Leite em pó', u:'g', p:.25, k:4.9, pack:380, pk:['lata','latas'], size:'380 g', aisle:'merc'}
 };
 /* Editor de refeição: st = passo do + e −, hu = medida caseira [singular, plural, g ou ml por medida],
    pri = máximo por refeição para a Pri ficar no FODMAP baixo (0 = evitar).
@@ -552,14 +555,16 @@ const ADJ = {
   abacaxi:{fp:120, st:40, hu:['fatia','fatias',80], pri:140}, limao:{st:.5, gw:40}, ameixa:{fp:2, st:.5, pri:0, gw:70},
   maionese:{st:15, hu:['colher de sopa','colheres de sopa',15]}, nescau:{st:5, hu:['colher de sopa','colheres de sopa',10]},
   tapioca:{st:20}, cuscuz:{st:10}, minas:{st:15, hu:['fatia','fatias',30], pri:40}, castanha:{st:4, hu:['castanha','castanhas',4], pri:40},
-  chocolate:{st:5, hu:['quadradinho','quadradinhos',5], pri:30}, mel:{st:5, hu:['colher','colheres',10], pri:0}, maca:{fp:1, st:.5, pri:0, gw:150}
+  chocolate:{st:5, hu:['quadradinho','quadradinhos',5], pri:30}, mel:{st:5, hu:['colher','colheres',10], pri:0},
+  requeijao:{st:15, hu:['colher de sopa','colheres de sopa',30], pri:0}, ricota:{st:15, hu:['colher de sopa','colheres de sopa',30], pri:0},
+  leitepo:{st:6.5, hu:['colher de sopa','colheres de sopa',13], pri:0}, maca:{fp:1, st:.5, pri:0, gw:150}
 };
 for (const id in ADJ) Object.assign(ING[id], ADJ[id]);
 /* Categoria de cada ingrediente: a troca no editor oferece os da mesma categoria, convertidos pelo que importa nela
    (proteína pela proteína, carboidrato e gordura pelas kcal, fruta pela porção, legume pelo peso). */
 const CATS=[['prot','Proteína','p'],['lat','Laticínios e whey','p'],['carbo','Pães, grãos e batatas','k'],['fruta','Frutas','fp'],
   ['leg','Legumes e verduras','g'],['gord','Gorduras e doces','k'],['outro','Outros','k']];
-const CAT_OF={prot:'frango ovo atum sardinha peixe camarao pts',lat:'iogurte leite cottage mussarela parmesao whey minas',
+const CAT_OF={prot:'frango ovo atum sardinha peixe camarao pts',lat:'iogurte leite cottage mussarela parmesao whey minas requeijao ricota leitepo',
   carbo:'pao paofr arroz macarrao aveia batata batatadoce mandioca quinoa tapioca cuscuz',fruta:'banana morango mamao uva laranja kiwi abacaxi ameixa maca',
   leg:'cenoura abobrinha pepino tomate espinafre abobora alface couve brocolis pimentao berinjela vagem',gord:'azeite amendoim maionese castanha chocolate mel nescau',outro:'passata feijao grao limao'};
 for (const c in CAT_OF) CAT_OF[c].split(' ').forEach(id=>{ING[id].cat=c;});
@@ -571,7 +576,7 @@ const PAR=[
   'batata batatadoce mandioca arroz','batatadoce batata mandioca arroz','mandioca batata batatadoce arroz','aveia tapioca pao',
   'frango peixe atum camarao sardinha ovo pts','peixe frango atum camarao sardinha','camarao peixe frango atum',
   'atum sardinha frango peixe ovo','sardinha atum frango peixe','ovo minas mussarela cottage frango atum iogurte','pts frango atum',
-  'iogurte leite cottage','leite iogurte','cottage minas mussarela iogurte ovo','minas cottage mussarela','mussarela minas cottage parmesao',
+  'iogurte leite cottage','leite iogurte leitepo','leitepo leite iogurte','cottage requeijao ricota minas mussarela iogurte ovo','requeijao cottage ricota minas mussarela','ricota cottage requeijao minas','minas cottage mussarela','mussarela minas cottage parmesao',
   'parmesao mussarela minas','feijao grao',
   'amendoim castanha','castanha amendoim','azeite','maionese azeite','mel chocolate nescau','chocolate mel castanha nescau','nescau chocolate mel',
   'alface couve espinafre pepino tomate','couve espinafre alface brocolis','espinafre couve alface brocolis','tomate pepino cenoura pimentao',
@@ -580,7 +585,7 @@ const PAR=[
 ].reduce((o,l)=>{const [k,...r]=l.split(' ');o[k]=r;return o;},{});
 /* Porção típica de quem adiciona um ingrediente no editor (o Lucas; a Pri recebe ~⅔). Sem POR: 1 medida caseira, 1 porção de fruta, 100 g ou 1 unidade. */
 const POR={ovo:2,frango:120,peixe:150,camarao:120,macarrao:80,pts:30,azeite:.5,aveia:30,parmesao:10,cottage:40,mussarela:30,arroz:100,alface:30,passata:150,
-  tapioca:60,cuscuz:60,minas:30,castanha:8,chocolate:20,mel:10,tomate:50,nescau:20};
+  tapioca:60,cuscuz:60,minas:30,castanha:8,chocolate:20,mel:10,tomate:50,nescau:20,requeijao:30,ricota:30,leitepo:26};
 for (const id in POR) ING[id].por=POR[id];
 const MEALS = {
  C1:{slot:'cafe', n:'Pão com cottage e ovos mexidos, iogurte e fruta', t:8, junto:['ovo'], jn:'Ovos mexidos',
@@ -687,7 +692,7 @@ const WK=WEEK[0].d.replace(/-/g,'');
 /* ===== RECEITAS E FOTOS ===== */
 const SLOTS=[['cafe','Café da manhã'],['almoco','Almoço'],['lanche','Lanche'],['jantar','Jantar'],['ceia','Ceia']];
 const SHORT={C1:'Pão com cottage',C2:'Mingau',L1:'Vitamina',E1:'Iogurte',E2:'Iogurte',M1:'Macarrão',M2:'Omelete',M3:'Peixe',M4:'Crepe',M5:'Purê',C3:'Panqueca',C4:'Queijo quente',C5:'Iogurte e ovos',L2:'Iogurte batido',L3:'Sanduíche de atum',L4:'Ovos e leite',E3:'Leite com whey',E4:'Ovos mexidos',M6:'Salada morna',M7:'Macarrão e abobrinha',M8:'Peixe ao molho',M9:'Sanduíche quente',M10:'Maionese',M11:'Arroz e feijão com frango',M12:'Arroz e feijão com ovos',M13:'Crepe simples'};
-const SN={tapioca:'tapioca',cuscuz:'cuscuz',minas:'queijo minas',castanha:'castanha-do-pará',chocolate:'chocolate 70%',mel:'mel',maca:'maçã',maionese:'maionese light',ovo:'ovo',atum:'atum',sardinha:'sardinha',peixe:'filé de peixe',frango:'frango',cottage:'cottage',mussarela:'mussarela',parmesao:'parmesão',iogurte:'iogurte',leite:'leite sem lactose',whey:'whey',azeite:'azeite',pao:'pão',arroz:'arroz cozido',feijao:'feijão cozido',macarrao:'macarrão de arroz',aveia:'aveia',amendoim:'pasta de amendoim',passata:'molho de tomate',batata:'batata',cenoura:'cenoura',abobrinha:'abobrinha',pepino:'pepino',tomate:'tomate',espinafre:'espinafre',banana:'banana',morango:'morango',mamao:'mamão',uva:'uva',limao:'limão',abobora:'abóbora',alface:'alface',couve:'couve',brocolis:'brócolis',pimentao:'pimentão vermelho',berinjela:'berinjela',vagem:'vagem',batatadoce:'batata-doce',mandioca:'mandioca',laranja:'laranja',kiwi:'kiwi',abacaxi:'abacaxi',camarao:'camarão',grao:'grão-de-bico',quinoa:'quinoa cozida',pts:'PTS seca',paofr:'pão francês',ameixa:'ameixa',nescau:'Nescau'};
+const SN={tapioca:'tapioca',cuscuz:'cuscuz',minas:'queijo minas',castanha:'castanha-do-pará',chocolate:'chocolate 70%',mel:'mel',maca:'maçã',maionese:'maionese light',ovo:'ovo',atum:'atum',sardinha:'sardinha',peixe:'filé de peixe',frango:'frango',cottage:'cottage',mussarela:'mussarela',parmesao:'parmesão',iogurte:'iogurte',leite:'leite sem lactose',whey:'whey',azeite:'azeite',pao:'pão',arroz:'arroz cozido',feijao:'feijão cozido',macarrao:'macarrão de arroz',aveia:'aveia',amendoim:'pasta de amendoim',passata:'molho de tomate',batata:'batata',cenoura:'cenoura',abobrinha:'abobrinha',pepino:'pepino',tomate:'tomate',espinafre:'espinafre',banana:'banana',morango:'morango',mamao:'mamão',uva:'uva',limao:'limão',abobora:'abóbora',alface:'alface',couve:'couve',brocolis:'brócolis',pimentao:'pimentão vermelho',berinjela:'berinjela',vagem:'vagem',batatadoce:'batata-doce',mandioca:'mandioca',laranja:'laranja',kiwi:'kiwi',abacaxi:'abacaxi',camarao:'camarão',grao:'grão-de-bico',quinoa:'quinoa cozida',pts:'PTS seca',paofr:'pão francês',ameixa:'ameixa',nescau:'Nescau',requeijao:'requeijão',ricota:'ricota',leitepo:'leite em pó'};
 
 const RECIPES={
  C1:{steps:[
@@ -1106,7 +1111,7 @@ const ALIAS={'peito de frango':'frango','sassami':'frango','file de frango':'fra
   'pao de forma':'pao','pao frances':'paofr','pao de sal':'paofr','muçarela':'mussarela','mucarela':'mussarela','mozarela':'mussarela','queijo mussarela':'mussarela',
   'batata doce':'batatadoce','aipim':'mandioca','macaxeira':'mandioca','tomate pelado':'passata','molho de tomate':'passata','passata':'passata',
   'pasta de amendoim':'amendoim','grao de bico':'grao','flocao':'cuscuz','goma':'tapioca','queijo minas':'minas','iogurte natural':'iogurte','leite zero lactose':'leite',
-  'whey protein':'whey','proteina de soja':'pts','soja texturizada':'pts','macarrao de arroz':'macarrao','ameixa':'ameixa','castanha do para':'castanha','queijo parmesao':'parmesao','queijo ralado':'parmesao','queijo coalho':'minas','queijo branco':'minas','achocolatado':'nescau','toddy':'nescau'};
+  'whey protein':'whey','proteina de soja':'pts','soja texturizada':'pts','macarrao de arroz':'macarrao','ameixa':'ameixa','castanha do para':'castanha','queijo parmesao':'parmesao','queijo ralado':'parmesao','queijo coalho':'minas','queijo branco':'minas','achocolatado':'nescau','toddy':'nescau','leite':'leite','leite em po':'leitepo','leite po':'leitepo','ninho':'leitepo','requeijao cremoso':'requeijao','catupiry':'requeijao','ricota fresca':'ricota'};
 let MIDX=null;
 function ingIndex(){
   if(MIDX&&MIDX.n===ING_IDS.length)return MIDX;
@@ -1877,7 +1882,7 @@ function viewAjustes(){
   <section class="card stack"><div class="eyebrow">Pri: o que pode e o que evitar (FODMAP)</div>
    <div class="scroll-x"><table class="t"><thead><tr><th>Pode</th><th>Evitar</th></tr></thead><tbody>
     <tr><td class="ok-t">Frango, ovo, peixe, camarão, atum, sardinha</td><td class="no-t">Feijão, lentilha, grão-de-bico, soja</td></tr>
-    <tr><td class="ok-t">Leite e iogurte sem lactose, mussarela, parmesão, cottage até 2 colheres (40 g)</td><td class="no-t">Leite comum, ricota, requeijão</td></tr>
+    <tr><td class="ok-t">Leite e iogurte sem lactose, mussarela, parmesão, cottage até 2 colheres (40 g)</td><td class="no-t">Leite comum, leite em pó, ricota, requeijão (só os sem lactose)</td></tr>
     <tr><td class="ok-t">Batata, arroz, quinoa, mandioca, aveia (até 40 g), batata-doce (até ½ unidade), macarrão de arroz, pão de trigo até 1 fatia (½ pão francês) por vez</td><td class="no-t">Pão e macarrão de trigo em quantidade</td></tr>
     <tr><td class="ok-t">Cenoura, tomate, pepino, espinafre, alface, couve, pimentão vermelho; abobrinha, abóbora cabotiá, brócolis, berinjela e vagem até ¾ xícara</td><td class="no-t">Cebola, alho, cogumelo, couve-flor, beterraba, grão-de-bico</td></tr>
     <tr><td class="ok-t">Morango, uva, mamão, banana firme, laranja, kiwi, abacaxi</td><td class="no-t">Manga, maçã, pera, abacate, banana muito madura</td></tr></tbody></table></div>

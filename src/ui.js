@@ -406,7 +406,7 @@ function viewAjustes(){
   <section class="card stack"><div class="eyebrow">Pri: o que pode e o que evitar (FODMAP)</div>
    <div class="scroll-x"><table class="t"><thead><tr><th>Pode</th><th>Evitar</th></tr></thead><tbody>
     <tr><td class="ok-t">Frango, ovo, peixe, camarão, atum, sardinha</td><td class="no-t">Feijão, lentilha, grão-de-bico, soja</td></tr>
-    <tr><td class="ok-t">Leite e iogurte sem lactose, mussarela, parmesão, cottage até 2 colheres (40 g)</td><td class="no-t">Leite comum, ricota, requeijão</td></tr>
+    <tr><td class="ok-t">Leite e iogurte sem lactose, mussarela, parmesão, cottage até 2 colheres (40 g)</td><td class="no-t">Leite comum, leite em pó, ricota, requeijão (só os sem lactose)</td></tr>
     <tr><td class="ok-t">Batata, arroz, quinoa, mandioca, aveia (até 40 g), batata-doce (até ½ unidade), macarrão de arroz, pão de trigo até 1 fatia (½ pão francês) por vez</td><td class="no-t">Pão e macarrão de trigo em quantidade</td></tr>
     <tr><td class="ok-t">Cenoura, tomate, pepino, espinafre, alface, couve, pimentão vermelho; abobrinha, abóbora cabotiá, brócolis, berinjela e vagem até ¾ xícara</td><td class="no-t">Cebola, alho, cogumelo, couve-flor, beterraba, grão-de-bico</td></tr>
     <tr><td class="ok-t">Morango, uva, mamão, banana firme, laranja, kiwi, abacaxi</td><td class="no-t">Manga, maçã, pera, abacate, banana muito madura</td></tr></tbody></table></div>
