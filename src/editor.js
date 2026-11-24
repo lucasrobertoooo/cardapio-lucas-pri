@@ -68,7 +68,7 @@ function swChip(from,id,qL,qP,present){const cat=ING[from].cat;
     const byP=CAT_BY[cat]==='p',dL=R0(byP?pOf(id)*aL-pOf(from)*qL:ING[id].k*aL-ING[from].k*qL);
     return `<button class="sw-ch" role="listitem" data-act="shswap" data-from="${from}" data-to="${id}"><b>${cap(SN[id])}</b>
       <span class="sub"><span class="L">${aL?trq(id,aL):'—'}</span> · <span class="P">${aP?trq(id,aP)+(g.pri===0?' (evita)':''):'—'}</span></span>
-      <span class="sub">${present.has(id)?'Já está no prato: soma':`Lucas ${dL>0?'+':dL<0?'−':'±'}${Math.abs(dL)} ${byP?'g de proteína':'kcal'}`}</span></button>`;}}
+      <span class="sub">${present.has(id)?'Já está no prato: soma':`Lucas ${dL>0?'+':dL<0?'−':'±'}${Math.abs(dL)} ${byP?'g de proteína':'kcal'}`}${known(id)?(homeQ(id)>=aL+aP-1e-6?' · <span class="ok-t">tem em casa</span>':' · <span class="warn-t">não tem em casa</span>'):''}</span></button>`;}}
 function trq(id,q){return fq(id,q).replace(/ \(.*\)$/,'').replace(' de '+SN[id],'');}
 function resultsHtml(sh){
   /* some da lista só o que os dois já têm: se só um tem, o botão adiciona para o outro */
@@ -177,7 +177,7 @@ function shSubmit(f){
   toast(`${n} cadastrado`);return true;}
 
 /* ===== DESFAZER: ação na hora + aviso com "Desfazer" por 6 s (em vez de "toque de novo para confirmar") ===== */
-const SNAP_F=['custom','mine','ing','swap','checks','manual','shop','dayc'];
+const SNAP_F=['custom','mine','ing','swap','checks','manual','shop','dayc','casa','have'];
 function snap(){const o={};SNAP_F.forEach(f=>{o[f]=clone(S[f]);});return o;}
 let toastT=null;
 function toast(msg,undo){V.toast={msg,undo};clearTimeout(toastT);toastT=setTimeout(()=>{V.toast=null;drawToast();},6000);drawToast();}

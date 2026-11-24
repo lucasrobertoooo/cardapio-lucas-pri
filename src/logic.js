@@ -1,7 +1,7 @@
 /* ===== ESTADO E CÁLCULOS ===== */
 const KEY='cardapio-lucas-pri-v1';
 const DEF={checks:{},extras:{},shop:{},stock:{atum:4,sardinha:2},pantry:{},prep:{},steps:{},
-  targets:{L:{p:160,k:2800},P:{p:125,k:1750}},ref:{iog:3.6,whey:24},maxKg:14,have:{},swap:{},icon:'verde',custom:{},unit:{},manual:{},mine:{},ing:{},me:'',dayc:{}};
+  targets:{L:{p:160,k:2800},P:{p:125,k:1750}},ref:{iog:3.6,whey:24},maxKg:14,have:{},swap:{},icon:'verde',custom:{},unit:{},manual:{},mine:{},ing:{},me:'',dayc:{},casa:{},hz:3};
 function clone(o){return JSON.parse(JSON.stringify(o));}
 function loadState(){
   const s=clone(DEF);
@@ -155,13 +155,8 @@ function suggest(gap){
   return out.join(' + ');
 }
 
-/* ===== COMPRAS: calculadas a partir do plano ===== */
+/* ===== DIAS DO PLANO: lotes do preparo ===== */
 const DD=WEEK.map(d=>d.d),dia=i=>+DD[i].slice(8);
-const TRIPS=[
-  {id:'T1-'+WK,k:'T1',n:'Compra 1',when:'Dom '+dia(0),long:'Domingo '+dia(0),covers:'dom e seg, mais a despensa da semana',days:DD.slice(0,2)},
-  {id:'T2-'+WK,k:'T2',n:'Compra 2',when:'Ter '+dia(2),long:'Terça '+dia(2),covers:'ter a qui, mais o frango e o arroz da quarta',days:DD.slice(2,5)},
-  {id:'T3-'+WK,k:'T3',n:'Compra 3',when:'Sex '+dia(5),long:'Sexta '+dia(5),covers:'sex e sáb',days:DD.slice(5)}
-];
 /* O que é cozido em lote é comprado antes do dia de cozinhar: lote 1 no domingo (cobre dom a ter), lote 2 na quarta de manhã (cobre qua a sáb). */
 const BATCH1=DD.slice(0,3),BATCH2=DD.slice(3);
 const ALL_DAYS=WEEK.map(d=>d.d);
@@ -187,32 +182,58 @@ function needText(id,q){
 const PANTRY_STATIC=[
   {id:'sal',n:'Sal'},{id:'pimenta',n:'Pimenta-do-reino'},{id:'paprica',n:'Páprica'},
   {id:'oregano',n:'Orégano'},{id:'alho',n:'Alho (1 cabeça, só para o azeite aromatizado)'}];
-function shopping(){
-  const left={};
-  for(const id in S.stock){if(ING[id])left[id]=(S.stock[id]||0)*(ING[id].f||1);}
-  return TRIPS.map(t=>{
-    const nd=needs(t.days);const items=[];let w=0;
-    for(const id of ['frango','arroz','feijao'])delete nd[id];
-    const bn=needs(t.k==='T1'?BATCH1:t.k==='T2'?BATCH2:[]);
-    for(const id of ['frango','arroz'])if(bn[id])nd[id]=bn[id];
-    if(t.k==='T1'){const fa=needs(ALL_DAYS).feijao;if(fa)nd.feijao=fa;}
-    for(const id in nd){const g=ING[id];if(g.pantry)continue;
-      const need=nd[id].tot*(g.f||1);const have=S.have[id]?Infinity:(left[id]||0);let packs=0;
-      if(have<need-1e-9)packs=Math.ceil((need-have)/g.pack-1e-9);
-      left[id]=isFinite(have)?have+packs*g.pack-need:0;
-      if(packs>0){const qty=packs*g.pack;const wt=qty*(g.wp||1);w+=wt;
-        items.push({id,packs,qty,need:nd[id].tot,who:{L:nd[id].L>0,P:nd[id].P>0},uses:nd[id].uses,wt});}
-      else if(nd[id].tot>0){/* coberto pelo estoque ou por sobra da compra anterior */}
-    }
-    /* Itens digitados que o app reconhece ("2 kg batata"): entram na compra, no peso da mochila e, o que sobrar, abate da próxima. */
-    const man=S.manual[t.id]||{};
-    for(const mk in man){const m=parseManual(man[mk]);if(!m.id)continue;const g=ING[m.id];
-      const packs=Math.max(1,Math.ceil(m.q/g.pack-1e-9)),qty=packs*g.pack,wt=qty*(g.wp||1);
-      left[m.id]=(left[m.id]||0)+qty;w+=wt;
-      const it=items.find(i=>i.id===m.id),ex={k:mk,t:m.t,packs,qty};
-      if(it){it.packs+=packs;it.qty+=qty;it.wt+=wt;(it.extra=it.extra||[]).push(ex);}
-      else items.push({id:m.id,packs,qty,need:0,who:{L:false,P:false},uses:[],wt,extra:[ex]});}
-    items.sort((a,b)=>ING[a.id].n.localeCompare(ING[b.id].n,'pt-BR'));
-    return Object.assign({},t,{items,kg:w/1000});
-  });
+/* ===== DESPENSA E LISTA DE COMPRAS (mercado sem dia certo) =====
+   S.casa[id]: quanto tem em casa, na unidade da receita (lata, g, un, ml; arroz e feijão em peso cozido).
+   Só é controlado o que já entrou em casa: comprado na lista, "Já tenho" ou ajustado em Em casa. O resto o app não sabe e não avisa.
+   Marcar que comeu tira de casa o que estava no prato; desmarcar devolve (setCheck).
+   S.shop[chave] = {id,q,d}: comprado agora (no carrinho). Já conta como em casa e passa para S.casa ao "Guardar" ou no dia seguinte.
+   A lista = o que as refeições ainda não comidas de hoje até S.hz dias pedem, menos o que tem em casa. */
+const addDays=(iso,n)=>{const d=new Date(iso+'T12:00:00');d.setDate(d.getDate()+n);return isoOf(d);};
+/* qualquer data, também fora da semana atual: o cardápio-modelo do dia da semana + as trocas daquela data */
+function dayFor(iso){const w=WEEK.find(x=>x.d===iso);if(w)return w;const p=PLANO[new Date(iso+'T12:00:00').getDay()];return {d:iso,wd:p.wd,slots:p.slots};}
+function cartOf(id){let q=0;for(const k in S.shop){const c=S.shop[k];if(c&&typeof c==='object'&&c.id===id)q+=c.q||0;}return q;}
+const known=id=>!!S.have[id]||id in S.casa||cartOf(id)>0;
+function homeQ(id){return S.have[id]?Infinity:Math.max(0,(S.casa[id]||0)+cartOf(id));}
+const r3=n=>Math.round(n*1000)/1000;
+function eatMove(key,on){const [d,k,w]=key.split('|');if(!w)return;
+  for(const [id,q] of dayItems(dayFor(d),k,w)){if(S.have[id]||!(id in S.casa||cartOf(id)>0))continue;
+    S.casa[id]=r3(Math.max(-cartOf(id),(S.casa[id]||0)+(on?-q:q)));}}
+function setCheck(key,on){on=!!on;if(!!S.checks[key]===on)return;S.checks[key]=on;eatMove(key,on);}
+/* carrinho -> casa */
+function stowCart(){let n=0;for(const k in S.shop){const c=S.shop[k];if(!c||typeof c!=='object')continue;n++;
+    if(c.id&&ING[c.id])S.casa[c.id]=r3(Math.max(0,(S.casa[c.id]||0)+c.q));
+    if(k.indexOf('m-')===0&&S.manual.lista)delete S.manual.lista[k.slice(2)];}
+  S.shop={};return n;}
+const dayWord=d=>d===HOJE?'hoje':d===addDays(HOJE,1)?'amanhã':(dayFor(d).wd||'').toLowerCase();
+const slotWord=k=>(SLOTS.find(s=>s[0]===k)||['',''])[1].split(' ')[0].toLowerCase();
+/* refeições que ainda não foram comidas, em ordem, de hoje até n dias */
+function upcoming(n){const out=[];
+  for(let i=0;i<n;i++){const day=dayFor(addDays(HOJE,i)),sl=slotsOf(day);
+    for(const [k] of SLOTS){if(!sl[k])continue;for(const w of ['L','P']){if(S.checks[`${day.d}|${k}|${w}`])continue;const its=dayItems(day,k,w);if(its.length)out.push({d:day.d,k,w,its});}}}
+  return out;}
+function needsAhead(n){const out={};
+  for(const m of upcoming(n))for(const [id,q] of m.its){const o=out[id]||(out[id]={tot:0,uses:[]});o.tot+=q;
+    const u=`${dayWord(m.d)} ${slotWord(m.k)}`;if(!o.uses.includes(u))o.uses.push(u);}
+  return out;}
+/* o que falta em casa em cada refeição (só itens controlados): casa vai sendo gasta na ordem das refeições */
+function shortages(n){const left={},out={};
+  for(const m of upcoming(n))for(const [id,q] of m.its){if(!known(id)||S.have[id])continue;
+    if(!(id in left))left[id]=homeQ(id);left[id]-=q;
+    if(left[id]<-1e-6){const key=`${m.d}|${m.k}`;(out[key]=out[key]||new Set()).add(id);}}
+  return out;}
+/* até quando dá o que tem em casa: a primeira refeição que fica sem */
+function runsOut(id,n){let left=homeQ(id);if(!isFinite(left))return null;
+  for(const m of upcoming(n)){const it=m.its.find(i=>i[0]===id);if(!it)continue;left-=it[1];if(left<-1e-6)return m;}return false;}
+const packsFor=(id,q)=>{const g=ING[id];return Math.max(1,Math.ceil(q*(g.f||1)/g.pack-1e-9));};
+function shopList(){
+  const n=S.hz||3,nd=needsAhead(n),rows=[];let w=0;
+  for(const id in nd){const g=ING[id];if(!g||g.pantry||S.have[id])continue;
+    const c=S.shop[id];if(c&&typeof c==='object'){rows.push({id,done:true,packs:c.p||1,qty:(c.p||1)*g.pack,need:nd[id].tot,uses:nd[id].uses});continue;}
+    const home=homeQ(id),miss=nd[id].tot-home;if(miss<=1e-6)continue;
+    const packs=packsFor(id,miss),wt=packs*g.pack*(g.wp||1);w+=wt;
+    rows.push({id,packs,qty:packs*g.pack,need:nd[id].tot,home:known(id)?home:null,uses:nd[id].uses,wt});}
+  /* comprado fora do plano que ainda está no carrinho */
+  for(const k in S.shop){const c=S.shop[k];if(c&&c.id&&k===c.id&&!rows.some(r=>r.id===k)&&ING[k])rows.push({id:k,done:true,packs:c.p||1,qty:(c.p||1)*ING[k].pack,need:0,uses:[]});}
+  rows.sort((a,b)=>ING[a.id].n.localeCompare(ING[b.id].n,'pt-BR'));
+  return {rows,kg:w/1000,n};
 }
