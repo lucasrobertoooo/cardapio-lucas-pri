@@ -194,7 +194,18 @@ const MEALS = {
   P:[['pao',1],['ovo',1],['frango',100],['mussarela',15],['tomate',50],['espinafre',30],['batata',150]]},
  M10:{slot:'ref', lote:1, n:'Maionese de batata com frango', t:25, oc:1, junto:['batata','cenoura','ovo','maionese'], jn:'Maionese',
   L:[['batata',300],['cenoura',90],['ovo',2],['maionese',45],['frango',140],['arroz',100]],
-  P:[['batata',225],['cenoura',60],['ovo',2],['maionese',30],['frango',80]]}
+  P:[['batata',225],['cenoura',60],['ovo',2],['maionese',30],['frango',80]]},
+ /* arroz e feijão do lote no centro do prato; a Pri come o arroz e fica sem o feijão (FODMAP) */
+ M11:{slot:'ref', n:'Arroz, feijão, frango grelhado e salada', t:15, junto:['alface','tomate','pepino','azeite'], jn:'Salada',
+  L:[['arroz',150],['feijao',140],['frango',140],['alface',30],['tomate',75],['pepino',50],['azeite',.5]],
+  P:[['arroz',100],['frango',120],['alface',30],['tomate',75],['pepino',50],['azeite',.25]]},
+ M12:{slot:'ref', n:'Arroz, feijão, ovos mexidos com queijo e couve', t:15, junto:['couve','azeite'], jn:'Couve refogada',
+  L:[['arroz',150],['feijao',140],['ovo',3],['mussarela',15],['couve',60],['tomate',50],['azeite',.5]],
+  P:[['arroz',100],['ovo',3],['mussarela',15],['couve',60],['tomate',50],['azeite',.25]]},
+ /* crepe sem verdura na massa: para quando não tem espinafre */
+ M13:{slot:'ref', n:'Crepe de frango com queijo e tomate', t:20, junto:['ovo','aveia','batata'], jn:'Massa e batata',
+  L:[['ovo',2],['aveia',30],['frango',120],['tomate',50],['mussarela',30],['batata',225],['azeite',.5]],
+  P:[['ovo',2],['aveia',30],['frango',50],['tomate',50],['mussarela',15],['batata',150],['azeite',.25]]}
 };
 /* Pratos de panela (lote:1) seguidos no plano viram uma panela só: cozinha em dobro e a refeição seguinte é sobra (loteOf em logic.js). */
 /* Semana de domingo a sábado, calculada pela data de hoje: vira sozinha todo domingo.

@@ -1,6 +1,6 @@
 /* ===== RECEITAS E FOTOS ===== */
 const SLOTS=[['cafe','Café da manhã'],['almoco','Almoço'],['lanche','Lanche'],['jantar','Jantar'],['ceia','Ceia']];
-const SHORT={C1:'Pão com cottage',C2:'Mingau',L1:'Vitamina',E1:'Iogurte',E2:'Iogurte',M1:'Macarrão',M2:'Omelete',M3:'Peixe',M4:'Crepe',M5:'Purê',C3:'Panqueca',C4:'Queijo quente',C5:'Iogurte e ovos',L2:'Iogurte batido',L3:'Sanduíche de atum',L4:'Ovos e leite',E3:'Leite com whey',E4:'Ovos mexidos',M6:'Salada morna',M7:'Macarrão e abobrinha',M8:'Peixe ao molho',M9:'Sanduíche quente',M10:'Maionese'};
+const SHORT={C1:'Pão com cottage',C2:'Mingau',L1:'Vitamina',E1:'Iogurte',E2:'Iogurte',M1:'Macarrão',M2:'Omelete',M3:'Peixe',M4:'Crepe',M5:'Purê',C3:'Panqueca',C4:'Queijo quente',C5:'Iogurte e ovos',L2:'Iogurte batido',L3:'Sanduíche de atum',L4:'Ovos e leite',E3:'Leite com whey',E4:'Ovos mexidos',M6:'Salada morna',M7:'Macarrão e abobrinha',M8:'Peixe ao molho',M9:'Sanduíche quente',M10:'Maionese',M11:'Arroz e feijão com frango',M12:'Arroz e feijão com ovos',M13:'Crepe simples'};
 const SN={tapioca:'tapioca',cuscuz:'cuscuz',minas:'queijo minas',castanha:'castanha-do-pará',chocolate:'chocolate 70%',mel:'mel',maca:'maçã',maionese:'maionese light',ovo:'ovo',atum:'atum',sardinha:'sardinha',peixe:'filé de peixe',frango:'frango',cottage:'cottage',mussarela:'mussarela',parmesao:'parmesão',iogurte:'iogurte',leite:'leite sem lactose',whey:'whey',azeite:'azeite',pao:'pão',arroz:'arroz cozido',feijao:'feijão cozido',macarrao:'macarrão de arroz',aveia:'aveia',amendoim:'pasta de amendoim',passata:'molho de tomate',batata:'batata',cenoura:'cenoura',abobrinha:'abobrinha',pepino:'pepino',tomate:'tomate',espinafre:'espinafre',banana:'banana',morango:'morango',mamao:'mamão',uva:'uva',limao:'limão',abobora:'abóbora',alface:'alface',couve:'couve',brocolis:'brócolis',pimentao:'pimentão vermelho',berinjela:'berinjela',vagem:'vagem',batatadoce:'batata-doce',mandioca:'mandioca',laranja:'laranja',kiwi:'kiwi',abacaxi:'abacaxi',camarao:'camarão',grao:'grão-de-bico',quinoa:'quinoa cozida',pts:'PTS seca',paofr:'pão francês',ameixa:'ameixa',nescau:'Nescau'};
 
 const RECIPES={
@@ -117,6 +117,24 @@ const RECIPES={
   'Uma tigela só: batata, cenoura, ovos cozidos do lote picados e a maionese light, com sal, limão e cheiro-verde. Mexa com cuidado para a batata não virar purê.',
   'Divida na proporção do quadro. Frango desfiado do lote por cima ou ao lado. Lucas: arroz do lote.'],
   tips:['Gelada fica melhor: dá para fazer na véspera. Na geladeira, em pote fechado, dura 2 dias.','Pri: maionese com alho ou cebola na lista de ingredientes sai do FODMAP baixo. Confira o rótulo. Sem ervilha pelo mesmo motivo.']},
+ M11:{steps:[
+  'Esquente o arroz e o feijão do lote (micro-ondas, 2 min cada, com 1 colher de água no arroz).',
+  'Frango em bifes finos com sal, páprica e limão. Frigideira bem quente com um fio de azeite: 4 min de cada lado, até não ter rosa por dentro.',
+  'Uma tigela só de salada: alface, tomate e pepino com limão, sal e o azeite do quadro.',
+  'Monte os pratos na proporção do quadro. Feijão só para o Lucas.'],
+  tips:['Sem tempo de grelhar? Use o frango assado do lote, esquentado na frigideira para dourar.','Pri: feijão fica fora por FODMAP; o arroz entra no lugar da batata.']},
+ M12:{steps:[
+  'Esquente o arroz e o feijão do lote.',
+  'Couve em tiras finas: refogue 2 min no azeite com sal, só até murchar. Divida.',
+  'Ovos mexidos dos dois numa frigideira só: bata com sal, mexa em fogo baixo e, quase no ponto, junte a mussarela picada. Divida na proporção do quadro.',
+  'Tomate em rodelas ao lado. Feijão só para o Lucas.'],
+  tips:['Prato de quando o frango acabou: só ovo, queijo e o que já está pronto no lote.','Sem couve, vai espinafre ou abobrinha refogada.']},
+ M13:{steps:[
+  'Uma massa só no liquidificador: os ovos e a aveia do quadro, com sal e uma pitada de páprica.',
+  'Frigideira antiaderente untada: faça os crepes, 2 min de cada lado, e divida meio a meio.',
+  'Recheio dos dois: frango desfiado do lote, mussarela e tomate. Enrole e volte 1 min à frigideira para o queijo derreter.',
+  'Batata assada numa assadeira só, dividida na proporção do quadro.'],
+  tips:['É o crepe de espinafre sem a verdura na massa: para quando não tem espinafre em casa.','A massa fica mais firme se descansar 5 min antes de ir para a frigideira.']},
  B1:{steps:[
   'Pese cru (pode ser congelado: veja a dica). Tempere com sal, páprica, limão e um fio de azeite.',
   'Forno a 200 °C por 22 a 25 min, até ficar branco por dentro e sem rosa.',
