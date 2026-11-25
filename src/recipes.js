@@ -5,15 +5,15 @@ const SN={tapioca:'tapioca',cuscuz:'cuscuz',minas:'queijo minas',castanha:'casta
 
 const RECIPES={
  C1:{steps:[
-  'Torre o pão (Lucas 3 fatias, Pri 1).',
+  'Torre o pão de cada um (fatias na tabela).',
   'Bata os ovos dos dois juntos com sal e mexa numa frigideira só, com um fio de azeite, por 2 min.',
   'Passe o cottage no pão e divida os ovos.',
-  'Sirva com o iogurte e a banana (a Pri fica com meia).'],
-  tips:['Pão francês: troque no seletor Pão do card (1 pão de 50 g vale umas 2 fatias). A Pri fica com meio pão.','Pri: 1 fatia de pão de trigo por refeição fica dentro do FODMAP baixo. Mais que isso pode incomodar.']},
+  'Sirva com o iogurte e a banana, pela tabela.'],
+  tips:['Pão francês: toque em Pão na tabela e troque (1 pão de 50 g vale umas 2 fatias). A Pri fica com meio pão.','Pri: 1 fatia de pão de trigo por refeição fica dentro do FODMAP baixo. Mais que isso pode incomodar.']},
  C2:{steps:[
-  'Uma panela só: aveia, leite sem lactose e metade da banana amassada (proporção do quadro), fogo médio, mexendo por 4 a 5 min até ficar cremoso.',
+  'Uma panela só: aveia, leite sem lactose e a banana amassada (proporção do quadro), fogo médio, mexendo por 4 a 5 min até ficar cremoso.',
   'Pese o mingau pronto em cada prato.',
-  'Por cima, nos dois: banana em rodelas e um fio de pasta de amendoim.',
+  'Por cima, nos dois: um fio de pasta de amendoim.',
   'Ovos cozidos do lote ao lado.'],
   tips:['Versão sem fogo: misture aveia e leite na noite anterior e deixe na geladeira.','Os ovos cozidos saem do lote de domingo e quarta, veja a aba Preparo.']},
  L1:{steps:[
@@ -43,9 +43,10 @@ const RECIPES={
   tips:['Prato de Outros: só quando comprar peixe. Filé grosso (mais de 2 cm) pede 2 a 3 min a mais.']},
  M4:{steps:[
   'Uma massa só no liquidificador: ovos, aveia e espinafre na proporção do quadro, com sal. Faça a quantidade que quiser.',
+  'Batata em cubos com o azeite e sal: airfryer a 200 °C por 18 min.',
   'Frigideira antiaderente untada: uma concha pequena por crepe (cada ovo da massa dá 1 crepe), 2 min de cada lado. Cada um come o número da tabela; o resto guarda 2 dias na geladeira.',
   'Recheio dos dois: frango desfiado do lote, mussarela e tomate. Enrole.',
-  'Batata assada numa assadeira só. No prato, pese já assada.'],
+  'No prato, pese a batata já assada.'],
   tips:['A massa fica mais firme se descansar 5 min antes de ir para a frigideira.']},
  M5:{steps:[
   'Uma panela só de purê: faça a quantidade que quiser. Cozinhe as batatas em cubos por 15 min, escorra e amasse com o leite, o azeite (proporção do quadro) e sal. Sem manteiga e sem alho.',
@@ -59,14 +60,14 @@ const RECIPES={
   'Cada um come o número da tabela (2 por ovo da massa). Sirva com o iogurte e um fio de pasta de amendoim.'],
   tips:['Pri: banana firme, ainda com a ponta verde. Madura demais pesa no FODMAP.','Panquecas pequenas viram sem quebrar.']},
  C4:{steps:[
-  'Faça os ovos fritos ou mexidos (Lucas 3, Pri 2).',
-  'Monte o pão com a mussarela e o ovo. Frigideira tampada em fogo baixo, 2 min de cada lado, até o queijo derreter. Lucas: 3 fatias, Pri: 1 fatia aberta.',
-  'Café com leite sem lactose (Lucas 300 ml, Pri 200 ml) e mamão picado ao lado.'],
+  'Faça os ovos fritos ou mexidos (quantos na tabela).',
+  'Monte o pão com a mussarela e o ovo. Frigideira tampada em fogo baixo, 2 min de cada lado, até o queijo derreter. Pão pela tabela; com 1 fatia, fica aberto.',
+  'Café com o leite sem lactose da tabela e mamão picado ao lado.'],
   tips:['Sem frigideira livre? Sanduicheira ou airfryer a 180 °C por 4 min.']},
  C5:{steps:[
   'Coloque o iogurte na tigela, junte a aveia e a banana em rodelas.',
   'Um fio de pasta de amendoim por cima, nos dois.',
-  'Ovos cozidos do lote ao lado, com sal (3 Lucas, 2 Pri).'],
+  'Ovos cozidos do lote ao lado, com sal (quantos na tabela).'],
   tips:['É o café de quem está com pressa: nada vai ao fogo se os ovos do lote estiverem prontos.']},
  L2:{steps:[
   'Bata juntos o iogurte, o whey, os morangos e a aveia por 30 s (proporção do quadro).',
@@ -74,12 +75,12 @@ const RECIPES={
   tips:['Fica mais grosso que a vitamina de leite. Se quiser mais líquido, junte um pouco de água gelada.']},
  L3:{steps:[
   'Misture o atum escorrido com tomate em cubos, sal e um fio de limão.',
-  'Monte no pão com a mussarela (Lucas 3 fatias, Pri 1 fatia aberta). Se quiser quente, 2 min na frigideira tampada.',
-  'Lucas: um copo de leite sem lactose ao lado.'],
+  'Monte no pão com a mussarela (fatias na tabela; com 1, fica aberto). Se quiser quente, 2 min na frigideira tampada.',
+  'Leite sem lactose e banana ao lado. No da Pri, o Nescau.'],
   tips:['Prato de Outros: só quando tiver atum em casa. Meia lata para cada.']},
  L4:{steps:[
-  'Descasque os ovos cozidos do lote (Lucas 3, Pri 2) e tempere com sal.',
-  'Copo de leite sem lactose (Lucas 300 ml, Pri 250 ml).',
+  'Descasque os ovos cozidos do lote (quantos na tabela) e tempere com sal.',
+  'Copo de leite sem lactose (da tabela); no da Pri, o Nescau.',
   'Banana e pão com pasta de amendoim, para os dois.'],
   tips:['Bom para levar: ovo cozido e fruta aguentam a mochila.']},
  E3:{steps:[
@@ -109,14 +110,14 @@ const RECIPES={
   tips:['Prato de Outros: só quando comprar peixe.']},
  M9:{steps:[
   'Uma assadeira só: batata em cubos na airfryer a 200 °C por 18 min.',
-  'Uma frigideira só: mexa os ovos dos dois e junte o frango desfiado do lote.',
-  'Monte com a mussarela, o tomate e o espinafre (Lucas: 1 sanduíche de 2 fatias; Pri: 1 fatia aberta). Frigideira tampada, 2 min de cada lado. Batata assada ao lado, pesada pronta.'],
+  'Uma frigideira só: mexa os ovos dos dois e junte o frango desfiado do lote. Pese pronto no prato; o que não couber no pão vai ao lado.',
+  'Monte com a mussarela, o tomate e o espinafre (pão pela tabela; com 1 fatia, fica aberto). Frigideira tampada, 2 min de cada lado. Batata assada ao lado, pesada pronta.'],
   tips:['Pri: 1 fatia de pão de trigo por refeição fica dentro do FODMAP baixo; a batata completa o prato.']},
  M10:{steps:[
   'Cozinhe todas as batatas em cubos com a cenoura em cubinhos, 12 min em água com sal, até ficarem macias mas inteiras. Escorra e deixe esfriar.',
   'Uma tigela só: batata, cenoura, ovos cozidos do lote picados e a maionese light, com sal, limão e cheiro-verde. Mexa com cuidado para a batata não virar purê.',
   'No prato, pese a maionese pronta. Frango desfiado do lote por cima ou ao lado. Lucas: arroz do lote.'],
-  tips:['Gelada fica melhor: dá para fazer na véspera. Na geladeira, em pote fechado, dura 2 dias.','Pri: maionese com alho ou cebola na lista de ingredientes sai do FODMAP baixo. Confira o rótulo. Sem ervilha pelo mesmo motivo.']},
+  tips:['Gelada fica melhor: dá para fazer na véspera. Na geladeira, em pote fechado, dura até 3 dias. Não vai ao micro-ondas.','Pri: maionese com alho ou cebola na lista de ingredientes sai do FODMAP baixo. Confira o rótulo. Sem ervilha pelo mesmo motivo.']},
  M11:{steps:[
   'Esquente o arroz e o feijão do lote (micro-ondas, 2 min cada, com 1 colher de água no arroz).',
   'Frango em bifes finos com sal, páprica e limão. Frigideira bem quente com um fio de azeite: 4 min de cada lado, até não ter rosa por dentro.',
@@ -126,14 +127,15 @@ const RECIPES={
  M12:{steps:[
   'Esquente o arroz e o feijão do lote.',
   'Couve em tiras finas: refogue 2 min no azeite com sal, só até murchar. Divida.',
-  'Ovos mexidos dos dois numa frigideira só: bata com sal, mexa em fogo baixo e, quase no ponto, junte a mussarela picada. Divida meio a meio.',
+  'Ovos mexidos dos dois numa frigideira só: bata com sal, mexa em fogo baixo e, quase no ponto, junte a mussarela picada. Divida pela tabela.',
   'Tomate em rodelas ao lado. Feijão só para o Lucas.'],
   tips:['Prato de quando o frango acabou: só ovo, queijo e o que já está pronto no lote.','Sem couve, vai espinafre ou abobrinha refogada.']},
  M13:{steps:[
   'Uma massa só no liquidificador: ovos e aveia na proporção do quadro, com sal e uma pitada de páprica. Faça a quantidade que quiser.',
+  'Batata em cubos com o azeite e sal: airfryer a 200 °C por 18 min.',
   'Frigideira antiaderente untada: uma concha pequena por crepe (cada ovo da massa dá 1 crepe), 2 min de cada lado. Cada um come o número da tabela; o resto guarda 2 dias na geladeira.',
   'Recheio dos dois: frango desfiado do lote, mussarela e tomate. Enrole e volte 1 min à frigideira para o queijo derreter.',
-  'Batata assada numa assadeira só. No prato, pese já assada.'],
+  'No prato, pese a batata já assada.'],
   tips:['É o crepe de espinafre sem a verdura na massa: para quando não tem espinafre em casa.','A massa fica mais firme se descansar 5 min antes de ir para a frigideira.']},
  M14:{steps:[
   'Esquente o arroz e o feijão do lote.',
@@ -143,15 +145,15 @@ const RECIPES={
   'No prato, pese a farofa pronta, com o tomate ao lado. Feijão só para o Lucas.'],
   tips:['Banana firme não desmancha na farofa e é a que cabe no FODMAP baixo da Pri.','Use farinha torrada pura: a farofa pronta do pacote costuma levar cebola e alho.','Dá para usar o frango assado do lote e fazer só a farofa na hora.']},
  B1:{steps:[
-  'Pese cru (pode ser congelado: veja a dica). Tempere com sal, páprica, limão e um fio de azeite.',
+  'Pese cru (pode pesar congelado: veja a dica) e descongele na geladeira de véspera. Tempere com sal, páprica, limão e um fio de azeite.',
   'Forno a 200 °C por 22 a 25 min, até ficar branco por dentro e sem rosa.',
-  'Descanse 5 min. Desfie metade e fatie a outra metade.',
-  'Guarde em potes na geladeira por até 4 dias.'],tips:['Todas as quantidades de frango do app são de frango cru. Assado, ele perde cerca de ¼ do peso: 120 g cru dão ~90 g prontos.','Congelado: pese direto na balança. Se tiver casca de gelo, passe na água fria uns segundos e seque antes, ou conte uns 10% a mais. Sem balança: peso do pacote ÷ número de pedaços (sassami tem ~40 a 50 g, filé de peito ~100 a 150 g).','Esta semana o frango é dos dois: Lucas 100 a 120 g por refeição, Pri 50 a 110 g.']},
+  'Descanse 5 min. Desfie o que vai para molho, salada e recheio; fatie o resto.',
+  'Guarde em potes na geladeira por até 4 dias.'],tips:['Todas as quantidades de frango do app são de frango cru. Assado, ele perde cerca de ¼ do peso: 120 g cru dão ~90 g prontos.','Congelado: pese direto na balança. Se tiver casca de gelo, passe na água fria uns segundos e seque antes, ou conte uns 10% a mais. Sem balança: peso do pacote ÷ número de pedaços (sassami tem ~40 a 50 g, filé de peito ~100 a 150 g).','Assar direto do congelador leva cerca de 50% mais tempo: só tire quando não tiver rosa no meio.']},
  B2:{steps:[
-  'Arroz: lave 100 g de arroz, refogue em um fio de azeite, junte 250 ml de água e sal. Tampado, 12 min em fogo baixo.',
-  'Feijão: cubra 150 g de feijão (de molho por 8 h, se tiver) com água, panela de pressão por 25 min depois de pegar pressão.',
+  'Arroz: lave o arroz (quantidade na aba Preparo), refogue em um fio de azeite, junte 2,5 partes de água e sal. Tampado, 12 min em fogo baixo.',
+  'Feijão: cubra o feijão (de molho por 8 h, se tiver) com água, panela de pressão por 25 min depois de pegar pressão.',
   'Tempere o feijão com sal e louro. Sem cebola e alho se for dividir com a Pri.',
-  'Arroz na geladeira por 4 dias. Feijão em porções de 150 g no congelador.'],tips:['Só o Lucas come feijão. A Pri troca por batata.']},
+  'Arroz na geladeira por 4 dias. Feijão em porções de 1 concha (140 g) no congelador.'],tips:['Só o Lucas come feijão (FODMAP). Arroz entra nos dois em alguns pratos.']},
  B3:{steps:[
   'Coloque os ovos em água fria e leve ao fogo.',
   'Quando ferver, conte 10 min.',
@@ -163,9 +165,9 @@ const RECIPES={
   'Guarde na geladeira e use em até 4 dias. Depois disso, faça outro.'],tips:['Por que tirar o alho: o frutano do alho não passa para o azeite, e a Pri pode usar sem sintoma.','Guardar alho em óleo por muito tempo, fora da geladeira, traz risco. Faça pouco e use rápido.']}
 };
 const BASES={
- B1:{n:'Frango assado em lote',t:30,slot:'base',desc:'Só para a Pri: 50 a 110 g por refeição.'},
- B2:{n:'Arroz e feijão em lote',t:35,slot:'base',desc:'Arroz para o Lucas, feijão congelado em porções.'},
- B3:{n:'Ovos cozidos em lote',t:12,slot:'base',desc:'Mingau, purê e macarrão usam ovo cozido.'},
+ B1:{n:'Frango assado em lote',t:30,slot:'base',desc:'Frango dos dois, assado de uma vez para 3 a 4 dias.'},
+ B2:{n:'Arroz e feijão em lote',t:35,slot:'base',desc:'Arroz para a semana e feijão congelado em porções.'},
+ B3:{n:'Ovos cozidos em lote',t:12,slot:'base',desc:'Ovo cozido do café, do purê, do macarrão, da salada morna e da maionese.'},
  B4:{n:'Azeite aromatizado com alho',t:8,slot:'base',desc:'O sabor de alho do macarrão sem frutano.'}
 };
 

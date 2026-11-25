@@ -6,14 +6,14 @@ const CAT_BY=Object.fromEntries(CATS.map(c=>[c[0],c[2]])),CAT_N=Object.fromEntri
 const cap=t=>t?t[0].toUpperCase()+t.slice(1):t;
 /* No painel aberto pelo dia, "Só hoje" muda só aquele dia (S.dayc); "Todos os dias" muda a receita (S.custom). */
 function shDay(sh){return sh.mode==='edit'&&sh.scope==='dia'&&sh.key?dayOf(sh.key.split('|')[0]):null;}
-function shItems(sh,w){const d=shDay(sh);if(d)return dayItems(d,sh.key.split('|')[1],w);if(sh.mode==='edit')return itemsOf(sh.mid,w);const o=sh[w];return Object.keys(o).filter(i=>ING[i]&&o[i]>0).map(i=>[i,o[i]]);}
+function shItems(sh,w){const d=shDay(sh);if(d)return dayRaw(d,sh.key.split('|')[1],w);if(sh.mode==='edit')return itemsOf(sh.mid,w);const o=sh[w];return Object.keys(o).filter(i=>ING[i]&&o[i]>0).map(i=>[i,o[i]]);}
 function shQ(sh,w,id){return (shItems(sh,w).find(i=>i[0]===id)||[0,0])[1];}
 function shSet(sh,w,id,q){q=Math.max(0,Math.round(q*1000)/1000);
   if(sh.mode==='build'){if(q)sh[w][id]=q;else delete sh[w][id];return;}
   const d=shDay(sh);if(d){let o=S.dayc[sh.key];if(!o||o.mid!==sh.mid)o=S.dayc[sh.key]={mid:sh.mid};
     /* cada pessoa começa do que já tinha naquele dia; '_' mantém a lista mesmo vazia (o banco apaga objeto vazio) */
     ['L','P'].forEach(x=>{if(!o[x]){const n={_:0};shItems(sh,x).forEach(([i,v])=>{n[i]=v;});o[x]=n;}});
-    if(q)o[w][id]=q;else delete o[w][id];return;}
+    if(q)o[w][id]=q;else delete o[w][id];reEat(sh.key);return;}
   if(MEALS[sh.mid].user){const u=S.mine[sh.mid];u[w]=u[w]||{};if(q)u[w][id]=q;else delete u[w][id];applyUser();}
   else customOf(sh.mid,w)[id]=q;}
 /* passo do + e −; em gramas, 5 g nos itens pequenos, 10 g no resto, 25 em leite e iogurte */
@@ -23,7 +23,10 @@ function porOf(id){const g=ING[id];return g.por!=null?g.por:g.fp?g.fp:g.hu?g.hu[
 function addQty(id,w){const g=ING[id],st=g.st||1,r=q=>Math.max(st,Math.round(q/st)*st);let q=r(porOf(id));
   if(w==='P'){q=r(q*.65);if(g.pri>0&&q>g.pri)q=Math.max(st,Math.floor(g.pri/st)*st);}return q;}
 /* troca convertida pelo que importa na categoria: 120 g de frango ≈ 4 ovos; 1 banana ≈ 12 morangos; pão por kcal */
-function cvOf(id,by){const g=ING[id];return by==='p'?pOf(id):by==='fp'?(g.fp?1/g.fp:g.k/95):by==='g'?(g.u==='un'?(g.gw||g.wp||100):1):g.k;}
+function cvOf(id,by){const g=ING[id];return by==='p'?pOf(id):by==='fp'?(g.fp?1/g.fp:g.k/95):by==='g'?(g.u==='g'||g.u==='ml'||g.u==='g cozido'?1:(g.gw||g.wp||100)):g.k;}
+/* troca para outra categoria (abobrinha -> azeite): não converte, entra a porção típica */
+function convW(from,q,to,w){const a=ING[from],b=ING[to],ok=a.cat===b.cat||CAT_BY[a.cat]===CAT_BY[b.cat]&&CAT_BY[a.cat]==='p';
+  if(!ok)return addQty(to,w);const v=conv(from,q,to),st=b.st||1,cap=Math.max(st,Math.round(porOf(to)*(w==='P'?2:3)/st)*st);return Math.min(v,cap);}
 function conv(from,q,to){const by=CAT_BY[ING[from].cat]||'k';let a=cvOf(from,by),b=cvOf(to,by);if(!(a>0&&b>0)){a=ING[from].k;b=ING[to].k;}
   const st=ING[to].st||1;if(!(b>0))return Math.max(st,Math.round(porOf(to)/st)*st);return Math.max(st,Math.round(a*q/b/st)*st);}
 function capPri(id,q){const g=ING[id],st=g.st||1;if(g.pri===0)return 0;return g.pri>0&&q>g.pri?Math.max(st,Math.floor(g.pri/st)*st):q;}
@@ -31,15 +34,17 @@ function capPri(id,q){const g=ING[id],st=g.st||1;if(g.pri===0)return 0;return g.
 function recents(){try{return JSON.parse(localStorage.getItem('cardapio-recentes')||'[]').filter(id=>ING[id]);}catch(e){return [];}}
 function pushRecent(id){try{const r=recents().filter(x=>x!==id);r.unshift(id);localStorage.setItem('cardapio-recentes',JSON.stringify(r.slice(0,10)));}catch(e){}}
 
-function sheetOpen(o){if(o.mode==='edit')o.scope=o.key?'dia':'sempre';V.sheet=o;V.sheetIn=true;V.prOpen=null;V.sw=o.sw&&ING[o.sw]?o.sw:null;V.shq='';V.swq='';V.shcat='';V.newIng=null;V.shIn=null;
+function sheetOpen(o){if(o.mode==='edit')o.scope=o.key?'dia':'sempre';V.sheet=o;V.sheetIn=true;V.prOpen=o.sw&&/^pr\d/.test(o.sw)?o.sw:null;if(V.prOpen&&o.mode==='edit'){const d=o.key?dayOf(o.key.split('|')[0]):null,raw=w=>d?dayRaw(d,o.key.split('|')[1],w):itemsOf(o.mid,w),g=prGroups(o.mid,raw('L'),raw('P')).find(x=>'pr'+x.ix===V.prOpen);if(g&&g.ids.length===1)o.sw=g.ids[0];}V.sw=o.sw&&ING[o.sw]?o.sw:null;V.shq='';V.swq='';V.shcat='';V.newIng=null;V.shIn=null;
   try{history.pushState({sheet:1},'');}catch(e){}render(true);
-  if(o.sw)setTimeout(()=>{const el=document.getElementById('er-'+o.sw);if(el)el.scrollIntoView({block:'center'});},30);}
+  if(o.sw)setTimeout(()=>{const el=document.getElementById('er-'+o.sw)||document.querySelector(`[id^="er-pr"] #er-${o.sw}`);if(el)el.scrollIntoView({block:'center'});},30);
+  if(o.add)setTimeout(()=>{const i=document.getElementById('sh-q');if(i){i.scrollIntoView({block:'center'});i.focus({preventScroll:true});}},350);}
 function sheetClose(fromPop){if(!V.sheet)return;V.sheet=null;V.newIng=null;
   if(!fromPop){try{if(history.state&&history.state.sheet)history.back();}catch(e){}}render(true);}
 window.addEventListener('popstate',()=>{if(V.sheet)sheetClose(true);});
 
 function amtHtml(sh,w,id,q){const a=amtOf(id,q),k=`${w}|${id}`;
-  if(V.shIn===k)return `<input class="ed-in" type="text" inputmode="decimal" autocomplete="off" data-act="shset" data-w="${w}" data-id="${id}" value="${inGrams(id)?fmt(gramsOf(id,q),0):ING[id].hu?fmt(q/ING[id].hu[2],2):fmt(q,2)}" aria-label="Quantidade de ${SN[id]} para ${WHO[w]}">`;
+  if(V.shIn===k){const g=ING[id],un=inGrams(id)?gUnit(id):g.hu?g.hu[1]:(amtOf(id,2).small||g.u);
+    return `<span class="ed-inw"><input class="ed-in" type="text" inputmode="decimal" autocomplete="off" data-act="shset" data-w="${w}" data-id="${id}" value="${inGrams(id)?fmt(gramsOf(id,q),0):g.hu?fmt(q/g.hu[2],2):fmt(q,2)}" aria-label="Quantidade de ${SN[id]} para ${WHO[w]}"><small>${un}</small></span>`;}
   return `<button class="ed-v" data-act="shtype" data-key="${k}" aria-label="Digitar quantidade de ${SN[id]} para ${WHO[w]}"><b>${q?a.big:'0'}</b><small>${q?a.small:'não come'}</small></button>`;}
 /* pesar em gramas o que é contado por medida (lata de atum, ovo, fatia): só muda como este celular mostra e digita */
 function unitBtn(id){const g=ING[id];if(!canGrams(id)||g.u==='g'&&!g.hu||g.u==='ml'&&!g.hu)return '';
@@ -52,7 +57,9 @@ function swapChips(sh,from,qL,qP){
   return `<input class="in-text sw-q" type="search" data-act="swq-in" placeholder="Buscar qualquer alimento: queijo, tapioca…" autocomplete="off" enterkeyhint="search" value="${esc(V.swq||'')}" aria-label="Buscar alimento para trocar">
     <div id="sw-res">${swapList(sh,from,qL,qP)}</div>`;}
 /* nome, apelido (ALIAS) e nome curto: "queijo" acha minas, mussarela, cottage e parmesão */
-function ingFind(q){q=singAll(norm(q));if(!q)return [];return ING_IDS.filter(id=>{const t=singAll(norm(ING[id].n+' '+(SN[id]||'')+' '+Object.keys(ALIAS).filter(a=>ALIAS[a]===id).join(' ')));return q.split(' ').every(w=>t.includes(w));});}
+function ingFind(q){q=singAll(norm(q));if(!q)return [];const qs=q.split(' ').filter(w=>!['de','do','da','com','em'].includes(w));if(!qs.length)return [];
+  return ING_IDS.filter(id=>{const t=singAll(norm((ING[id].n.replace(/\(.*?\)/g,' ')+' '+(SN[id]||'')).replace(/-(\w)/g,'$1')+' '+Object.keys(ALIAS).filter(a=>ALIAS[a]===id).join(' '))).split(' ');
+    return qs.every(w=>t.some(x=>x.startsWith(w)));});}
 function swapList(sh,from,qL,qP){
   const cat=ING[from].cat,present=new Set(shItems(sh,'L').concat(shItems(sh,'P')).map(i=>i[0]));
   if((V.swq||'').trim()){const f=ingFind(V.swq).filter(id=>id!==from);
@@ -64,11 +71,11 @@ function swapList(sh,from,qL,qP){
   if(!opts.length)return `<div class="sub sw-none">Não há outro item de ${CAT_N[cat].toLowerCase()} cadastrado. Busque acima.</div>`;
   return `<div class="sw-list" role="list">${opts.map(id=>swChip(from,id,qL,qP,present)).join('')}</div>`;}
 function swChip(from,id,qL,qP,present){const cat=ING[from].cat;
-  {const g=ING[id],aL=qL?conv(from,qL,id):0,aP=qP?(g.pri>0?capPri(id,conv(from,qP,id)):conv(from,qP,id)):0;
-    const byP=CAT_BY[cat]==='p',dL=R0(byP?pOf(id)*aL-pOf(from)*qL:ING[id].k*aL-ING[from].k*qL);
+  {const g=ING[id],aL=qL?convW(from,qL,id,'L'):0,rP=qP?convW(from,qP,id,'P'):0,aP=g.pri>0?capPri(id,rP):rP;
+    const byP=CAT_BY[cat]==='p',dd=(a,q0)=>R0(byP?pOf(id)*a-pOf(from)*q0:ING[id].k*a-ING[from].k*q0),dL=dd(aL,qL),dP=dd(aP,qP);
     return `<button class="sw-ch" role="listitem" data-act="shswap" data-from="${from}" data-to="${id}"><b>${cap(SN[id])}</b>
       <span class="sub"><span class="L">${aL?trq(id,aL):'—'}</span> · <span class="P">${aP?trq(id,aP)+(g.pri===0?' (evita)':''):'—'}</span></span>
-      <span class="sub">${present.has(id)?'Já está no prato: soma':`Lucas ${dL>0?'+':dL<0?'−':'±'}${Math.abs(dL)} ${byP?'g de proteína':'kcal'}`}${known(id)?(homeQ(id)>=aL+aP-1e-6?' · <span class="ok-t">tem em casa</span>':' · <span class="warn-t">não tem em casa</span>'):''}</span></button>`;}}
+      <span class="sub">${present.has(id)?'Já está no prato: soma':`Lucas ${dL>0?'+':dL<0?'−':'±'}${Math.abs(dL)} · Pri ${dP>0?'+':dP<0?'−':'±'}${Math.abs(dP)} ${byP?'g de proteína':'kcal'}${aP<rP-1e-6?' (limite FODMAP dela)':''}`}${known(id)?(homeQ(id)>=aL+aP-1e-6?' · <span class="ok-t">tem em casa</span>':' · <span class="warn-t">não tem em casa</span>'):''}</span></button>`;}}
 function trq(id,q){return fq(id,q).replace(/ \(.*\)$/,'').replace(' de '+SN[id],'');}
 function resultsHtml(sh){
   /* some da lista só o que os dois já têm: se só um tem, o botão adiciona para o outro */
@@ -76,14 +83,14 @@ function resultsHtml(sh){
   const q=singAll(norm(V.shq||''));
   if(q)ids=ingFind(V.shq);
   else if(V.shcat)ids=ING_IDS.filter(id=>ING[id].cat===V.shcat);
-  else{ids=recents();if(ids.length)head='<div class="sub res-h">Usados por último</div>';else ids=['ovo','iogurte','whey','banana','pao','aveia','cottage','amendoim','tapioca','mussarela'];}
+  else{const r=recents();ids=[...new Set(r.concat(['ovo','iogurte','whey','banana','pao','aveia','cottage','amendoim','tapioca','mussarela','frango','batata']))];if(r.length)head='<div class="sub res-h">Usados por último primeiro</div>';}
   /* na busca, o que já está no prato dos dois aparece marcado (toque leva até ele) em vez de sumir */
   const on=q||V.shcat?ids.filter(id=>hL.has(id)&&hP.has(id)):[];
   ids=ids.filter(id=>!(hL.has(id)&&hP.has(id))).slice(0,24);
   const chips=ids.map(id=>{const fw=hP.has(id)?' para o Lucas':hL.has(id)?' para a Pri':'';
     return `<button class="ch-add" data-act="shadd" data-id="${id}">+ ${cap(SN[id]||ING[id].n)}${fw}${ING[id].pri===0&&!hP.has(id)?' <small>(Pri evita)</small>':''}</button>`;}).join('')+on.map(id=>`<button class="ch-add on" data-act="shgo" data-id="${id}">✓ ${cap(SN[id]||ING[id].n)} <small>já está no prato</small></button>`).join('');
   const exact=q&&ING_IDS.some(id=>singAll(norm(SN[id]||''))===q||singAll(norm(ING[id].n))===q);
-  const nw=q&&!exact&&!chips?`<button class="ch-add new" data-act="shnew">+ Cadastrar “${esc(V.shq.trim())}”</button>`:'';
+  const nw=q&&!exact?`<button class="ch-add new" data-act="shnew">+ Cadastrar “${esc(V.shq.trim())}”</button>`:'';
   return head+(chips||nw?`<div class="res-chips">${chips}${nw}</div>`:'<div class="sub">Nada encontrado.</div>');}
 function newIngForm(){const f=V.newIng;
   return `<form class="new-ing card" data-act="ingsave"><div class="eyebrow">Ingrediente novo</div>
@@ -97,7 +104,7 @@ function newIngForm(){const f=V.newIng;
 function sheetHtml(){
   const sh=V.sheet;if(!sh)return '';
   if(sh.mode==='edit'&&!MEALS[sh.mid]){V.sheet=null;return '';}
-  const iL=shItems(sh,'L'),iP=shItems(sh,'P'),nL=nut(iL),nP=nut(iP);
+  const iL=shItems(sh,'L'),iP=shItems(sh,'P'),cm=sh.mode==='edit'?compose(sh.mid,iL,iP):{L:iL,P:iP},nL=nut(cm.L),nP=nut(cm.P);
   const ids=[...new Set(iL.map(i=>i[0]).concat(iP.map(i=>i[0])))];
   const gs=sh.mode==='edit'?prGroups(sh.mid,iL,iP):[],inG=id=>gs.find(x=>x.ids.includes(id));
   const erRow=id=>{const g=ING[id],qL=shQ(sh,'L',id),qP=shQ(sh,'P',id),open=V.sw===id;
@@ -107,16 +114,16 @@ function sheetHtml(){
      <div class="er-a"><button class="link" data-act="shsw" data-id="${id}" aria-expanded="${open}">${open?'Fechar troca':'Trocar por…'}</button>${unitBtn(id)}<button class="link danger" data-act="shrm" data-id="${id}">Tirar</button></div>
      ${open?swapChips(sh,id,qL,qP):''}</div>`;};
   /* preparo de panela: uma linha só, pelo pronto; os ingredientes ficam recolhidos */
-  const prRow=gr=>{const k='pr'+gr.ix,open=V.prOpen===k||gr.ids.includes(V.sw),one=gr.ids.length===1;
+  const prRow=gr=>{const k='pr'+gr.ix,one=gr.ids.length===1,open=one?V.sw===gr.ids[0]:V.prOpen===k||gr.ids.includes(V.sw);
     const stp=(w,its)=>{const q=prQty(gr,its),a=prAmt(gr,q),key=`${w}|${k}`;
-      const v=V.shIn===key?`<input class="ed-in" type="text" inputmode="decimal" autocomplete="off" data-act="shprset" data-w="${w}" data-ix="${gr.ix}" value="${fmt(q,2)}" aria-label="Quantidade de ${gr.g.n} para ${WHO[w]}">`
-        :`<button class="ed-v" data-act="shtype" data-key="${key}" aria-label="Digitar ${gr.g.n} para ${WHO[w]}"><b>${q?a.big:'0'}</b><small>${q?a.small:'não come'}</small></button>`;
-      return `<div class="stp ${w}"><span class="stp-w">${WHO[w]}</span><button data-act="shpr" data-w="${w}" data-ix="${gr.ix}" data-d="-1" aria-label="Menos ${gr.g.n} para ${WHO[w]}"${q?'':' disabled'}>−</button>${v}<button data-act="shpr" data-w="${w}" data-ix="${gr.ix}" data-d="1" aria-label="Mais ${gr.g.n} para ${WHO[w]}">+</button></div>`;};
-    const w=gr.ids.filter(id=>ING[id].pri===0&&shQ(sh,'P',id)).map(id=>SN[id]);
-    return `<div class="er pr" id="er-${k}"><div class="er-h"><b>${gr.g.n}</b><span class="er-c">${prUn(gr)?'':gr.g.ml?'no copo':'pronto, no prato'}</span>${w.length?`<span class="ed-warn">A Pri evita (FODMAP): ${w.join(', ')}</span>`:''}</div>
+      const v=V.shIn===key?`<span class="ed-inw"><input class="ed-in" type="text" inputmode="decimal" autocomplete="off" data-act="shprset" data-w="${w}" data-ix="${gr.ix}" value="${fmt(q,2)}" aria-label="Quantidade de ${gr.n} para ${WHO[w]}"><small>${prUn(gr)?prUn(gr)[1]:gr.g.ml?'ml':'g pronto'}</small></span>`
+        :`<button class="ed-v" data-act="shtype" data-key="${key}" aria-label="Digitar ${gr.n} para ${WHO[w]}"><b>${q?a.big:'0'}</b><small>${q?a.small:'não come'}</small></button>`;
+      return `<div class="stp ${w}"><span class="stp-w">${WHO[w]}</span><button data-act="shpr" data-w="${w}" data-ix="${gr.ix}" data-d="-1" aria-label="Menos ${gr.n} para ${WHO[w]}"${q?'':' disabled'}>−</button>${v}<button data-act="shpr" data-w="${w}" data-ix="${gr.ix}" data-d="1" aria-label="Mais ${gr.n} para ${WHO[w]}">+</button></div>`;};
+    const w=gr.ids.filter(id=>{const q=shQ(sh,'P',id),p=ING[id].pri;return q&&p!=null&&q>p+1e-6;}).map(id=>SN[id]);
+    return `<div class="er pr" id="er-${k}"><div class="er-h"><b>${gr.n}</b><span class="er-c">${prUn(gr)?'':gr.g.ml?'no copo':'pronto, no prato'}</span>${w.length?`<span class="ed-warn">Pri acima do limite FODMAP: ${w.join(', ')}</span>`:''}</div>
      <div class="er-q">${stp('L',iL)}${stp('P',iP)}</div>
-     <div class="er-a"><button class="link" data-act="shpropen" data-k="${k}" aria-expanded="${open}">${open?'Fechar ingredientes':one?`Trocar ${SN[gr.ids[0]]}`:'Ingredientes: '+gr.ids.map(id=>SN[id]).join(', ')}</button>${one&&!open?'':''}</div>
-     ${open?`<div class="pr-in">${gr.ids.map(erRow).join('')}</div>`:''}</div>`;};
+     <div class="er-a">${one?`<button class="link" data-act="shsw" data-id="${gr.ids[0]}" aria-expanded="${open}">${open?'Fechar troca':'Trocar por…'}</button>`:`<button class="link" data-act="shpropen" data-k="${k}" aria-expanded="${open}">${open?'Fechar ingredientes':'Ingredientes: '+gr.ids.map(id=>SN[id]).join(', ')}</button>`}<button class="link danger" data-act="shprrm" data-ix="${gr.ix}">Tirar</button></div>
+     ${open?(one?swapChips(sh,gr.ids[0],shQ(sh,'L',gr.ids[0]),shQ(sh,'P',gr.ids[0])):`<div class="pr-in">${gr.ids.map(erRow).join('')}</div>`):''}</div>`;};
   const rows=sh.mode==='edit'?plateRows(sh.mid,iL,iP).map(({id,gr})=>gr?prRow(gr):erRow(id)).join(''):ids.map(erRow).join('');
   const mealN=sh.mode==='edit'?MEALS[sh.mid].n:'';
   const dd=sh.key?dayOf(sh.key.split('|')[0]):null,dn=dd?(dd.d===TODAY?'hoje':`${WD_FULL[dd.wd].toLowerCase()} ${+dd.d.slice(8)}`):'';
@@ -124,7 +131,7 @@ function sheetHtml(){
     <div class="sub">${sh.scope==='dia'?`Muda só ${dn}, para quando falta algo ou deu vontade de outra coisa. Os outros dias continuam iguais.`:'Muda a receita em todos os dias. Compras, preparo e placar se recalculam.'}</div>`:'<div class="sub">Muda a receita em todos os dias. Compras, preparo e placar se recalculam.</div>';
   const head=sh.mode==='edit'?`<div class="eyebrow">Mudar itens</div><h2>${mealN}</h2>${scope}`
     :`<div class="eyebrow">Montar refeição · ${SLOT_N[sh.slot]}</div><label class="fl">Nome<input class="in-text" id="sh-name" data-act="shname" maxlength="50" value="${esc(sh.n)}"></label>
-      <div class="sub">Comece do que já tem ou do zero. Ao salvar, ela entra no lugar desta refeição hoje e fica nas trocas para outros dias.${ids.length?' <button class="link" data-act="shzero">Começar do zero</button>':''}</div>`;
+      <div class="sub">Comece do que já tem ou do zero. ${sh.key?`Ao salvar, ela entra no lugar desta refeição ${sh.key.split('|')[0]===TODAY?'hoje':'neste dia'} e fica nas trocas para outros dias.`:'Ao salvar, ela fica em Receitas e nas trocas.'}${ids.length?' <button class="link" data-act="shzero">Começar do zero</button>':''}</div>`;
   const cats=`<div class="chips cats"><button class="chip" data-act="shcat" data-c="" aria-pressed="${!V.shcat}">Sugestões</button>${CATS.map(c=>`<button class="chip" data-act="shcat" data-c="${c[0]}" aria-pressed="${V.shcat===c[0]}">${c[1]}</button>`).join('')}</div>`;
   const foot=sh.mode==='edit'
     ?`${shDay(sh)?(S.dayc[sh.key]?`<button class="btn" data-act="shdayreset">Voltar ao normal ${dn}</button>`:''):isCustom(sh.mid)?`<button class="btn" data-act="edreset" data-mid="${sh.mid}">Voltar ao original</button>`:''}${MEALS[sh.mid].user?'':`<button class="btn" data-act="shasnew">Salvar como refeição nova</button>`}<button class="btn primary" data-act="shclose">Pronto</button>`
@@ -147,34 +154,35 @@ function shAct(a,t){const sh=V.sheet;if(!sh)return false;const d=t.dataset;
     case 'shclose':sheetClose();return true;
     case 'shq':{const q=shQ(sh,d.w,d.id),st=stepOf(d.id);shSet(sh,d.w,d.id,Math.max(0,q+Number(d.d)*st));save();render(true);return true;}
     case 'shpropen':if(V.prOpen===d.k||(V.sw&&prGroups(sh.mid,shItems(sh,'L'),shItems(sh,'P')).some(x=>'pr'+x.ix===d.k&&x.ids.includes(V.sw)))){V.prOpen=null;V.sw=null;}else V.prOpen=d.k;render(true);return true;
+    case 'shprrm':{const gr=prGroups(sh.mid,shItems(sh,'L'),shItems(sh,'P')).find(x=>x.ix===+d.ix);if(!gr)return true;const un=snap();['L','P'].forEach(w=>gr.ids.forEach(id=>shSet(sh,w,id,0)));save();render(true);toast(`${gr.n} saiu da refeição`,un);return true;}
     case 'shpr':{const gr=prGroups(sh.mid,shItems(sh,'L'),shItems(sh,'P')).find(x=>x.ix===+d.ix);if(!gr)return true;
-      const st=prUn(gr)?(gr.g.un[3]<1?1:.5):gr.g.ml?50:25;prSet(sh,d.w,gr,prQty(gr,shItems(sh,d.w))+Number(d.d)*st);save();render(true);return true;}
+      const st=prUn(gr)?1:gr.g.ml?50:25;prSet(sh,d.w,gr,prQty(gr,shItems(sh,d.w))+Number(d.d)*st);save();render(true);return true;}
     case 'shtype':V.shIn=d.key;render(true);{const i=document.querySelector('.sheet .ed-in');if(i){i.focus();i.select();}}return true;
     case 'shsw':V.sw=V.sw===d.id?null:d.id;V.swq='';render(true);return true;
     case 'shscope':sh.scope=d.s;render(true);return true;
-    case 'shdayreset':{const un=snap();delete S.dayc[sh.key];save();render(true);toast('Este dia voltou ao normal',un);return true;}
-    case 'shnewsw':V.newIng={n:cap((V.swq||'').trim()),cat:ING[V.sw]?ING[V.sw].cat:'outro'};render(true);{const f=document.querySelector('.new-ing');if(f)f.scrollIntoView({block:'center'});}return true;
+    case 'shdayreset':{const un=snap();delete S.dayc[sh.key];reEat(sh.key);save();render(true);toast('Este dia voltou ao normal',un);return true;}
+    case 'shnewsw':V.newIng={n:cap((V.swq||'').trim()),cat:ING[V.sw]?ING[V.sw].cat:'outro',from:V.sw};render(true);{const f=document.querySelector('.new-ing');if(f)f.scrollIntoView({block:'center'});}return true;
     case 'shunit':{if(inGrams(d.id))delete S.unit[d.id];else S.unit[d.id]='g';V.shIn=null;save();render(true);return true;}
     case 'shrm':{const un=snap();['L','P'].forEach(w=>shSet(sh,w,d.id,0));if(V.sw===d.id)V.sw=null;save();render(true);toast(`${cap(SN[d.id])} saiu da refeição`,un);return true;}
     case 'shswap':{const un=snap(),from=d.from,to=d.to;
       /* troca sempre para os dois; se a Pri evita o item novo, troca do mesmo jeito e só avisa (quem decide são vocês) */
       for(const w of ['L','P']){const q=shQ(sh,w,from);if(!q)continue;
-        const c=conv(from,q,to),add=w==='P'&&ING[to].pri>0?capPri(to,c):c;shSet(sh,w,from,0);shSet(sh,w,to,shQ(sh,w,to)+add);}
+        const c=convW(from,q,to,w),add=w==='P'&&ING[to].pri>0?capPri(to,c):c;shSet(sh,w,from,0);shSet(sh,w,to,shQ(sh,w,to)+add);}
       const ev=shQ(sh,'P',to)&&ING[to].pri===0?` · a Pri costuma evitar ${SN[to]} (FODMAP)`:'';
       V.sw=null;V.swq='';pushRecent(to);save();render(true);toast(`Trocado${shDay(sh)?' só '+(sh.key.split('|')[0]===TODAY?'hoje':'neste dia'):''}: ${SN[from]} → ${SN[to]}${ev}`,un);return true;}
     case 'shadd':{const id=d.id;['L','P'].forEach(w=>{if(!shQ(sh,w,id))shSet(sh,w,id,addQty(id,w));});pushRecent(id);V.shq='';save();render(true);return true;}
     case 'shgo':{const el=document.getElementById('er-'+d.id);if(el)el.scrollIntoView({block:'center'});return true;}
     case 'shcat':V.shcat=d.c;V.shq='';V.newIng=null;render(true);return true;
-    case 'shnew':V.newIng={n:cap((V.shq||'').trim()),cat:V.shcat||'outro'};render(true);return true;
+    case 'shnew':V.newIng={n:cap((V.shq||'').trim()),cat:V.shcat||'outro'};render(true);{const f=document.querySelector('.new-ing');if(f)f.scrollIntoView({block:'center'});}return true;
     case 'shnewx':V.newIng=null;render(true);return true;
     case 'shzero':if(sh.mode==='build'){sh.L={};sh.P={};render(true);}return true;
     case 'shasnew':{const items={L:{},P:{}};['L','P'].forEach(w=>shItems(sh,w).forEach(([i,q])=>{items[w][i]=q;}));
-      const mid=sh.mid,key=sh.key,kind=MEALS[mid].slot;delete S.custom[mid];save();
+      const mid=sh.mid,key=sh.key,kind=MEALS[mid].slot;
       V.sheet={mode:'build',key,slot:kind,n:`${shortOf(mid)} do nosso jeito`,L:items.L,P:items.P};V.sw=null;render(true);return true;}
-    case 'shsave':{const n=(sh.n||'').trim()||cap(SLOT_N[sh.slot]);const id='U'+Date.now().toString(36);
+    case 'shsave':{const un=snap(),n=(sh.n||'').trim()||cap(SLOT_N[sh.slot]);const id='U'+Date.now().toString(36);
       S.mine[id]={n,slot:sh.slot,t:10,L:Object.assign({},sh.L),P:Object.assign({},sh.P)};applyUser();
-      if(sh.key){S.swap[sh.key]=id;delete S.checks[sh.key+'|L'];delete S.checks[sh.key+'|P'];}
-      save();sheetClose();toast(`“${n}” salva e já está no cardápio`);return true;}
+      if(sh.key){['L','P'].forEach(w=>{setCheck(sh.key+'|'+w,false);delete S.checks[sh.key+'|'+w];});S.swap[sh.key]=id;}
+      save();sheetClose();toast(sh.key?`“${n}” salva e já está no cardápio`:`“${n}” salva nas receitas`,un);return true;}
   }
   return false;}
 function shInput(t){
@@ -183,13 +191,16 @@ function shInput(t){
   if(t.dataset.act==='shname'&&V.sheet&&V.sheet.mode==='build'){V.sheet.n=t.value;return true;}
   return false;}
 /* muda quanto do preparo vai no prato: escala os ingredientes pela mistura da panela */
-function prSet(sh,w,gr,want){want=Math.max(0,want);const iL=shItems(sh,'L'),iP=shItems(sh,'P'),o=prFor(sh.mid,gr,iL,iP,want);
-  for(const id of gr.ids){const g=ING[id],q=want?(o[id]||0):0;shSet(sh,w,id,g.u==='g'||g.u==='ml'||g.u==='g cozido'?Math.round(q*10)/10:q);}}
+function prSet(sh,w,gr,want){want=Math.max(0,want);const iL=shItems(sh,'L'),iP=shItems(sh,'P'),own=w==='L'?iL:iP,cur=prRaw(gr,own);
+  const o=cur>0&&!gr.g.fix?Object.fromEntries(own.filter(i=>gr.ids.includes(i[0])).map(([id,q])=>[id,q*want/cur])):prFor(sh.mid,gr,iL,iP,want),un=snap();
+  for(const id of gr.ids)shSet(sh,w,id,want?(o[id]||0):0);
+  if(!want&&!prRaw(gr,shItems(sh,w==='L'?'P':'L')))toast(`${gr.n} saiu da refeição`,un);}
 function shChange(t){
   if(t.dataset.act==='shprset'&&V.sheet){V.shIn=null;const sh=V.sheet,v=parseQty(t.value),gr=prGroups(sh.mid,shItems(sh,'L'),shItems(sh,'P')).find(x=>x.ix===+t.dataset.ix);
     if(v!=null&&gr){prSet(sh,t.dataset.w,gr,v);save();}render(true);return true;}
   if(t.dataset.act!=='shset'||!V.sheet)return false;V.shIn=null;const d=t.dataset,g=ING[d.id],v=parseQty(t.value);
-  if(v!=null){const q=inGrams(d.id)?(g.hu?v:v/(g.gw||1)):(g.hu?v*g.hu[2]:v);shSet(V.sheet,d.w,d.id,q);save();}
+  if(v!=null){/* 350 "copos" de leite é 350 ml: número grande numa medida caseira vale como grama ou ml */
+    const big=!inGrams(d.id)&&g.hu&&v>20;const q=inGrams(d.id)||big?(g.hu?v:v/(g.gw||1)):(g.hu?v*g.hu[2]:v);shSet(V.sheet,d.w,d.id,q);save();}
   render(true);return true;}
 function shSubmit(f){
   if(f.dataset.act!=='ingsave'||!V.sheet)return false;const x=new FormData(f),num=v=>parseFloat(String(v||'').replace(',','.'));
@@ -197,14 +208,18 @@ function shSubmit(f){
   if(!n||!(p>=0)||!(k>=0))return true;
   const id='x'+Date.now().toString(36),ai=guessAisle(n),cat=String(x.get('cat')||'outro');
   S.ing[id]={n,u,p:u==='g'?p/100:p,k:u==='g'?k/100:k,cat,aisle:['hort','prot','lat','merc'].includes(ai)?ai:(cat==='fruta'||cat==='leg'?'hort':cat==='lat'?'lat':'merc')};
-  applyUser();V.newIng=null;V.shq='';['L','P'].forEach(w=>shSet(V.sheet,w,id,u==='g'?(w==='L'?100:70):1));pushRecent(id);save();render(true);
-  toast(`${n} cadastrado`);return true;}
+  const from=V.newIng&&V.newIng.from,sh=V.sheet;applyUser();V.newIng=null;V.shq='';V.swq='';
+  ['L','P'].forEach(w=>{const q0=from?shQ(sh,w,from):1;if(from)shSet(sh,w,from,0);if(q0)shSet(sh,w,id,u==='g'?(w==='L'?100:70):1);});
+  if(from)V.sw=null;pushRecent(id);save();render(true);toast(from?`${n} cadastrado no lugar de ${SN[from]}`:`${n} cadastrado`);return true;}
 
 /* ===== DESFAZER: ação na hora + aviso com "Desfazer" por 6 s (em vez de "toque de novo para confirmar") ===== */
-const SNAP_F=['custom','mine','ing','swap','checks','manual','shop','dayc','casa','have'];
+const SNAP_F=['custom','mine','ing','swap','checks','manual','shop','dayc','casa','have','eaten'];
 function snap(){const o={};SNAP_F.forEach(f=>{o[f]=clone(S[f]);});return o;}
 let toastT=null;
-function toast(msg,undo){V.toast={msg,undo};clearTimeout(toastT);toastT=setTimeout(()=>{V.toast=null;drawToast();},6000);drawToast();}
+/* guarda só o que a ação mudou: desfazer não volta marcações feitas depois, nem as do outro celular */
+function undoDiff(before){const a=flat(before),n={};SNAP_F.forEach(f=>{n[f]=S[f];});const b=flat(n),o={};
+  for(const k in a)if(a[k]!==b[k])o[k]=a[k];for(const k in b)if(!(k in a))o[k]=null;return o;}
+function toast(msg,undo){if(undo){undo=undoDiff(undo);if(!Object.keys(undo).length)undo=null;}V.toast={msg,undo};clearTimeout(toastT);toastT=setTimeout(()=>{V.toast=null;drawToast();},6000);drawToast();}
 function drawToast(){const el=document.getElementById('toast');if(!el)return;const t=V.toast;
   el.innerHTML=t?`<div class="toast" role="status"><span>${esc(t.msg)}</span>${t.undo?'<button data-act="undo">Desfazer</button>':''}</div>`:'';}
-function doUndo(){const t=V.toast;if(!t||!t.undo)return;Object.assign(S,clone(t.undo));applyUser();V.toast=null;clearTimeout(toastT);save();render(true);drawToast();}
+function doUndo(){const t=V.toast;if(!t||!t.undo)return;for(const k in t.undo)setPath(S,k,t.undo[k]);SNAP_F.forEach(f=>{S[f]=S[f]||{};});applyUser();V.toast=null;clearTimeout(toastT);save();render(true);drawToast();}

@@ -76,8 +76,10 @@ h1{font-family:var(--f-display)}
 .btn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:9px 14px;font-weight:600;font-size:13px}
 .btn.primary{background:var(--leaf);color:var(--leaf-ink);border-color:var(--leaf)}
 .btn.warn{background:var(--warn-soft);color:var(--warn);border-color:var(--warn)}
-.btn.small{padding:6px 10px;font-size:12px}
-.link{border:0;background:none;color:var(--leaf);font-weight:600;padding:0;font-size:13px}
+.btn.small{padding:9px 12px;font-size:12.5px;min-height:40px}
+.link{border:0;background:none;color:var(--leaf);font-weight:600;padding:10px 0;font-size:13px;min-height:40px}
+.ed-inw{display:flex;flex-direction:column;align-items:center;min-width:0}.ed-inw small{font-size:10.5px;color:var(--ink2)}
+.potes .both{grid-column:2 / span 2;font-weight:600}
 
 /* placar: fino e fixo no topo */
 .score{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 -16px 12px;padding:8px 16px;background:color-mix(in srgb,var(--bg) 92%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
@@ -328,13 +330,13 @@ body.sheet-open{overflow:hidden}
 .er-h{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 8px}
 .er-h b{font-size:15px}.er-c{font-size:11.5px;color:var(--ink2)}
 .er-q{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.stp{display:grid;grid-template-columns:34px minmax(0,1fr) 34px;align-items:center;gap:2px;border-radius:12px;padding:20px 4px 4px;position:relative;min-width:0}
+.stp{display:grid;grid-template-columns:40px minmax(0,1fr) 40px;align-items:center;gap:2px;border-radius:12px;padding:20px 4px 4px;position:relative;min-width:0}
 .stp.L{background:var(--lucas-soft)}.stp.P{background:var(--pri-soft)}
 .stp-w{position:absolute;left:10px;top:4px;font-size:11px;font-weight:700}.stp.L .stp-w{color:var(--lucas)}.stp.P .stp-w{color:var(--pri)}
-.stp>button{width:34px;height:34px;border-radius:50%;border:0;background:var(--surface);color:var(--ink);font-size:18px;font-weight:700;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.stp>button{width:40px;height:40px;border-radius:50%;border:0;background:var(--surface);color:var(--ink);font-size:18px;font-weight:700;box-shadow:0 1px 2px rgba(0,0,0,.08)}
 .stp>button[disabled]{opacity:.35}
 .stp .ed-v{display:flex;flex-direction:column;align-items:center;min-width:0;line-height:1.1}
-.stp .ed-v{padding:2px 0;width:100%;height:auto;min-height:34px}.stp .ed-v small{font-size:10.5px;color:var(--ink2);text-align:center;hyphens:none;word-break:normal;overflow-wrap:normal;line-height:1.15}
+.stp .ed-v{padding:2px 0;width:100%;height:auto;min-height:40px;background:none;border-radius:8px;box-shadow:none;font-size:inherit;font-weight:400}.stp .ed-v small{font-size:10.5px;color:var(--ink2);text-align:center;hyphens:none;word-break:normal;overflow-wrap:normal;line-height:1.15}
 .stp .ed-in{width:100%;justify-self:center}
 .er-a{display:flex;gap:18px}
 .er.pr .er-a .link{text-align:left}.pr-in{display:flex;flex-direction:column;gap:8px;border-top:1px dashed var(--line);padding-top:10px}.pr-in .er{background:var(--surface2)}
@@ -480,7 +482,7 @@ const ING = {
   iogurte:  {n:'Iogurte natural desnatado sem lactose (Pense Zero)', u:'g', p:.036, k:.4, pack:1150, pk:['garrafa','garrafas'], size:'1,15 kg', aisle:'lat'},
   leite:    {n:'Leite sem lactose', u:'ml', p:.032, k:.62, pack:1000, pk:['caixa','caixas'], size:'1 L', wp:1.03, aisle:'lat'},
   whey:     {n:'Whey isolado', u:'dose', p:24, k:115, pack:33, pk:['pote','potes'], size:'1 kg', aisle:'desp', pantry:true},
-  azeite:   {n:'Azeite de oliva', u:'cs', p:0, k:120, pack:1, pk:['garrafa','garrafas'], aisle:'desp', pantry:true, mlPerUnit:15},
+  azeite:   {n:'Azeite de oliva', u:'cs', p:0, k:120, pack:33, pk:['garrafa','garrafas'], size:'500 ml', aisle:'desp', pantry:true, mlPerUnit:15},
   pao:      {n:'Pão de forma tradicional', u:'fatia', p:2, k:63, pack:20, pk:['pacote','pacotes'], size:'500 g', wp:25, aisle:'merc'},
   arroz:    {n:'Arroz', u:'g cozido', p:.025, k:1.3, f:.34, pack:1000, pk:['pacote','pacotes'], size:'1 kg', aisle:'merc'},
   feijao:   {n:'Feijão', u:'g cozido', p:.05, k:.77, f:.35, pack:500, pk:['pacote','pacotes'], size:'500 g', aisle:'merc'},
@@ -613,7 +615,7 @@ const MEALS = {
   P:[['iogurte',200],['whey',1],['morango',96],['aveia',30],['pao',1],['cottage',20],['amendoim',7.5]]},
  L3:{slot:'lanche', n:'Sanduíche de atum com mussarela, leite e banana', t:5, outros:1, junto:['atum'], jn:'Atum',
   L:[['pao',3],['atum',.5],['mussarela',30],['tomate',50],['leite',300],['banana',1]],
-  P:[['pao',1],['atum',.5],['mussarela',15],['tomate',50],['leite',200],['banana',.5]]},
+  P:[['pao',1],['atum',.5],['mussarela',15],['tomate',50],['leite',200],['nescau',20],['banana',.5]]},
  L4:{slot:'lanche', n:'Ovos cozidos, pão com pasta de amendoim, leite e fruta', t:3, oc:1,
   L:[['ovo',3],['leite',300],['banana',1],['pao',2],['amendoim',30]],
   P:[['ovo',2],['leite',250],['nescau',25],['banana',1],['pao',1],['amendoim',15]]},
@@ -637,18 +639,18 @@ const MEALS = {
   P:[['ovo',2],['mussarela',15],['espinafre',30],['frango',50],['batata',150],['azeite',.25],['tomate',75],['pepino',50]]},
  M3:{slot:'ref', n:'Peixe na airfryer com batata e legumes', t:25, outros:1, junto:['peixe','batata','cenoura','abobrinha'], jn:'Assadeira',
   L:[['peixe',180],['batata',225],['arroz',100],['cenoura',90],['abobrinha',100],['azeite',1],['limao',.5]],
-  P:[['peixe',140],['batata',150],['cenoura',90],['abobrinha',100],['azeite',.25],['limao',.5]]},
+  P:[['peixe',140],['batata',150],['cenoura',90],['abobrinha',75],['azeite',.25],['limao',.5]]},
  M4:{slot:'ref', n:'Crepe de espinafre recheado', t:20, junto:['ovo','aveia','espinafre','batata'], jn:'Massa e batata',
   L:[['ovo',2],['aveia',30],['espinafre',45],['frango',120],['tomate',50],['mussarela',15],['batata',225],['azeite',.5]],
   P:[['ovo',2],['aveia',30],['espinafre',45],['frango',50],['tomate',50],['mussarela',15],['batata',150],['azeite',.25]]},
  M5:{slot:'ref', lote:1, n:'Frango com purê e legumes', t:25, oc:1, junto:['batata','leite','azeite'], jn:'Purê',
   L:[['frango',100],['ovo',2],['batata',225],['leite',50],['azeite',.5],['cenoura',90],['abobrinha',100],['tomate',50]],
-  P:[['frango',100],['ovo',1],['batata',150],['leite',50],['azeite',.25],['cenoura',90],['abobrinha',100],['tomate',50]]},
+  P:[['frango',100],['ovo',1],['batata',150],['leite',50],['azeite',.25],['cenoura',90],['abobrinha',75],['tomate',50]]},
  M6:{slot:'ref', lote:1, n:'Salada morna de batata com ovo e frango', t:20, oc:1, junto:['batata','tomate','pepino','azeite','frango','ovo'], jn:'Salada',
   L:[['batata',300],['ovo',2],['frango',120],['tomate',75],['pepino',50],['azeite',1],['feijao',140]],
   P:[['batata',225],['ovo',2],['frango',60],['tomate',75],['pepino',50],['azeite',.5]]},
  M7:{slot:'ref', lote:1, n:'Macarrão de arroz com frango, abobrinha e parmesão', t:20, junto:['macarrao','abobrinha','tomate','azeite','parmesao'], jn:'Macarrão com abobrinha',
-  L:[['macarrao',100],['frango',120],['abobrinha',150],['tomate',50],['azeite',1],['parmesao',15]],
+  L:[['macarrao',100],['frango',120],['abobrinha',125],['tomate',50],['azeite',1],['parmesao',15]],
   P:[['macarrao',55],['frango',100],['abobrinha',75],['tomate',50],['azeite',.5],['parmesao',10]]},
  M8:{slot:'ref', n:'Peixe ao molho de tomate com espinafre', t:25, outros:1, junto:['peixe','passata','espinafre'], jn:'Peixe no molho',
   L:[['peixe',180],['passata',150],['espinafre',45],['azeite',.5],['arroz',150],['feijao',140]],
@@ -681,27 +683,29 @@ const MEALS = {
    ml:1 = bebida (mostra em ml), anc = âncora da proporção da panela: [ingrediente, quantidade], hu = colher, para quem não quer balança.
    Só muda como se mostra e se ajusta: o que fica salvo continua por ingrediente (compras, casa e proteína saem dele). */
 const PRONTO={
- C2:[{n:'Mingau', i:['aveia','leite','banana'], y:{leite:.9}, anc:['aveia',100]}],
- C3:[{n:'Panqueca', i:['ovo','aveia','banana'], un:['panqueca','panquecas','ovo',.5], anc:['ovo',6]}],
+ C2:[{n:'Mingau', i:['aveia','leite','banana'], y:{leite:.9}, anc:['aveia',100], fix:1}],
+ C3:[{n:'Panqueca', i:['ovo','aveia','banana'], un:['panqueca','panquecas','ovo',.5], anc:['ovo',6], fix:1}],
  L1:[{n:'Vitamina', i:['leite','whey','banana','aveia'], ml:1, anc:['leite',500]}],
  L2:[{n:'Batido', i:['iogurte','whey','morango','aveia'], ml:1, anc:['iogurte',500]}],
  M1:[{n:'Macarrão cozido', i:['macarrao'], y:{macarrao:2.3}},
-     {n:'Molho com frango', i:['passata','frango','espinafre','azeite'], y:{passata:.85,frango:.75,espinafre:.6}, anc:['passata',500], hu:['concha','conchas',100]}],
- M2:[{n:'Batata assada', i:['batata'], y:{batata:.75}},{n:'Salada', i:['tomate','pepino']}],
- M3:[{n:'Batata e legumes assados', i:['batata','cenoura','abobrinha'], y:{batata:.75,cenoura:.8,abobrinha:.75}, anc:['batata',500]}],
- M4:[{n:'Crepe', i:['ovo','aveia','espinafre'], un:['crepe','crepes','ovo',1], anc:['ovo',6]},{n:'Batata assada', i:['batata'], y:{batata:.75}}],
- M5:[{n:'Purê', i:['batata','leite','azeite'], y:{batata:.95}, anc:['batata',1000], hu:['colher de servir','colheres de servir',50]},
+     {n:'Molho com frango', i:['passata','frango','espinafre','azeite'], y:{passata:.85,frango:.75,espinafre:.6}, anc:['passata',500], hu:['concha','conchas',100], sem:['frango','Molho com espinafre']}],
+ M2:[{n:'Batata assada', i:['batata','azeite'], y:{batata:.75}, rn:s=>cap(s)+' assada'},{n:'Salada', i:['tomate','pepino']}],
+ M3:[{n:'Batata e legumes assados', i:['batata','cenoura','abobrinha','azeite','limao'], y:{batata:.75,cenoura:.8,abobrinha:.75,limao:.01}, anc:['batata',500]}],
+ M4:[{n:'Crepe', i:['ovo','aveia','espinafre'], un:['crepe','crepes','ovo',1], anc:['ovo',6], fix:1},{n:'Batata assada', i:['batata','azeite'], y:{batata:.75}, rn:s=>cap(s)+' assada'}],
+ M5:[{n:'Purê', i:['batata','leite','azeite'], y:{batata:.95}, anc:['batata',1000], hu:['colher de servir','colheres de servir',50], fix:1, rn:s=>'Purê de '+s},
      {n:'Legumes cozidos', i:['cenoura','abobrinha'], y:{cenoura:.95,abobrinha:.9}}],
  M6:[{n:'Salada morna', i:['batata','tomate','pepino','azeite','frango','ovo'], y:{batata:.95,frango:.75}, anc:['batata',1000]}],
  M7:[{n:'Macarrão com abobrinha', i:['macarrao','abobrinha','tomate','azeite'], y:{macarrao:2.3,abobrinha:.75,tomate:.8}, anc:['macarrao',500]}],
- M8:[{n:'Molho com espinafre', i:['passata','espinafre','azeite'], y:{passata:.85,espinafre:.6}, anc:['passata',500], hu:['concha','conchas',100]},{n:'Batata cozida', i:['batata'], y:{batata:.95}}],
- M9:[{n:'Batata assada', i:['batata'], y:{batata:.75}}],
- M10:[{n:'Maionese de batata', i:['batata','cenoura','ovo','maionese'], y:{batata:.95,cenoura:.95}, anc:['batata',1000], hu:['colher de servir','colheres de servir',50]}],
+ M8:[{n:'Molho com espinafre', i:['passata','espinafre','azeite'], y:{passata:.85,espinafre:.6}, anc:['passata',500], hu:['concha','conchas',100]},{n:'Batata cozida', i:['batata'], y:{batata:.95}, rn:s=>cap(s)+' cozida'}],
+ M9:[{n:'Ovos com frango', i:['frango','ovo'], y:{frango:.75,ovo:.9}},{n:'Batata assada', i:['batata'], y:{batata:.75}, rn:s=>cap(s)+' assada'}],
+ M10:[{n:'Maionese de batata', i:['batata','cenoura','ovo','maionese'], y:{batata:.95,cenoura:.95}, anc:['batata',1000], hu:['colher de servir','colheres de servir',50], fix:1}],
  M11:[{n:'Salada', i:['alface','tomate','pepino','azeite']}],
  M12:[{n:'Couve refogada', i:['couve','azeite'], y:{couve:.6}}],
- M13:[{n:'Crepe', i:['ovo','aveia'], un:['crepe','crepes','ovo',1], anc:['ovo',6]},{n:'Batata assada', i:['batata'], y:{batata:.75}}],
- M14:[{n:'Farofa', i:['farinha','banana','ovo','azeite'], y:{ovo:.9,banana:.85}, anc:['farinha',100], hu:['colher de servir','colheres de servir',40]}]
+ M13:[{n:'Crepe', i:['ovo','aveia'], un:['crepe','crepes','ovo',1], anc:['ovo',6], fix:1},{n:'Batata assada', i:['batata','azeite'], y:{batata:.75}, rn:s=>cap(s)+' assada'}],
+ M14:[{n:'Farofa', i:['farinha','banana','ovo','azeite'], y:{ovo:.9,banana:.85}, anc:['farinha',100], hu:['colher de servir','colheres de servir',40], fix:1}]
 };
+/* Sobra que se come fria (a maionese) ou que vai fria ou morna (a salada morna) */
+const SOBRA_FRIA={M6:'fria ou morna',M10:'gelada'};
 /* Pratos de panela (lote:1) seguidos no plano viram uma panela só: cozinha em dobro e a refeição seguinte é sobra (loteOf em logic.js). */
 /* Semana de domingo a sábado, calculada pela data de hoje: vira sozinha todo domingo.
    PLANO é o cardápio-modelo, igual toda semana; as trocas da aba Hoje valem por data. Pratos de panela em pares. */
@@ -729,15 +733,15 @@ const SN={tapioca:'tapioca',cuscuz:'cuscuz',minas:'queijo minas',castanha:'casta
 
 const RECIPES={
  C1:{steps:[
-  'Torre o pão (Lucas 3 fatias, Pri 1).',
+  'Torre o pão de cada um (fatias na tabela).',
   'Bata os ovos dos dois juntos com sal e mexa numa frigideira só, com um fio de azeite, por 2 min.',
   'Passe o cottage no pão e divida os ovos.',
-  'Sirva com o iogurte e a banana (a Pri fica com meia).'],
-  tips:['Pão francês: troque no seletor Pão do card (1 pão de 50 g vale umas 2 fatias). A Pri fica com meio pão.','Pri: 1 fatia de pão de trigo por refeição fica dentro do FODMAP baixo. Mais que isso pode incomodar.']},
+  'Sirva com o iogurte e a banana, pela tabela.'],
+  tips:['Pão francês: toque em Pão na tabela e troque (1 pão de 50 g vale umas 2 fatias). A Pri fica com meio pão.','Pri: 1 fatia de pão de trigo por refeição fica dentro do FODMAP baixo. Mais que isso pode incomodar.']},
  C2:{steps:[
-  'Uma panela só: aveia, leite sem lactose e metade da banana amassada (proporção do quadro), fogo médio, mexendo por 4 a 5 min até ficar cremoso.',
+  'Uma panela só: aveia, leite sem lactose e a banana amassada (proporção do quadro), fogo médio, mexendo por 4 a 5 min até ficar cremoso.',
   'Pese o mingau pronto em cada prato.',
-  'Por cima, nos dois: banana em rodelas e um fio de pasta de amendoim.',
+  'Por cima, nos dois: um fio de pasta de amendoim.',
   'Ovos cozidos do lote ao lado.'],
   tips:['Versão sem fogo: misture aveia e leite na noite anterior e deixe na geladeira.','Os ovos cozidos saem do lote de domingo e quarta, veja a aba Preparo.']},
  L1:{steps:[
@@ -767,9 +771,10 @@ const RECIPES={
   tips:['Prato de Outros: só quando comprar peixe. Filé grosso (mais de 2 cm) pede 2 a 3 min a mais.']},
  M4:{steps:[
   'Uma massa só no liquidificador: ovos, aveia e espinafre na proporção do quadro, com sal. Faça a quantidade que quiser.',
+  'Batata em cubos com o azeite e sal: airfryer a 200 °C por 18 min.',
   'Frigideira antiaderente untada: uma concha pequena por crepe (cada ovo da massa dá 1 crepe), 2 min de cada lado. Cada um come o número da tabela; o resto guarda 2 dias na geladeira.',
   'Recheio dos dois: frango desfiado do lote, mussarela e tomate. Enrole.',
-  'Batata assada numa assadeira só. No prato, pese já assada.'],
+  'No prato, pese a batata já assada.'],
   tips:['A massa fica mais firme se descansar 5 min antes de ir para a frigideira.']},
  M5:{steps:[
   'Uma panela só de purê: faça a quantidade que quiser. Cozinhe as batatas em cubos por 15 min, escorra e amasse com o leite, o azeite (proporção do quadro) e sal. Sem manteiga e sem alho.',
@@ -783,14 +788,14 @@ const RECIPES={
   'Cada um come o número da tabela (2 por ovo da massa). Sirva com o iogurte e um fio de pasta de amendoim.'],
   tips:['Pri: banana firme, ainda com a ponta verde. Madura demais pesa no FODMAP.','Panquecas pequenas viram sem quebrar.']},
  C4:{steps:[
-  'Faça os ovos fritos ou mexidos (Lucas 3, Pri 2).',
-  'Monte o pão com a mussarela e o ovo. Frigideira tampada em fogo baixo, 2 min de cada lado, até o queijo derreter. Lucas: 3 fatias, Pri: 1 fatia aberta.',
-  'Café com leite sem lactose (Lucas 300 ml, Pri 200 ml) e mamão picado ao lado.'],
+  'Faça os ovos fritos ou mexidos (quantos na tabela).',
+  'Monte o pão com a mussarela e o ovo. Frigideira tampada em fogo baixo, 2 min de cada lado, até o queijo derreter. Pão pela tabela; com 1 fatia, fica aberto.',
+  'Café com o leite sem lactose da tabela e mamão picado ao lado.'],
   tips:['Sem frigideira livre? Sanduicheira ou airfryer a 180 °C por 4 min.']},
  C5:{steps:[
   'Coloque o iogurte na tigela, junte a aveia e a banana em rodelas.',
   'Um fio de pasta de amendoim por cima, nos dois.',
-  'Ovos cozidos do lote ao lado, com sal (3 Lucas, 2 Pri).'],
+  'Ovos cozidos do lote ao lado, com sal (quantos na tabela).'],
   tips:['É o café de quem está com pressa: nada vai ao fogo se os ovos do lote estiverem prontos.']},
  L2:{steps:[
   'Bata juntos o iogurte, o whey, os morangos e a aveia por 30 s (proporção do quadro).',
@@ -798,12 +803,12 @@ const RECIPES={
   tips:['Fica mais grosso que a vitamina de leite. Se quiser mais líquido, junte um pouco de água gelada.']},
  L3:{steps:[
   'Misture o atum escorrido com tomate em cubos, sal e um fio de limão.',
-  'Monte no pão com a mussarela (Lucas 3 fatias, Pri 1 fatia aberta). Se quiser quente, 2 min na frigideira tampada.',
-  'Lucas: um copo de leite sem lactose ao lado.'],
+  'Monte no pão com a mussarela (fatias na tabela; com 1, fica aberto). Se quiser quente, 2 min na frigideira tampada.',
+  'Leite sem lactose e banana ao lado. No da Pri, o Nescau.'],
   tips:['Prato de Outros: só quando tiver atum em casa. Meia lata para cada.']},
  L4:{steps:[
-  'Descasque os ovos cozidos do lote (Lucas 3, Pri 2) e tempere com sal.',
-  'Copo de leite sem lactose (Lucas 300 ml, Pri 250 ml).',
+  'Descasque os ovos cozidos do lote (quantos na tabela) e tempere com sal.',
+  'Copo de leite sem lactose (da tabela); no da Pri, o Nescau.',
   'Banana e pão com pasta de amendoim, para os dois.'],
   tips:['Bom para levar: ovo cozido e fruta aguentam a mochila.']},
  E3:{steps:[
@@ -833,14 +838,14 @@ const RECIPES={
   tips:['Prato de Outros: só quando comprar peixe.']},
  M9:{steps:[
   'Uma assadeira só: batata em cubos na airfryer a 200 °C por 18 min.',
-  'Uma frigideira só: mexa os ovos dos dois e junte o frango desfiado do lote.',
-  'Monte com a mussarela, o tomate e o espinafre (Lucas: 1 sanduíche de 2 fatias; Pri: 1 fatia aberta). Frigideira tampada, 2 min de cada lado. Batata assada ao lado, pesada pronta.'],
+  'Uma frigideira só: mexa os ovos dos dois e junte o frango desfiado do lote. Pese pronto no prato; o que não couber no pão vai ao lado.',
+  'Monte com a mussarela, o tomate e o espinafre (pão pela tabela; com 1 fatia, fica aberto). Frigideira tampada, 2 min de cada lado. Batata assada ao lado, pesada pronta.'],
   tips:['Pri: 1 fatia de pão de trigo por refeição fica dentro do FODMAP baixo; a batata completa o prato.']},
  M10:{steps:[
   'Cozinhe todas as batatas em cubos com a cenoura em cubinhos, 12 min em água com sal, até ficarem macias mas inteiras. Escorra e deixe esfriar.',
   'Uma tigela só: batata, cenoura, ovos cozidos do lote picados e a maionese light, com sal, limão e cheiro-verde. Mexa com cuidado para a batata não virar purê.',
   'No prato, pese a maionese pronta. Frango desfiado do lote por cima ou ao lado. Lucas: arroz do lote.'],
-  tips:['Gelada fica melhor: dá para fazer na véspera. Na geladeira, em pote fechado, dura 2 dias.','Pri: maionese com alho ou cebola na lista de ingredientes sai do FODMAP baixo. Confira o rótulo. Sem ervilha pelo mesmo motivo.']},
+  tips:['Gelada fica melhor: dá para fazer na véspera. Na geladeira, em pote fechado, dura até 3 dias. Não vai ao micro-ondas.','Pri: maionese com alho ou cebola na lista de ingredientes sai do FODMAP baixo. Confira o rótulo. Sem ervilha pelo mesmo motivo.']},
  M11:{steps:[
   'Esquente o arroz e o feijão do lote (micro-ondas, 2 min cada, com 1 colher de água no arroz).',
   'Frango em bifes finos com sal, páprica e limão. Frigideira bem quente com um fio de azeite: 4 min de cada lado, até não ter rosa por dentro.',
@@ -850,14 +855,15 @@ const RECIPES={
  M12:{steps:[
   'Esquente o arroz e o feijão do lote.',
   'Couve em tiras finas: refogue 2 min no azeite com sal, só até murchar. Divida.',
-  'Ovos mexidos dos dois numa frigideira só: bata com sal, mexa em fogo baixo e, quase no ponto, junte a mussarela picada. Divida meio a meio.',
+  'Ovos mexidos dos dois numa frigideira só: bata com sal, mexa em fogo baixo e, quase no ponto, junte a mussarela picada. Divida pela tabela.',
   'Tomate em rodelas ao lado. Feijão só para o Lucas.'],
   tips:['Prato de quando o frango acabou: só ovo, queijo e o que já está pronto no lote.','Sem couve, vai espinafre ou abobrinha refogada.']},
  M13:{steps:[
   'Uma massa só no liquidificador: ovos e aveia na proporção do quadro, com sal e uma pitada de páprica. Faça a quantidade que quiser.',
+  'Batata em cubos com o azeite e sal: airfryer a 200 °C por 18 min.',
   'Frigideira antiaderente untada: uma concha pequena por crepe (cada ovo da massa dá 1 crepe), 2 min de cada lado. Cada um come o número da tabela; o resto guarda 2 dias na geladeira.',
   'Recheio dos dois: frango desfiado do lote, mussarela e tomate. Enrole e volte 1 min à frigideira para o queijo derreter.',
-  'Batata assada numa assadeira só. No prato, pese já assada.'],
+  'No prato, pese a batata já assada.'],
   tips:['É o crepe de espinafre sem a verdura na massa: para quando não tem espinafre em casa.','A massa fica mais firme se descansar 5 min antes de ir para a frigideira.']},
  M14:{steps:[
   'Esquente o arroz e o feijão do lote.',
@@ -867,15 +873,15 @@ const RECIPES={
   'No prato, pese a farofa pronta, com o tomate ao lado. Feijão só para o Lucas.'],
   tips:['Banana firme não desmancha na farofa e é a que cabe no FODMAP baixo da Pri.','Use farinha torrada pura: a farofa pronta do pacote costuma levar cebola e alho.','Dá para usar o frango assado do lote e fazer só a farofa na hora.']},
  B1:{steps:[
-  'Pese cru (pode ser congelado: veja a dica). Tempere com sal, páprica, limão e um fio de azeite.',
+  'Pese cru (pode pesar congelado: veja a dica) e descongele na geladeira de véspera. Tempere com sal, páprica, limão e um fio de azeite.',
   'Forno a 200 °C por 22 a 25 min, até ficar branco por dentro e sem rosa.',
-  'Descanse 5 min. Desfie metade e fatie a outra metade.',
-  'Guarde em potes na geladeira por até 4 dias.'],tips:['Todas as quantidades de frango do app são de frango cru. Assado, ele perde cerca de ¼ do peso: 120 g cru dão ~90 g prontos.','Congelado: pese direto na balança. Se tiver casca de gelo, passe na água fria uns segundos e seque antes, ou conte uns 10% a mais. Sem balança: peso do pacote ÷ número de pedaços (sassami tem ~40 a 50 g, filé de peito ~100 a 150 g).','Esta semana o frango é dos dois: Lucas 100 a 120 g por refeição, Pri 50 a 110 g.']},
+  'Descanse 5 min. Desfie o que vai para molho, salada e recheio; fatie o resto.',
+  'Guarde em potes na geladeira por até 4 dias.'],tips:['Todas as quantidades de frango do app são de frango cru. Assado, ele perde cerca de ¼ do peso: 120 g cru dão ~90 g prontos.','Congelado: pese direto na balança. Se tiver casca de gelo, passe na água fria uns segundos e seque antes, ou conte uns 10% a mais. Sem balança: peso do pacote ÷ número de pedaços (sassami tem ~40 a 50 g, filé de peito ~100 a 150 g).','Assar direto do congelador leva cerca de 50% mais tempo: só tire quando não tiver rosa no meio.']},
  B2:{steps:[
-  'Arroz: lave 100 g de arroz, refogue em um fio de azeite, junte 250 ml de água e sal. Tampado, 12 min em fogo baixo.',
-  'Feijão: cubra 150 g de feijão (de molho por 8 h, se tiver) com água, panela de pressão por 25 min depois de pegar pressão.',
+  'Arroz: lave o arroz (quantidade na aba Preparo), refogue em um fio de azeite, junte 2,5 partes de água e sal. Tampado, 12 min em fogo baixo.',
+  'Feijão: cubra o feijão (de molho por 8 h, se tiver) com água, panela de pressão por 25 min depois de pegar pressão.',
   'Tempere o feijão com sal e louro. Sem cebola e alho se for dividir com a Pri.',
-  'Arroz na geladeira por 4 dias. Feijão em porções de 150 g no congelador.'],tips:['Só o Lucas come feijão. A Pri troca por batata.']},
+  'Arroz na geladeira por 4 dias. Feijão em porções de 1 concha (140 g) no congelador.'],tips:['Só o Lucas come feijão (FODMAP). Arroz entra nos dois em alguns pratos.']},
  B3:{steps:[
   'Coloque os ovos em água fria e leve ao fogo.',
   'Quando ferver, conte 10 min.',
@@ -887,9 +893,9 @@ const RECIPES={
   'Guarde na geladeira e use em até 4 dias. Depois disso, faça outro.'],tips:['Por que tirar o alho: o frutano do alho não passa para o azeite, e a Pri pode usar sem sintoma.','Guardar alho em óleo por muito tempo, fora da geladeira, traz risco. Faça pouco e use rápido.']}
 };
 const BASES={
- B1:{n:'Frango assado em lote',t:30,slot:'base',desc:'Só para a Pri: 50 a 110 g por refeição.'},
- B2:{n:'Arroz e feijão em lote',t:35,slot:'base',desc:'Arroz para o Lucas, feijão congelado em porções.'},
- B3:{n:'Ovos cozidos em lote',t:12,slot:'base',desc:'Mingau, purê e macarrão usam ovo cozido.'},
+ B1:{n:'Frango assado em lote',t:30,slot:'base',desc:'Frango dos dois, assado de uma vez para 3 a 4 dias.'},
+ B2:{n:'Arroz e feijão em lote',t:35,slot:'base',desc:'Arroz para a semana e feijão congelado em porções.'},
+ B3:{n:'Ovos cozidos em lote',t:12,slot:'base',desc:'Ovo cozido do café, do purê, do macarrão, da salada morna e da maionese.'},
  B4:{n:'Azeite aromatizado com alho',t:8,slot:'base',desc:'O sabor de alho do macarrão sem frutano.'}
 };
 
@@ -903,7 +909,7 @@ function ill(id){
 /* ===== ESTADO E CÁLCULOS ===== */
 const KEY='cardapio-lucas-pri-v1';
 const DEF={checks:{},extras:{},shop:{},stock:{atum:4,sardinha:2},pantry:{},prep:{},steps:{},
-  targets:{L:{p:160,k:2800},P:{p:125,k:1750}},ref:{iog:3.6,whey:24},maxKg:14,have:{},swap:{},icon:'verde',custom:{},unit:{},manual:{},mine:{},ing:{},me:'',dayc:{},casa:{},hz:3};
+  targets:{L:{p:160,k:2800},P:{p:125,k:1750}},ref:{iog:3.6,whey:24},maxKg:14,have:{},swap:{},icon:'verde',custom:{},unit:{},manual:{},mine:{},ing:{},me:'',dayc:{},casa:{},eaten:{},hz:3};
 function clone(o){return JSON.parse(JSON.stringify(o));}
 function loadState(){
   const s=clone(DEF);
@@ -928,7 +934,7 @@ function applyUser(){
     SN[id]=u.n.toLowerCase();}
   for(const id in S.mine){const m=S.mine[id];if(!m||!m.n||!SLOT_OK[m.slot])continue;
     const its=w=>Object.keys(m[w]||{}).filter(i=>ING[i]&&m[w][i]>0).map(i=>[i,+m[w][i]]);
-    MEALS[id]={slot:m.slot,n:m.n,t:+m.t||10,user:1,L:its('L'),P:its('P')};}
+    MEALS[id]={slot:m.slot,n:m.n,t:+m.t||10,user:1,del:!!m.del,L:its('L'),P:its('P')};}
   ING_IDS=Object.keys(ING);
 }
 applyUser();
@@ -944,8 +950,8 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 
 function fmt(n,d){return Number(n).toLocaleString('pt-BR',{maximumFractionDigits:d==null?1:d});}
 /* 0,75 -> ¾ ; 1,5 -> 1½ (medidas caseiras) */
-function frac(n){const w=Math.floor(n+1e-9),r=n-w,F=[[.25,'¼'],[.5,'½'],[.75,'¾']].find(f=>Math.abs(f[0]-r)<.03);
-  return r<.03?String(w):r>.97?String(w+1):F?(w?w+F[1]:F[1]):fmt(n,1);}
+const q4=n=>n>0?Math.max(.25,Math.round(n*4)/4):0;
+function frac(n){n=q4(n);const w=Math.floor(n),r=n-w,F={0:'',.25:'¼',.5:'½',.75:'¾'}[r];return w?w+F:F||'0';}
 const R0=n=>Math.round(n);
 /* Medida em gramas: cada aparelho escolhe, por ingrediente (S.unit[id]='g'). */
 function canGrams(id){const g=ING[id];return !!(g.hu||g.gw);}
@@ -954,7 +960,7 @@ function gramsOf(id,q){const g=ING[id];return g.hu?q:q*(g.gw||1);}
 function gUnit(id){return ING[id].u==='ml'?'ml':'g';}
 function fq(id,q){
   if(inGrams(id))return `${fmt(gramsOf(id,q),0)} ${gUnit(id)} de ${SN[id]}`;
-  const n=frac(q),pl=q>1.01;
+  const n=frac(q),pl=q4(q)>1;
   switch(id){
     case 'ovo': return `${n} ${pl?'ovos':'ovo'}`;
     case 'atum': case 'sardinha': return `${n} ${pl?'latas':'lata'} de ${SN[id]}`;
@@ -966,9 +972,10 @@ function fq(id,q){
     case 'paofr': return `${n} ${pl?'pães franceses':'pão francês'}`;
     case 'ameixa': return `${n} ${pl?'ameixas':'ameixa'}`;
     case 'laranja': case 'kiwi': case 'maca': return `${n} ${SN[id]}${pl?'s':''}`;
-    default:{const h=ING[id].hu;if(h){const m=q/h[2],u=ING[id].u==='ml'?'ml':'g',w=m>1.01?h[1]:h[0];
+    default:{const h=ING[id].hu;if(h){const m=q/h[2],u=ING[id].u==='ml'?'ml':'g',w=q4(m)>1?h[1]:h[0];
       /* "¾ tomate", não "¾ tomate de tomate" */
       const same=h[0].split(/[ -]/)[0]===SN[id].split(/[ -]/)[0];return `${frac(m)} ${w}${same?'':' de '+SN[id]} (${fmt(q,0)} ${u})`;}
+      if(ING[id].u==='un')return `${n} un de ${SN[id]}`;
       return `${fmt(q)} ${ING[id].u==='ml'?'ml':'g'} de ${SN[id]}`;}
   }
 }
@@ -984,8 +991,8 @@ function customOf(mid,who){
   if(!S.custom[mid][who]){const o={};MEALS[mid][who].forEach(i=>{o[i[0]]=i[1];});S.custom[mid][who]=o;}
   return S.custom[mid][who];
 }
-function isCustom(mid){const c=S.custom[mid];if(!c)return false;
-  return ['L','P'].some(w=>c[w]&&JSON.stringify(itemsOf(mid,w))!==JSON.stringify(MEALS[mid][w]));}
+function isCustomW(mid,w){const c=S.custom[mid];return !!(c&&c[w])&&JSON.stringify(itemsOf(mid,w))!==JSON.stringify(MEALS[mid][w]);}
+function isCustom(mid){return ['L','P'].some(w=>isCustomW(mid,w));}
 function pOf(id){
   if(id==='iogurte') return S.ref.iog/100;
   if(id==='whey') return S.ref.whey;
@@ -997,27 +1004,43 @@ function nut(items){let p=0,k=0;for(const it of items){p+=pOf(it[0])*it[1];k+=IN
 const gOf=(id,q)=>gramsOf(id,q);
 function prGroups(mid,iL,iP){const P=PRONTO[mid];if(!P)return [];
   const now=[...new Set(iL.concat(iP).filter(i=>i[1]>0).map(i=>i[0]))],base=new Set(MEALS[mid].L.concat(MEALS[mid].P).map(i=>i[0])),out=[],used=new Set();
-  P.forEach((g,ix)=>{const ids=g.i.filter(id=>now.includes(id)&&!used.has(id)),gone=new Set(g.i.filter(id=>!now.includes(id)&&base.has(id)).map(id=>ING[id].cat));
-    ids.forEach(id=>used.add(id));
-    now.forEach(id=>{if(!base.has(id)&&!used.has(id)&&gone.has(ING[id].cat)&&ids.length){ids.push(id);used.add(id);}});
-    if(ids.length)out.push({g,ix,ids});});
+  P.forEach((g,ix)=>{const ids=[],sub={};
+    g.i.forEach(id=>{if(now.includes(id)){if(!used.has(id)){ids.push(id);used.add(id);}return;}
+      /* saiu: entra no lugar o substituto mais parecido (PAR) que não é da receita; se não há parecido, o da mesma categoria */
+      if(!base.has(id))return;const free=now.filter(x=>!base.has(x)&&!used.has(x)&&!P.some(o=>o.i.includes(x)));
+      const r=(PAR[id]||[]).find(x=>free.includes(x))||free.find(x=>ING[x].cat===ING[id].cat);
+      if(r){ids.push(r);used.add(r);sub[r]=id;}});
+    /* sem o ingrediente principal não há preparo (só azeite não é batata assada): os itens aparecem soltos */
+    const main=ids.find(x=>x===g.i[0]||sub[x]===g.i[0]);
+    if(!main||(main!==g.i[0]&&!g.rn)){ids.forEach(x=>used.delete(x));return;}
+    const n=main!==g.i[0]?g.rn(SN[main]):g.sem&&!ids.includes(g.sem[0])?g.sem[1]:g.n;
+    out.push({g,ix,ids,sub,n});});
   return out;}
-function prWeight(gr,its){const y=gr.g.y||{};return gr.ids.reduce((a,id)=>{const it=its.find(i=>i[0]===id);return a+(it?gOf(id,it[1])*(y[id]||1):0);},0);}
+function prWeight(gr,its){const y=gr.g.y||{};return gr.ids.reduce((a,id)=>{const it=its.find(i=>i[0]===id);return a+(it?gOf(id,it[1])*(y[(gr.sub||{})[id]||id]||1):0);},0);}
 /* quantidade pronta na unidade da linha: unidades (crepe) ou gramas/ml arredondados de 5 em 5 */
 function prUn(gr){return gr.g.un&&gr.ids.includes(gr.g.un[2])?gr.g.un:null;}
-function prQty(gr,its){const u=prUn(gr);if(u){const it=its.find(i=>i[0]===u[2]);return it?Math.round(it[1]/u[3]*4)/4:0;}return Math.round(prWeight(gr,its)/5)*5;}
-/* a mistura da panela: a da receita; se vocês trocaram algum ingrediente, a que está nos pratos */
-function prMix(mid,gr,iL,iP){const B=MEALS[mid],src=gr.ids.every(id=>B.L.concat(B.P).some(i=>i[0]===id))?B.L.concat(B.P):iL.concat(iP);
-  const tot={};gr.ids.forEach(id=>{tot[id]=src.filter(i=>i[0]===id).reduce((a,i)=>a+i[1],0);});
-  return tot;}
+function prRaw(gr,its){const u=prUn(gr);if(u){const it=its.find(i=>i[0]===u[2]);return it?it[1]/u[3]:0;}return prWeight(gr,its);}
+function prQty(gr,its){const v=prRaw(gr,its);return prUn(gr)?Math.round(v*4)/4:Math.round(v/5)*5;}
+/* a mistura da panela. fix:1 (purê, crepe, farofa…) segue sempre a proporção da receita, senão desanda; o resto é o que está nos dois pratos somado. */
+function prMix(mid,gr,iL,iP){const B=MEALS[mid].L.concat(MEALS[mid].P),sum=src=>{const t={};gr.ids.forEach(id=>{t[id]=src.filter(i=>i[0]===id).reduce((a,i)=>a+i[1],0);});return t;};
+  const inBase=gr.ids.every(id=>B.some(i=>i[0]===id)),now=sum(iL.concat(iP));
+  return inBase&&(gr.g.fix||!Object.values(now).some(v=>v>0))?sum(B):now;}
 /* ingredientes (na unidade de cada um) para ter `want` pronto: {id: quantidade} */
-function prFor(mid,gr,iL,iP,want){const tot=prMix(mid,gr,iL,iP),u=prUn(gr),all=Object.keys(tot).map(id=>[id,tot[id]]);
-  const one=u?tot[u[2]]/u[3]:prWeight(gr,all),o={};if(!(one>0))return o;
+function prFor(mid,gr,iL,iP,want){const tot=prMix(mid,gr,iL,iP),one=prRaw(gr,Object.keys(tot).map(id=>[id,tot[id]])),o={};if(!(one>0))return o;
   for(const id in tot)o[id]=tot[id]*want/one;return o;}
-function prAmt(gr,q){const u=prUn(gr),h=gr.g.hu;if(u)return {big:frac(q),small:q>1.01?u[1]:u[0]};
+/* O que vai de verdade em cada prato: de uma panela só, cada um leva a parte dele da mistura (o copo maior da vitamina leva mais whey). */
+function compose(mid,iL,iP){const out={L:iL.slice(),P:iP.slice()};
+  for(const gr of prGroups(mid,iL,iP)){if(gr.ids.length<2)continue;
+    for(const w of ['L','P']){const src=w==='L'?iL:iP,v=prRaw(gr,src);const m=v>0?prFor(mid,gr,iL,iP,v):{};
+      const at=out[w].findIndex(i=>gr.ids.includes(i[0]));if(at<0)continue;
+      const rest=out[w].filter(i=>!gr.ids.includes(i[0]));rest.splice(Math.min(at,rest.length),0,...gr.ids.filter(id=>m[id]>0).map(id=>[id,m[id]]));out[w]=rest;}}
+  return out;}
+function plateOf(mid,w){return compose(mid,itemsOf(mid,'L'),itemsOf(mid,'P'))[w];}
+function prAmt(gr,q){const u=prUn(gr),h=gr.g.hu;if(u)return {big:frac(q),small:q>1?u[1]:u[0]};
   if(gr.g.ml)return {big:fmt(q,0),small:'ml'};
   return {big:fmt(q,0),small:'g pronto'+(h&&q?` · ${frac(Math.max(.5,Math.round(q/h[2]*2)/2))} ${q/h[2]>1.25?h[1]:h[0]}`:'')};}
-function prTxt(gr,q){const u=prUn(gr);if(u)return `${frac(q)} ${q>1.01?u[1]:u[0]}`;const a=prAmt(gr,q);return gr.g.ml?`${a.big} ml de ${gr.g.n.toLowerCase()}`:`${a.big} g de ${gr.g.n.toLowerCase()}${a.small.slice(1).replace(' · ',' (').replace(/^ pronto( \(.*)?$/,(m,x)=>x?x+')':'')}`;}
+function prTxt(gr,q){const a=prAmt(gr,q),h=gr.g.hu;if(prUn(gr))return `${a.big} ${a.small}`;
+  return gr.g.ml?`${a.big} ml de ${gr.n.toLowerCase()}`:`${a.big} g de ${gr.n.toLowerCase()}${h?` (${a.small.split(' · ')[1]})`:''}`;}
 /* frango cru -> ~¾ depois de pronto */
 const FR_PRONTO=.75;
 /* linhas para mostrar: {gr} (preparo) ou {id} (ingrediente solto), na ordem da receita */
@@ -1050,9 +1073,13 @@ function slotsOf(day){
 /* Panela em dobro: um prato de panela (lote:1) que aparece em dois almoços/jantares seguidos é feito uma vez só.
    A primeira é 'cook' (faz em dobro), a segunda é 'sobra' (só esquentar). Segue as trocas: trocar uma das duas desfaz o par. */
 const REF=['almoco','jantar'];
-function loteMap(){const seq=[];for(const d of WEEK){const sl=slotsOf(d);for(const k of REF)if(sl[k])seq.push({d:d.d,k,mid:sl[k]});}
-  const m={};for(let i=0;i+1<seq.length;i++){const a=seq[i],b=seq[i+1],ka=a.d+'|'+a.k;if(m[ka])continue;
-    if(a.mid===b.mid&&MEALS[a.mid].lote){m[ka]={role:'cook',o:b};m[b.d+'|'+b.k]={role:'sobra',o:a};}}
+function loteMap(){const seq=[];for(let i=-3;i<10;i++){const d=dayFor(addDays(WEEK[0].d,i)),sl=slotsOf(d);for(const k of REF)if(sl[k])seq.push({d:d.d,k,mid:sl[k]});}
+  /* só é panela se a refeição teve mesmo o preparo principal (o jantar "só frango e cenoura" não deixa purê para amanhã) */
+  const pot=x=>{const d=dayFor(x.d);return !!PRONTO[x.mid]&&prGroups(x.mid,dayRaw(d,x.k,'L'),dayRaw(d,x.k,'P')).some(g=>g.ix===0);};
+  const m={};for(let i=0;i<seq.length;i++){const a=seq[i];if(!MEALS[a.mid].lote||!pot(a))continue;
+    /* todas as repetições seguidas até 2 dias depois saem da mesma panela */
+    const os=[];let j=i+1;while(j<seq.length&&seq[j].mid===a.mid&&seq[j].d<=addDays(a.d,2)&&pot(seq[j])){os.push(seq[j]);j++;}
+    if(os.length){m[a.d+'|'+a.k]={role:'cook',o:os[0],os};os.forEach(b=>{m[b.d+'|'+b.k]={role:'sobra',o:a};});i=j-1;}}
   return {m,seq};}
 function loteOf(d,k){return loteMap().m[d+'|'+k]||null;}
 /* A sobra é comprada junto com o dia em que a panela é feita. */
@@ -1062,20 +1089,25 @@ function cookDate(d,k){const l=loteOf(d,k);return l&&l.role==='sobra'?l.o.d:d;}
    Não ajusta se a ceia foi mexida à mão no editor, nem em dia parcial. */
 function ceiaInfo(day,who){
   const sl=slotsOf(day),mid=sl.ceia;
-  if(!mid||!sl.cafe||!sl.jantar||(S.custom[mid]&&S.custom[mid][who])||dayOver(day,'ceia',who))return {f:1,auto:false};
-  let others=0;for(const s of SLOTS){if(s[0]==='ceia')continue;const m=sl[s[0]];if(m)others+=nut(dayOver(day,s[0],who)||itemsOf(m,who)).p;}
+  if(!mid||!sl.cafe||!sl.jantar||MEALS[mid].user||isCustomW(mid,who)||dayOver(day,'ceia',who))return {f:1,auto:false};
+  /* já comida: fica a quantidade de quando foi marcada, extra registrado depois não muda */
+  const ck=S.checks[`${day.d}|ceia|${who}`];if(typeof ck==='number')return {f:ck,auto:true,gap:0,eaten:true};
+  let others=0;for(const s of SLOTS){if(s[0]==='ceia')continue;const m=sl[s[0]];if(m)others+=nut(dayItems(day,s[0],who)).p;}
   /* extras registrados no dia (ex.: 1 dose de whey a mais) também contam */
   const ex=S.extras[`${day.d}|${who}`]||{};for(const e of EXTRAS){const c=ex[e.id]||0;if(c)others+=nut(e.it).p*c;}
   const base=nut(itemsOf(mid,who)).p||1,gap=S.targets[who].p-others;
   return {f:gap<=3?0:Math.min(3,Math.max(.5,gap/base)),auto:true,gap};
 }
-function scaleItems(its,f){if(f===1)return its;if(f===0)return [];return its.map(([id,q])=>{const st=ING[id].st||1;return [id,Math.max(st,Math.round(q*f/st)*st)];});}
+function scaleItems(its,f,w){if(f===1)return its;if(f===0)return [];return its.map(([id,q])=>{const st=ING[id].st||1;let v=Math.max(st,Math.round(q*f/st)*st);
+  if(w==='P'&&ING[id].pri>0&&v>ING[id].pri)v=Math.max(q,Math.floor(ING[id].pri/st)*st);return [id,v];});}
 /* Ingredientes de uma refeição num dia, para uma pessoa (com ajustes do editor e a ceia completando o dia). */
 /* Mudança só de um dia ("não tinha ovo, comi queijo"): S.dayc['data|refeição'] = {mid, L:{item:qtd}, P:{…}}. Vale se a refeição do dia ainda é a mesma. */
 function dayOver(day,slot,who){const o=S.dayc[day.d+'|'+slot];if(!o||o.mid!==slotsOf(day)[slot]||!o[who])return null;
   const base=itemsOf(o.mid,who).map(i=>i[0]),pos=id=>{const i=base.indexOf(id);return i<0?100+ING_IDS.indexOf(id):i;};
   return Object.keys(o[who]).filter(id=>ING[id]&&o[who][id]>0).sort((a,b)=>pos(a)-pos(b)).map(id=>[id,o[who][id]]);}
-function dayItems(day,slot,who){const mid=slotsOf(day)[slot];if(!mid)return [];const ov=dayOver(day,slot,who);if(ov)return ov;const its=itemsOf(mid,who);return slot==='ceia'?scaleItems(its,ceiaInfo(day,who).f):its;}
+/* dayRaw = como está salvo (o editor mexe nele); dayItems = o que vai no prato, com a panela repartida (proteína, compras e despensa) */
+function dayRaw(day,slot,who){const mid=slotsOf(day)[slot];if(!mid)return [];const ov=dayOver(day,slot,who);if(ov)return ov;const its=itemsOf(mid,who);return slot==='ceia'?scaleItems(its,ceiaInfo(day,who).f,who):its;}
+function dayItems(day,slot,who){const mid=slotsOf(day)[slot];if(!mid)return [];return PRONTO[mid]?compose(mid,dayRaw(day,slot,'L'),dayRaw(day,slot,'P'))[who]:dayRaw(day,slot,who);}
 function dayStats(day,who){
   const plan={p:0,k:0},done={p:0,k:0};
   const sl=slotsOf(day);for(const s of SLOTS){const mid=sl[s[0]];if(!mid)continue;const n=nut(dayItems(day,s[0],who));plan.p+=n.p;plan.k+=n.k;
@@ -1122,7 +1154,8 @@ function needText(id,q){
 }
 const PANTRY_STATIC=[
   {id:'sal',n:'Sal'},{id:'pimenta',n:'Pimenta-do-reino'},{id:'paprica',n:'Páprica'},
-  {id:'oregano',n:'Orégano'},{id:'alho',n:'Alho (1 cabeça, só para o azeite aromatizado)'}];
+  {id:'oregano',n:'Orégano'},{id:'alho',n:'Alho (1 cabeça, só para o azeite aromatizado)'},
+  {id:'limao-t',n:'Limão (tempero)'},{id:'cheiro',n:'Cheiro-verde'},{id:'louro',n:'Louro'},{id:'canela',n:'Canela'},{id:'cafe',n:'Café'}];
 /* ===== DESPENSA E LISTA DE COMPRAS (mercado sem dia certo) =====
    S.casa[id]: quanto tem em casa, na unidade da receita (lata, g, un, ml; arroz e feijão em peso cozido).
    Só é controlado o que já entrou em casa: comprado na lista, "Já tenho" ou ajustado em Em casa. O resto o app não sabe e não avisa.
@@ -1134,23 +1167,38 @@ const addDays=(iso,n)=>{const d=new Date(iso+'T12:00:00');d.setDate(d.getDate()+
 function dayFor(iso){const w=WEEK.find(x=>x.d===iso);if(w)return w;const p=PLANO[new Date(iso+'T12:00:00').getDay()];return {d:iso,wd:p.wd,slots:p.slots};}
 function cartOf(id){let q=0;for(const k in S.shop){const c=S.shop[k];if(c&&typeof c==='object'&&c.id===id)q+=c.q||0;}return q;}
 const known=id=>!!S.have[id]||id in S.casa||cartOf(id)>0;
-function homeQ(id){return S.have[id]?Infinity:Math.max(0,(S.casa[id]||0)+cartOf(id));}
+/* S.eaten['data|refeição|pessoa'] = {item: quanto saiu de casa}: marcar não mexe em S.casa, então dois celulares marcando ao mesmo tempo não se atropelam
+   e desmarcar devolve exatamente o que saiu, mesmo que a refeição tenha mudado depois. */
+function eatenOf(id){let q=0;for(const k in S.eaten){const v=S.eaten[k]&&S.eaten[k][id];if(v>0)q+=v;}return q;}
+const netCasa=id=>(S.casa[id]||0)-eatenOf(id);
+function setHome(id,q){S.casa[id]=r3(Math.max(0,q)+eatenOf(id));}
+function homeQ(id){return S.have[id]?Infinity:Math.max(0,netCasa(id)+cartOf(id));}
 const r3=n=>Math.round(n*1000)/1000;
-function eatMove(key,on){const [d,k,w]=key.split('|');if(!w)return;
-  for(const [id,q] of dayItems(dayFor(d),k,w)){if(S.have[id]||!(id in S.casa||cartOf(id)>0))continue;
-    S.casa[id]=r3(Math.max(-cartOf(id),(S.casa[id]||0)+(on?-q:q)));}}
-function setCheck(key,on){on=!!on;if(!!S.checks[key]===on)return;S.checks[key]=on;eatMove(key,on);}
+function eatMove(key,on){const [d,k,w]=key.split('|');if(!w)return;delete S.eaten[key];if(!on)return;
+  const o={};for(const [id,q] of dayItems(dayFor(d),k,w)){if(S.have[id]||!(id in S.casa||cartOf(id)>0))continue;const t=r3(Math.min(q,homeQ(id)));if(t>0)o[id]=t;}
+  if(Object.keys(o).length)S.eaten[key]=o;}
+function setCheck(key,on){on=!!on;if(!!S.checks[key]===on)return;const [d,k,w]=key.split('|');let v=on;
+  if(on&&k==='ceia'&&w){const c=ceiaInfo(dayFor(d),w);if(c.auto&&c.f>0)v=r3(c.f)||true;}
+  S.checks[key]=v;eatMove(key,on);}
+/* a refeição já marcada mudou: refaz o que saiu de casa */
+function reEat(key){['L','P'].forEach(w=>{const k=key+'|'+w;if(S.checks[k])eatMove(k,true);});}
 /* carrinho -> casa */
 function stowCart(){let n=0;for(const k in S.shop){const c=S.shop[k];if(!c||typeof c!=='object')continue;n++;
-    if(c.id&&ING[c.id])S.casa[c.id]=r3(Math.max(0,(S.casa[c.id]||0)+c.q));
+    if(c.id&&ING[c.id]){const id=c.id;delete S.shop[k];setHome(id,Math.max(0,netCasa(id))+c.q);}
     if(k.indexOf('m-')===0&&S.manual.lista)delete S.manual.lista[k.slice(2)];}
   S.shop={};return n;}
 const dayWord=d=>d===HOJE?'hoje':d===addDays(HOJE,1)?'amanhã':(dayFor(d).wd||'').toLowerCase();
 const slotWord=k=>(SLOTS.find(s=>s[0]===k)||['',''])[1].split(' ')[0].toLowerCase();
 /* refeições que ainda não foram comidas, em ordem, de hoje até n dias */
-function upcoming(n){const out=[];
-  for(let i=0;i<n;i++){const day=dayFor(addDays(HOJE,i)),sl=slotsOf(day);
-    for(const [k] of SLOTS){if(!sl[k])continue;for(const w of ['L','P']){if(S.checks[`${day.d}|${k}|${w}`])continue;const its=dayItems(day,k,w);if(its.length)out.push({d:day.d,k,w,its});}}}
+function upcoming(n){const out=[],lm=loteMap().m,last=addDays(HOJE,n-1);
+  for(let i=0;i<n+2;i++){const day=dayFor(addDays(HOJE,i)),sl=slotsOf(day);
+    for(const [k] of SLOTS){if(!sl[k])continue;const lo=lm[`${day.d}|${k}`],sob=lo&&lo.role==='sobra'?lo.o:null;
+      if(i>=n&&!(sob&&sob.d<=last&&sob.d>=HOJE))continue;
+      const cooked=sob&&(sob.d<HOJE||S.checks[`${sob.d}|${sob.k}|L`]||S.checks[`${sob.d}|${sob.k}|P`]);
+      const pot=sob?new Set(prGroups(sl[k],dayRaw(day,k,'L'),dayRaw(day,k,'P')).flatMap(g=>g.ids)):null;
+      for(const w of ['L','P']){if(S.checks[`${day.d}|${k}|${w}`])continue;let its=dayItems(day,k,w);
+        if(pot&&cooked)its=its.filter(x=>!pot.has(x[0]));else if(i>=n)its=its.filter(x=>pot.has(x[0]));
+        if(its.length)out.push({d:day.d,k,w,its});}}}
   return out;}
 function needsAhead(n){const out={};
   for(const m of upcoming(n))for(const [id,q] of m.its){const o=out[id]||(out[id]={tot:0,uses:[]});o.tot+=q;
@@ -1168,8 +1216,8 @@ function runsOut(id,n){let left=homeQ(id);if(!isFinite(left))return null;
 const packsFor=(id,q)=>{const g=ING[id];return Math.max(1,Math.ceil(q*(g.f||1)/g.pack-1e-9));};
 function shopList(){
   const n=S.hz||3,nd=needsAhead(n),rows=[];let w=0;
-  for(const id in nd){const g=ING[id];if(!g||g.pantry||S.have[id])continue;
-    const c=S.shop[id];if(c&&typeof c==='object'){rows.push({id,done:true,packs:c.p||1,qty:(c.p||1)*g.pack,need:nd[id].tot,uses:nd[id].uses});continue;}
+  for(const id in nd){const g=ING[id];if(!g||g.pantry&&!known(id)||S.have[id])continue;
+    const c=S.shop[id];if(c&&typeof c==='object'){rows.push({id,done:true,packs:c.p||1,qty:(c.p||1)*g.pack,need:nd[id].tot,uses:nd[id].uses,more:Math.max(0,nd[id].tot-homeQ(id))});w+=(c.p||1)*g.pack*(g.wp||1);continue;}
     const home=homeQ(id),miss=nd[id].tot-home;if(miss<=1e-6)continue;
     const packs=packsFor(id,miss),wt=packs*g.pack*(g.wp||1);w+=wt;
     rows.push({id,packs,qty:packs*g.pack,need:nd[id].tot,home:known(id)?home:null,uses:nd[id].uses,wt});}
@@ -1197,46 +1245,60 @@ function ingIndex(){
   const list=ING_IDS.map(id=>{const names=[ING[id].n.split(/[(,]/)[0],SN[id]||''].map(x=>singAll(norm(x))).filter(Boolean);return {id,names};});
   return MIDX={n:ING_IDS.length,list};
 }
+/* palavras que só descrevem o item ("banana prata", "leite desnatado"): o resto não pode virar outro alimento ("creme de leite", "leite condensado") */
+const QUAL=new Set('congelado congelada fresco fresca desnatado integral semidesnatado sem lactose zero light natural grande pequeno pequena media medio madura maduro verde fatiado fatiada ralado ralada limpo limpa branco branca parboilizado carioca preto organico organica em de do da caixa lata nanica prata ouro inglesa italiano formosa papaya tradicional forma cru crua inteiro inteira picado picada sassami file peito kg g ml l un pacote unidade bandeja duzia cartela pe maco'.split(' '));
 function matchIng(name){
   const q=singAll(norm(name));if(!q)return null;
   for(const a in ALIAS)if(q===singAll(norm(a)))return ING[ALIAS[a]]?ALIAS[a]:null;
   const words=q.split(' ');let best=null;
   for(const c of ingIndex().list)for(const nm of c.names){
     if(nm===q)return c.id;
-    const nw=nm.split(' ');
-    /* todas as palavras digitadas aparecem no nome ("iogurte" -> iogurte natural…), o nome mais curto ganha */
-    if(words.every(w=>nw.includes(w))&&(!best||nm.length<best.l))best={id:c.id,l:nm.length};
+    const nw=nm.split(/[ -]/);
+    /* todas as palavras digitadas estão no nome e a primeira bate ("milho" não é o flocão de milho; "manteiga" não é couve-manteiga) */
+    if(nw[0]===words[0]&&words.every(w=>nw.includes(w))&&(!best||nm.length<best.l))best={id:c.id,l:nm.length};
   }
   if(best)return best.id;
-  for(const a in ALIAS){const an=singAll(norm(a));if(q.includes(an))return ING[ALIAS[a]]?ALIAS[a]:null;}
-  return null;
+  /* começa por um nome ou apelido conhecido e o resto só descreve: "leite desnatado", "banana prata" */
+  let hit=null;
+  const tryN=(nm,id)=>{const nw=nm.split(' ');if(nw.length>words.length)return;if(nw.every((w,i)=>words[i]===w)&&words.slice(nw.length).every(w=>QUAL.has(w))&&(!hit||nm.length>hit.l))hit={id,l:nm.length};};
+  for(const a in ALIAS)tryN(singAll(norm(a)),ALIAS[a]);
+  for(const c of ingIndex().list)for(const nm of c.names)tryN(nm,c.id);
+  return hit&&ING[hit.id]?hit.id:null;
 }
+/* peso de 1 unidade de legume e fruta solta, para "2 abobrinhas" */
+const UNW={abobrinha:250,berinjela:300,abobora:1500,batata:150,batatadoce:200,cenoura:120,tomate:100,pepino:200,pimentao:150,mandioca:500,mamao:800,abacaxi:1500,alface:250,couve:200,brocolis:300};
 const NUMW={um:1,uma:1,dois:2,duas:2,tres:3,quatro:4,cinco:5,seis:6,sete:7,oito:8,dez:10,doze:12,meia:.5,meio:.5};
 const UNITW=[[/^(kg|kgs|quilos?|kilos?)$/,'kg'],[/^(g|gr|grs|gramas?)$/,'g'],[/^(l|lt|litros?)$/,'l'],[/^ml$/,'ml'],[/^(un|und|unid|unidades?)$/,'un'],
-  [/^duzias?$/,'dz'],[/^(pct|pcts|pacotes?|caixas?|cx|latas?|bandejas?|potes?|macos?|garrafas?|pencas?|cachos?|barras?|pecas?|sacos?|vidros?|saquinhos?)$/,'pk']];
+  [/^duzias?$/,'dz'],[/^cartelas?$/,'ct'],[/^(pct|pcts|pacotes?|caixas?|cx|latas?|bandejas?|potes?|macos?|garrafas?|pencas?|cachos?|barras?|pecas?|sacos?|vidros?|saquinhos?|pes?)$/,'pk']];
 /* corredor provável do que não é ingrediente do app */
 const KW=[['casa','detergente sabao amaciante desinfetante sanitaria esponja papel toalha higienico guardanapo lixo aluminio filme vassoura pano alcool multiuso lustra limpador'],
-  ['hig','shampoo xampu condicionador sabonete dente escova desodorante absorvente fio algodao cotonete barbeador lamina hidratante protetor'],
+  ['hig','shampoo xampu condicionador sabonete dente dental escova desodorante absorvente fio algodao cotonete barbeador lamina hidratante protetor'],
   ['beb','cafe cha suco refrigerante agua cerveja vinho kombucha energetico'],
-  ['hort','alface fruta verdura legume salsinha cebolinha hortela manjericao melancia melao manga pera abacate gengibre'],
+  ['hort','alface fruta verdura legume cebola alho salsinha cebolinha hortela manjericao melancia melao manga pera abacate gengibre'],
   ['lat','queijo requeijao manteiga creme nata coalhada iogurte leite'],['prot','carne salmao camarao lombo'],
   ['merc','biscoito bolacha granola cereal farinha acucar sal oleo vinagre tempero massa arroz feijao molho fermento adocante gelatina']];
 const MAN_AISLES={casa:'Limpeza e casa',hig:'Higiene',beb:'Bebidas',out:'Outros itens'};
 function guessAisle(name){const ws=singAll(norm(name)).split(' ');for(const [a,l] of KW){const ks=l.split(' ');if(ws.some(w=>ks.includes(w)))return a;}return 'out';}
 function parseManual(text){
-  const t=String(text||'').trim();let ws=norm(t).replace(/^(\d+(?:[.,]\d+)?)(kg|g|ml|l|un)\b/,'$1 $2').split(' ').filter(Boolean);
+  const t=String(text||'').trim();let s0=norm(t.replace(/\b1\/2\b/,'½').replace(/(\d)\s*x\b/i,'$1'));
+  /* quantidade no fim ("batata 2kg", "ovos 12") vai para o começo */
+  const tail=s0.match(/^(.*\D)\s(\d+(?:[.,]\d+)?)\s?(kg|g|ml|l|un|duzias?|cartelas?)?$/);if(tail&&tail[1].trim())s0=`${tail[2]} ${tail[3]||''} ${tail[1]}`;
+  let ws=s0.replace(/(^|\s)(\d+(?:[.,]\d+)?)(kg|g|ml|l|un)\b/,'$1$2 $3').split(' ').filter(Boolean);
   let n=null,u=null;
   if(ws.length&&/^\d+([.,]\d+)?$/.test(ws[0])){n=parseFloat(ws[0].replace(',','.'));ws.shift();}
   else if(ws.length&&ws[0]==='½'){n=.5;ws.shift();}
   else if(ws.length&&NUMW[ws[0]]!=null&&ws.length>1){n=NUMW[ws[0]];ws.shift();}
   if(ws.length>1){const f=UNITW.find(x=>x[0].test(ws[0]));if(f){u=f[1];ws.shift();}}
   if(ws[0]==='de'&&ws.length>1)ws.shift();
-  const name=ws.join(' '),id=matchIng(name);
+  const name=ws.join(' ');let id=matchIng(name);
+  /* "6 pães" na padaria é pão francês, não 6 pacotes de forma */
+  if(id==='pao'&&u==null&&n>=2&&/\bpa(es|ezinhos?)\b/.test(norm(t))&&!/forma/.test(norm(t)))id='paofr';
   if(!id)return {t,id:null,aisle:guessAisle(name)};
-  const g=ING[id],pkd=!!g.pk&&!g.loose,unitW=g.hu?g.hu[2]:g.wp||g.gw||150;
+  const g=ING[id],pkd=!!g.pk&&!g.loose,unitW=UNW[id]||(g.hu?g.hu[2]:g.wp||g.gw||150);
   let q;
   if(u==='kg'||u==='g'||u==='l'||u==='ml'){const gr=n==null?1:n*(u==='kg'||u==='l'?1000:1);q=g.u==='g'||g.u==='g cozido'||g.u==='ml'?gr:gr/(g.wp||g.gw||1);}
   else if(u==='dz')q=(n||1)*12;
+  else if(u==='ct')q=(n||1)*30;
   else if(u==='pk')q=(n||1)*g.pack;
   else if(g.u==='un'||g.u==='lata')q=n!=null?n:(pkd?g.pack:1);
   else if(pkd)q=(n||1)*g.pack;
@@ -1249,7 +1311,7 @@ function parseManual(text){
    Em comum: tudo que é do plano e da casa, inclusive o que cada um comeu (checks), extras e passos de receita.
    Só do aparelho: ícone e a escolha de ver em gramas (unit).
    A casa (…/casas/<código>) vem embutida no app (CASA, no fim deste arquivo): nada para configurar. */
-const SHARED=['swap','shop','stock','have','pantry','prep','targets','ref','maxKg','custom','manual','checks','extras','steps','mine','ing','dayc','casa'];
+const SHARED=['swap','shop','stock','have','pantry','prep','targets','ref','maxKg','custom','manual','checks','extras','steps','mine','ing','dayc','casa','eaten'];
 /* passaram a sincronizar depois: na 1ª conexão de um aparelho que já estava na casa, o que só ele tem sobe (nada se apaga) */
 const LATE=['checks','extras','steps'];
 const SYK='cardapio-sync';
@@ -1361,6 +1423,8 @@ const CASA=(()=>{let b='';try{b=localStorage.getItem('cardapio-sync-test')||'';}
   return (b||'https://cardapio-lucas-pri-default-rtdb.firebaseio.com')+'/casas/2jiut88v973bhzvr2pwq4dtm';})();
 syLoad();
 if(SY.url!==CASA){SY.url=CASA;SY.pend={};SY.merge=true;syStore();}
+/* Aparelho que já está na casa: o que está salvo aqui é a base. Sem isso, o que se marca antes de conectar (ou aberto sem internet) era apagado quando a conexão chegava. */
+if(SY.mig&&!SY.merge){SY.base=flat(sharedOf(S));SY.based=true;}
 syListen();
 /* Voltou para o app (celular tira a conexão em segundo plano): reconecta e pega o que mudou nos outros aparelhos. */
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&SY.url&&SY.state!=='erro'){saveNow();syListen();}});
@@ -1374,14 +1438,14 @@ const CAT_BY=Object.fromEntries(CATS.map(c=>[c[0],c[2]])),CAT_N=Object.fromEntri
 const cap=t=>t?t[0].toUpperCase()+t.slice(1):t;
 /* No painel aberto pelo dia, "Só hoje" muda só aquele dia (S.dayc); "Todos os dias" muda a receita (S.custom). */
 function shDay(sh){return sh.mode==='edit'&&sh.scope==='dia'&&sh.key?dayOf(sh.key.split('|')[0]):null;}
-function shItems(sh,w){const d=shDay(sh);if(d)return dayItems(d,sh.key.split('|')[1],w);if(sh.mode==='edit')return itemsOf(sh.mid,w);const o=sh[w];return Object.keys(o).filter(i=>ING[i]&&o[i]>0).map(i=>[i,o[i]]);}
+function shItems(sh,w){const d=shDay(sh);if(d)return dayRaw(d,sh.key.split('|')[1],w);if(sh.mode==='edit')return itemsOf(sh.mid,w);const o=sh[w];return Object.keys(o).filter(i=>ING[i]&&o[i]>0).map(i=>[i,o[i]]);}
 function shQ(sh,w,id){return (shItems(sh,w).find(i=>i[0]===id)||[0,0])[1];}
 function shSet(sh,w,id,q){q=Math.max(0,Math.round(q*1000)/1000);
   if(sh.mode==='build'){if(q)sh[w][id]=q;else delete sh[w][id];return;}
   const d=shDay(sh);if(d){let o=S.dayc[sh.key];if(!o||o.mid!==sh.mid)o=S.dayc[sh.key]={mid:sh.mid};
     /* cada pessoa começa do que já tinha naquele dia; '_' mantém a lista mesmo vazia (o banco apaga objeto vazio) */
     ['L','P'].forEach(x=>{if(!o[x]){const n={_:0};shItems(sh,x).forEach(([i,v])=>{n[i]=v;});o[x]=n;}});
-    if(q)o[w][id]=q;else delete o[w][id];return;}
+    if(q)o[w][id]=q;else delete o[w][id];reEat(sh.key);return;}
   if(MEALS[sh.mid].user){const u=S.mine[sh.mid];u[w]=u[w]||{};if(q)u[w][id]=q;else delete u[w][id];applyUser();}
   else customOf(sh.mid,w)[id]=q;}
 /* passo do + e −; em gramas, 5 g nos itens pequenos, 10 g no resto, 25 em leite e iogurte */
@@ -1391,7 +1455,10 @@ function porOf(id){const g=ING[id];return g.por!=null?g.por:g.fp?g.fp:g.hu?g.hu[
 function addQty(id,w){const g=ING[id],st=g.st||1,r=q=>Math.max(st,Math.round(q/st)*st);let q=r(porOf(id));
   if(w==='P'){q=r(q*.65);if(g.pri>0&&q>g.pri)q=Math.max(st,Math.floor(g.pri/st)*st);}return q;}
 /* troca convertida pelo que importa na categoria: 120 g de frango ≈ 4 ovos; 1 banana ≈ 12 morangos; pão por kcal */
-function cvOf(id,by){const g=ING[id];return by==='p'?pOf(id):by==='fp'?(g.fp?1/g.fp:g.k/95):by==='g'?(g.u==='un'?(g.gw||g.wp||100):1):g.k;}
+function cvOf(id,by){const g=ING[id];return by==='p'?pOf(id):by==='fp'?(g.fp?1/g.fp:g.k/95):by==='g'?(g.u==='g'||g.u==='ml'||g.u==='g cozido'?1:(g.gw||g.wp||100)):g.k;}
+/* troca para outra categoria (abobrinha -> azeite): não converte, entra a porção típica */
+function convW(from,q,to,w){const a=ING[from],b=ING[to],ok=a.cat===b.cat||CAT_BY[a.cat]===CAT_BY[b.cat]&&CAT_BY[a.cat]==='p';
+  if(!ok)return addQty(to,w);const v=conv(from,q,to),st=b.st||1,cap=Math.max(st,Math.round(porOf(to)*(w==='P'?2:3)/st)*st);return Math.min(v,cap);}
 function conv(from,q,to){const by=CAT_BY[ING[from].cat]||'k';let a=cvOf(from,by),b=cvOf(to,by);if(!(a>0&&b>0)){a=ING[from].k;b=ING[to].k;}
   const st=ING[to].st||1;if(!(b>0))return Math.max(st,Math.round(porOf(to)/st)*st);return Math.max(st,Math.round(a*q/b/st)*st);}
 function capPri(id,q){const g=ING[id],st=g.st||1;if(g.pri===0)return 0;return g.pri>0&&q>g.pri?Math.max(st,Math.floor(g.pri/st)*st):q;}
@@ -1399,15 +1466,17 @@ function capPri(id,q){const g=ING[id],st=g.st||1;if(g.pri===0)return 0;return g.
 function recents(){try{return JSON.parse(localStorage.getItem('cardapio-recentes')||'[]').filter(id=>ING[id]);}catch(e){return [];}}
 function pushRecent(id){try{const r=recents().filter(x=>x!==id);r.unshift(id);localStorage.setItem('cardapio-recentes',JSON.stringify(r.slice(0,10)));}catch(e){}}
 
-function sheetOpen(o){if(o.mode==='edit')o.scope=o.key?'dia':'sempre';V.sheet=o;V.sheetIn=true;V.prOpen=null;V.sw=o.sw&&ING[o.sw]?o.sw:null;V.shq='';V.swq='';V.shcat='';V.newIng=null;V.shIn=null;
+function sheetOpen(o){if(o.mode==='edit')o.scope=o.key?'dia':'sempre';V.sheet=o;V.sheetIn=true;V.prOpen=o.sw&&/^pr\d/.test(o.sw)?o.sw:null;if(V.prOpen&&o.mode==='edit'){const d=o.key?dayOf(o.key.split('|')[0]):null,raw=w=>d?dayRaw(d,o.key.split('|')[1],w):itemsOf(o.mid,w),g=prGroups(o.mid,raw('L'),raw('P')).find(x=>'pr'+x.ix===V.prOpen);if(g&&g.ids.length===1)o.sw=g.ids[0];}V.sw=o.sw&&ING[o.sw]?o.sw:null;V.shq='';V.swq='';V.shcat='';V.newIng=null;V.shIn=null;
   try{history.pushState({sheet:1},'');}catch(e){}render(true);
-  if(o.sw)setTimeout(()=>{const el=document.getElementById('er-'+o.sw);if(el)el.scrollIntoView({block:'center'});},30);}
+  if(o.sw)setTimeout(()=>{const el=document.getElementById('er-'+o.sw)||document.querySelector(`[id^="er-pr"] #er-${o.sw}`);if(el)el.scrollIntoView({block:'center'});},30);
+  if(o.add)setTimeout(()=>{const i=document.getElementById('sh-q');if(i){i.scrollIntoView({block:'center'});i.focus({preventScroll:true});}},350);}
 function sheetClose(fromPop){if(!V.sheet)return;V.sheet=null;V.newIng=null;
   if(!fromPop){try{if(history.state&&history.state.sheet)history.back();}catch(e){}}render(true);}
 window.addEventListener('popstate',()=>{if(V.sheet)sheetClose(true);});
 
 function amtHtml(sh,w,id,q){const a=amtOf(id,q),k=`${w}|${id}`;
-  if(V.shIn===k)return `<input class="ed-in" type="text" inputmode="decimal" autocomplete="off" data-act="shset" data-w="${w}" data-id="${id}" value="${inGrams(id)?fmt(gramsOf(id,q),0):ING[id].hu?fmt(q/ING[id].hu[2],2):fmt(q,2)}" aria-label="Quantidade de ${SN[id]} para ${WHO[w]}">`;
+  if(V.shIn===k){const g=ING[id],un=inGrams(id)?gUnit(id):g.hu?g.hu[1]:(amtOf(id,2).small||g.u);
+    return `<span class="ed-inw"><input class="ed-in" type="text" inputmode="decimal" autocomplete="off" data-act="shset" data-w="${w}" data-id="${id}" value="${inGrams(id)?fmt(gramsOf(id,q),0):g.hu?fmt(q/g.hu[2],2):fmt(q,2)}" aria-label="Quantidade de ${SN[id]} para ${WHO[w]}"><small>${un}</small></span>`;}
   return `<button class="ed-v" data-act="shtype" data-key="${k}" aria-label="Digitar quantidade de ${SN[id]} para ${WHO[w]}"><b>${q?a.big:'0'}</b><small>${q?a.small:'não come'}</small></button>`;}
 /* pesar em gramas o que é contado por medida (lata de atum, ovo, fatia): só muda como este celular mostra e digita */
 function unitBtn(id){const g=ING[id];if(!canGrams(id)||g.u==='g'&&!g.hu||g.u==='ml'&&!g.hu)return '';
@@ -1420,7 +1489,9 @@ function swapChips(sh,from,qL,qP){
   return `<input class="in-text sw-q" type="search" data-act="swq-in" placeholder="Buscar qualquer alimento: queijo, tapioca…" autocomplete="off" enterkeyhint="search" value="${esc(V.swq||'')}" aria-label="Buscar alimento para trocar">
     <div id="sw-res">${swapList(sh,from,qL,qP)}</div>`;}
 /* nome, apelido (ALIAS) e nome curto: "queijo" acha minas, mussarela, cottage e parmesão */
-function ingFind(q){q=singAll(norm(q));if(!q)return [];return ING_IDS.filter(id=>{const t=singAll(norm(ING[id].n+' '+(SN[id]||'')+' '+Object.keys(ALIAS).filter(a=>ALIAS[a]===id).join(' ')));return q.split(' ').every(w=>t.includes(w));});}
+function ingFind(q){q=singAll(norm(q));if(!q)return [];const qs=q.split(' ').filter(w=>!['de','do','da','com','em'].includes(w));if(!qs.length)return [];
+  return ING_IDS.filter(id=>{const t=singAll(norm((ING[id].n.replace(/\(.*?\)/g,' ')+' '+(SN[id]||'')).replace(/-(\w)/g,'$1')+' '+Object.keys(ALIAS).filter(a=>ALIAS[a]===id).join(' '))).split(' ');
+    return qs.every(w=>t.some(x=>x.startsWith(w)));});}
 function swapList(sh,from,qL,qP){
   const cat=ING[from].cat,present=new Set(shItems(sh,'L').concat(shItems(sh,'P')).map(i=>i[0]));
   if((V.swq||'').trim()){const f=ingFind(V.swq).filter(id=>id!==from);
@@ -1432,11 +1503,11 @@ function swapList(sh,from,qL,qP){
   if(!opts.length)return `<div class="sub sw-none">Não há outro item de ${CAT_N[cat].toLowerCase()} cadastrado. Busque acima.</div>`;
   return `<div class="sw-list" role="list">${opts.map(id=>swChip(from,id,qL,qP,present)).join('')}</div>`;}
 function swChip(from,id,qL,qP,present){const cat=ING[from].cat;
-  {const g=ING[id],aL=qL?conv(from,qL,id):0,aP=qP?(g.pri>0?capPri(id,conv(from,qP,id)):conv(from,qP,id)):0;
-    const byP=CAT_BY[cat]==='p',dL=R0(byP?pOf(id)*aL-pOf(from)*qL:ING[id].k*aL-ING[from].k*qL);
+  {const g=ING[id],aL=qL?convW(from,qL,id,'L'):0,rP=qP?convW(from,qP,id,'P'):0,aP=g.pri>0?capPri(id,rP):rP;
+    const byP=CAT_BY[cat]==='p',dd=(a,q0)=>R0(byP?pOf(id)*a-pOf(from)*q0:ING[id].k*a-ING[from].k*q0),dL=dd(aL,qL),dP=dd(aP,qP);
     return `<button class="sw-ch" role="listitem" data-act="shswap" data-from="${from}" data-to="${id}"><b>${cap(SN[id])}</b>
       <span class="sub"><span class="L">${aL?trq(id,aL):'—'}</span> · <span class="P">${aP?trq(id,aP)+(g.pri===0?' (evita)':''):'—'}</span></span>
-      <span class="sub">${present.has(id)?'Já está no prato: soma':`Lucas ${dL>0?'+':dL<0?'−':'±'}${Math.abs(dL)} ${byP?'g de proteína':'kcal'}`}${known(id)?(homeQ(id)>=aL+aP-1e-6?' · <span class="ok-t">tem em casa</span>':' · <span class="warn-t">não tem em casa</span>'):''}</span></button>`;}}
+      <span class="sub">${present.has(id)?'Já está no prato: soma':`Lucas ${dL>0?'+':dL<0?'−':'±'}${Math.abs(dL)} · Pri ${dP>0?'+':dP<0?'−':'±'}${Math.abs(dP)} ${byP?'g de proteína':'kcal'}${aP<rP-1e-6?' (limite FODMAP dela)':''}`}${known(id)?(homeQ(id)>=aL+aP-1e-6?' · <span class="ok-t">tem em casa</span>':' · <span class="warn-t">não tem em casa</span>'):''}</span></button>`;}}
 function trq(id,q){return fq(id,q).replace(/ \(.*\)$/,'').replace(' de '+SN[id],'');}
 function resultsHtml(sh){
   /* some da lista só o que os dois já têm: se só um tem, o botão adiciona para o outro */
@@ -1444,14 +1515,14 @@ function resultsHtml(sh){
   const q=singAll(norm(V.shq||''));
   if(q)ids=ingFind(V.shq);
   else if(V.shcat)ids=ING_IDS.filter(id=>ING[id].cat===V.shcat);
-  else{ids=recents();if(ids.length)head='<div class="sub res-h">Usados por último</div>';else ids=['ovo','iogurte','whey','banana','pao','aveia','cottage','amendoim','tapioca','mussarela'];}
+  else{const r=recents();ids=[...new Set(r.concat(['ovo','iogurte','whey','banana','pao','aveia','cottage','amendoim','tapioca','mussarela','frango','batata']))];if(r.length)head='<div class="sub res-h">Usados por último primeiro</div>';}
   /* na busca, o que já está no prato dos dois aparece marcado (toque leva até ele) em vez de sumir */
   const on=q||V.shcat?ids.filter(id=>hL.has(id)&&hP.has(id)):[];
   ids=ids.filter(id=>!(hL.has(id)&&hP.has(id))).slice(0,24);
   const chips=ids.map(id=>{const fw=hP.has(id)?' para o Lucas':hL.has(id)?' para a Pri':'';
     return `<button class="ch-add" data-act="shadd" data-id="${id}">+ ${cap(SN[id]||ING[id].n)}${fw}${ING[id].pri===0&&!hP.has(id)?' <small>(Pri evita)</small>':''}</button>`;}).join('')+on.map(id=>`<button class="ch-add on" data-act="shgo" data-id="${id}">✓ ${cap(SN[id]||ING[id].n)} <small>já está no prato</small></button>`).join('');
   const exact=q&&ING_IDS.some(id=>singAll(norm(SN[id]||''))===q||singAll(norm(ING[id].n))===q);
-  const nw=q&&!exact&&!chips?`<button class="ch-add new" data-act="shnew">+ Cadastrar “${esc(V.shq.trim())}”</button>`:'';
+  const nw=q&&!exact?`<button class="ch-add new" data-act="shnew">+ Cadastrar “${esc(V.shq.trim())}”</button>`:'';
   return head+(chips||nw?`<div class="res-chips">${chips}${nw}</div>`:'<div class="sub">Nada encontrado.</div>');}
 function newIngForm(){const f=V.newIng;
   return `<form class="new-ing card" data-act="ingsave"><div class="eyebrow">Ingrediente novo</div>
@@ -1465,7 +1536,7 @@ function newIngForm(){const f=V.newIng;
 function sheetHtml(){
   const sh=V.sheet;if(!sh)return '';
   if(sh.mode==='edit'&&!MEALS[sh.mid]){V.sheet=null;return '';}
-  const iL=shItems(sh,'L'),iP=shItems(sh,'P'),nL=nut(iL),nP=nut(iP);
+  const iL=shItems(sh,'L'),iP=shItems(sh,'P'),cm=sh.mode==='edit'?compose(sh.mid,iL,iP):{L:iL,P:iP},nL=nut(cm.L),nP=nut(cm.P);
   const ids=[...new Set(iL.map(i=>i[0]).concat(iP.map(i=>i[0])))];
   const gs=sh.mode==='edit'?prGroups(sh.mid,iL,iP):[],inG=id=>gs.find(x=>x.ids.includes(id));
   const erRow=id=>{const g=ING[id],qL=shQ(sh,'L',id),qP=shQ(sh,'P',id),open=V.sw===id;
@@ -1475,16 +1546,16 @@ function sheetHtml(){
      <div class="er-a"><button class="link" data-act="shsw" data-id="${id}" aria-expanded="${open}">${open?'Fechar troca':'Trocar por…'}</button>${unitBtn(id)}<button class="link danger" data-act="shrm" data-id="${id}">Tirar</button></div>
      ${open?swapChips(sh,id,qL,qP):''}</div>`;};
   /* preparo de panela: uma linha só, pelo pronto; os ingredientes ficam recolhidos */
-  const prRow=gr=>{const k='pr'+gr.ix,open=V.prOpen===k||gr.ids.includes(V.sw),one=gr.ids.length===1;
+  const prRow=gr=>{const k='pr'+gr.ix,one=gr.ids.length===1,open=one?V.sw===gr.ids[0]:V.prOpen===k||gr.ids.includes(V.sw);
     const stp=(w,its)=>{const q=prQty(gr,its),a=prAmt(gr,q),key=`${w}|${k}`;
-      const v=V.shIn===key?`<input class="ed-in" type="text" inputmode="decimal" autocomplete="off" data-act="shprset" data-w="${w}" data-ix="${gr.ix}" value="${fmt(q,2)}" aria-label="Quantidade de ${gr.g.n} para ${WHO[w]}">`
-        :`<button class="ed-v" data-act="shtype" data-key="${key}" aria-label="Digitar ${gr.g.n} para ${WHO[w]}"><b>${q?a.big:'0'}</b><small>${q?a.small:'não come'}</small></button>`;
-      return `<div class="stp ${w}"><span class="stp-w">${WHO[w]}</span><button data-act="shpr" data-w="${w}" data-ix="${gr.ix}" data-d="-1" aria-label="Menos ${gr.g.n} para ${WHO[w]}"${q?'':' disabled'}>−</button>${v}<button data-act="shpr" data-w="${w}" data-ix="${gr.ix}" data-d="1" aria-label="Mais ${gr.g.n} para ${WHO[w]}">+</button></div>`;};
-    const w=gr.ids.filter(id=>ING[id].pri===0&&shQ(sh,'P',id)).map(id=>SN[id]);
-    return `<div class="er pr" id="er-${k}"><div class="er-h"><b>${gr.g.n}</b><span class="er-c">${prUn(gr)?'':gr.g.ml?'no copo':'pronto, no prato'}</span>${w.length?`<span class="ed-warn">A Pri evita (FODMAP): ${w.join(', ')}</span>`:''}</div>
+      const v=V.shIn===key?`<span class="ed-inw"><input class="ed-in" type="text" inputmode="decimal" autocomplete="off" data-act="shprset" data-w="${w}" data-ix="${gr.ix}" value="${fmt(q,2)}" aria-label="Quantidade de ${gr.n} para ${WHO[w]}"><small>${prUn(gr)?prUn(gr)[1]:gr.g.ml?'ml':'g pronto'}</small></span>`
+        :`<button class="ed-v" data-act="shtype" data-key="${key}" aria-label="Digitar ${gr.n} para ${WHO[w]}"><b>${q?a.big:'0'}</b><small>${q?a.small:'não come'}</small></button>`;
+      return `<div class="stp ${w}"><span class="stp-w">${WHO[w]}</span><button data-act="shpr" data-w="${w}" data-ix="${gr.ix}" data-d="-1" aria-label="Menos ${gr.n} para ${WHO[w]}"${q?'':' disabled'}>−</button>${v}<button data-act="shpr" data-w="${w}" data-ix="${gr.ix}" data-d="1" aria-label="Mais ${gr.n} para ${WHO[w]}">+</button></div>`;};
+    const w=gr.ids.filter(id=>{const q=shQ(sh,'P',id),p=ING[id].pri;return q&&p!=null&&q>p+1e-6;}).map(id=>SN[id]);
+    return `<div class="er pr" id="er-${k}"><div class="er-h"><b>${gr.n}</b><span class="er-c">${prUn(gr)?'':gr.g.ml?'no copo':'pronto, no prato'}</span>${w.length?`<span class="ed-warn">Pri acima do limite FODMAP: ${w.join(', ')}</span>`:''}</div>
      <div class="er-q">${stp('L',iL)}${stp('P',iP)}</div>
-     <div class="er-a"><button class="link" data-act="shpropen" data-k="${k}" aria-expanded="${open}">${open?'Fechar ingredientes':one?`Trocar ${SN[gr.ids[0]]}`:'Ingredientes: '+gr.ids.map(id=>SN[id]).join(', ')}</button>${one&&!open?'':''}</div>
-     ${open?`<div class="pr-in">${gr.ids.map(erRow).join('')}</div>`:''}</div>`;};
+     <div class="er-a">${one?`<button class="link" data-act="shsw" data-id="${gr.ids[0]}" aria-expanded="${open}">${open?'Fechar troca':'Trocar por…'}</button>`:`<button class="link" data-act="shpropen" data-k="${k}" aria-expanded="${open}">${open?'Fechar ingredientes':'Ingredientes: '+gr.ids.map(id=>SN[id]).join(', ')}</button>`}<button class="link danger" data-act="shprrm" data-ix="${gr.ix}">Tirar</button></div>
+     ${open?(one?swapChips(sh,gr.ids[0],shQ(sh,'L',gr.ids[0]),shQ(sh,'P',gr.ids[0])):`<div class="pr-in">${gr.ids.map(erRow).join('')}</div>`):''}</div>`;};
   const rows=sh.mode==='edit'?plateRows(sh.mid,iL,iP).map(({id,gr})=>gr?prRow(gr):erRow(id)).join(''):ids.map(erRow).join('');
   const mealN=sh.mode==='edit'?MEALS[sh.mid].n:'';
   const dd=sh.key?dayOf(sh.key.split('|')[0]):null,dn=dd?(dd.d===TODAY?'hoje':`${WD_FULL[dd.wd].toLowerCase()} ${+dd.d.slice(8)}`):'';
@@ -1492,7 +1563,7 @@ function sheetHtml(){
     <div class="sub">${sh.scope==='dia'?`Muda só ${dn}, para quando falta algo ou deu vontade de outra coisa. Os outros dias continuam iguais.`:'Muda a receita em todos os dias. Compras, preparo e placar se recalculam.'}</div>`:'<div class="sub">Muda a receita em todos os dias. Compras, preparo e placar se recalculam.</div>';
   const head=sh.mode==='edit'?`<div class="eyebrow">Mudar itens</div><h2>${mealN}</h2>${scope}`
     :`<div class="eyebrow">Montar refeição · ${SLOT_N[sh.slot]}</div><label class="fl">Nome<input class="in-text" id="sh-name" data-act="shname" maxlength="50" value="${esc(sh.n)}"></label>
-      <div class="sub">Comece do que já tem ou do zero. Ao salvar, ela entra no lugar desta refeição hoje e fica nas trocas para outros dias.${ids.length?' <button class="link" data-act="shzero">Começar do zero</button>':''}</div>`;
+      <div class="sub">Comece do que já tem ou do zero. ${sh.key?`Ao salvar, ela entra no lugar desta refeição ${sh.key.split('|')[0]===TODAY?'hoje':'neste dia'} e fica nas trocas para outros dias.`:'Ao salvar, ela fica em Receitas e nas trocas.'}${ids.length?' <button class="link" data-act="shzero">Começar do zero</button>':''}</div>`;
   const cats=`<div class="chips cats"><button class="chip" data-act="shcat" data-c="" aria-pressed="${!V.shcat}">Sugestões</button>${CATS.map(c=>`<button class="chip" data-act="shcat" data-c="${c[0]}" aria-pressed="${V.shcat===c[0]}">${c[1]}</button>`).join('')}</div>`;
   const foot=sh.mode==='edit'
     ?`${shDay(sh)?(S.dayc[sh.key]?`<button class="btn" data-act="shdayreset">Voltar ao normal ${dn}</button>`:''):isCustom(sh.mid)?`<button class="btn" data-act="edreset" data-mid="${sh.mid}">Voltar ao original</button>`:''}${MEALS[sh.mid].user?'':`<button class="btn" data-act="shasnew">Salvar como refeição nova</button>`}<button class="btn primary" data-act="shclose">Pronto</button>`
@@ -1515,34 +1586,35 @@ function shAct(a,t){const sh=V.sheet;if(!sh)return false;const d=t.dataset;
     case 'shclose':sheetClose();return true;
     case 'shq':{const q=shQ(sh,d.w,d.id),st=stepOf(d.id);shSet(sh,d.w,d.id,Math.max(0,q+Number(d.d)*st));save();render(true);return true;}
     case 'shpropen':if(V.prOpen===d.k||(V.sw&&prGroups(sh.mid,shItems(sh,'L'),shItems(sh,'P')).some(x=>'pr'+x.ix===d.k&&x.ids.includes(V.sw)))){V.prOpen=null;V.sw=null;}else V.prOpen=d.k;render(true);return true;
+    case 'shprrm':{const gr=prGroups(sh.mid,shItems(sh,'L'),shItems(sh,'P')).find(x=>x.ix===+d.ix);if(!gr)return true;const un=snap();['L','P'].forEach(w=>gr.ids.forEach(id=>shSet(sh,w,id,0)));save();render(true);toast(`${gr.n} saiu da refeição`,un);return true;}
     case 'shpr':{const gr=prGroups(sh.mid,shItems(sh,'L'),shItems(sh,'P')).find(x=>x.ix===+d.ix);if(!gr)return true;
-      const st=prUn(gr)?(gr.g.un[3]<1?1:.5):gr.g.ml?50:25;prSet(sh,d.w,gr,prQty(gr,shItems(sh,d.w))+Number(d.d)*st);save();render(true);return true;}
+      const st=prUn(gr)?1:gr.g.ml?50:25;prSet(sh,d.w,gr,prQty(gr,shItems(sh,d.w))+Number(d.d)*st);save();render(true);return true;}
     case 'shtype':V.shIn=d.key;render(true);{const i=document.querySelector('.sheet .ed-in');if(i){i.focus();i.select();}}return true;
     case 'shsw':V.sw=V.sw===d.id?null:d.id;V.swq='';render(true);return true;
     case 'shscope':sh.scope=d.s;render(true);return true;
-    case 'shdayreset':{const un=snap();delete S.dayc[sh.key];save();render(true);toast('Este dia voltou ao normal',un);return true;}
-    case 'shnewsw':V.newIng={n:cap((V.swq||'').trim()),cat:ING[V.sw]?ING[V.sw].cat:'outro'};render(true);{const f=document.querySelector('.new-ing');if(f)f.scrollIntoView({block:'center'});}return true;
+    case 'shdayreset':{const un=snap();delete S.dayc[sh.key];reEat(sh.key);save();render(true);toast('Este dia voltou ao normal',un);return true;}
+    case 'shnewsw':V.newIng={n:cap((V.swq||'').trim()),cat:ING[V.sw]?ING[V.sw].cat:'outro',from:V.sw};render(true);{const f=document.querySelector('.new-ing');if(f)f.scrollIntoView({block:'center'});}return true;
     case 'shunit':{if(inGrams(d.id))delete S.unit[d.id];else S.unit[d.id]='g';V.shIn=null;save();render(true);return true;}
     case 'shrm':{const un=snap();['L','P'].forEach(w=>shSet(sh,w,d.id,0));if(V.sw===d.id)V.sw=null;save();render(true);toast(`${cap(SN[d.id])} saiu da refeição`,un);return true;}
     case 'shswap':{const un=snap(),from=d.from,to=d.to;
       /* troca sempre para os dois; se a Pri evita o item novo, troca do mesmo jeito e só avisa (quem decide são vocês) */
       for(const w of ['L','P']){const q=shQ(sh,w,from);if(!q)continue;
-        const c=conv(from,q,to),add=w==='P'&&ING[to].pri>0?capPri(to,c):c;shSet(sh,w,from,0);shSet(sh,w,to,shQ(sh,w,to)+add);}
+        const c=convW(from,q,to,w),add=w==='P'&&ING[to].pri>0?capPri(to,c):c;shSet(sh,w,from,0);shSet(sh,w,to,shQ(sh,w,to)+add);}
       const ev=shQ(sh,'P',to)&&ING[to].pri===0?` · a Pri costuma evitar ${SN[to]} (FODMAP)`:'';
       V.sw=null;V.swq='';pushRecent(to);save();render(true);toast(`Trocado${shDay(sh)?' só '+(sh.key.split('|')[0]===TODAY?'hoje':'neste dia'):''}: ${SN[from]} → ${SN[to]}${ev}`,un);return true;}
     case 'shadd':{const id=d.id;['L','P'].forEach(w=>{if(!shQ(sh,w,id))shSet(sh,w,id,addQty(id,w));});pushRecent(id);V.shq='';save();render(true);return true;}
     case 'shgo':{const el=document.getElementById('er-'+d.id);if(el)el.scrollIntoView({block:'center'});return true;}
     case 'shcat':V.shcat=d.c;V.shq='';V.newIng=null;render(true);return true;
-    case 'shnew':V.newIng={n:cap((V.shq||'').trim()),cat:V.shcat||'outro'};render(true);return true;
+    case 'shnew':V.newIng={n:cap((V.shq||'').trim()),cat:V.shcat||'outro'};render(true);{const f=document.querySelector('.new-ing');if(f)f.scrollIntoView({block:'center'});}return true;
     case 'shnewx':V.newIng=null;render(true);return true;
     case 'shzero':if(sh.mode==='build'){sh.L={};sh.P={};render(true);}return true;
     case 'shasnew':{const items={L:{},P:{}};['L','P'].forEach(w=>shItems(sh,w).forEach(([i,q])=>{items[w][i]=q;}));
-      const mid=sh.mid,key=sh.key,kind=MEALS[mid].slot;delete S.custom[mid];save();
+      const mid=sh.mid,key=sh.key,kind=MEALS[mid].slot;
       V.sheet={mode:'build',key,slot:kind,n:`${shortOf(mid)} do nosso jeito`,L:items.L,P:items.P};V.sw=null;render(true);return true;}
-    case 'shsave':{const n=(sh.n||'').trim()||cap(SLOT_N[sh.slot]);const id='U'+Date.now().toString(36);
+    case 'shsave':{const un=snap(),n=(sh.n||'').trim()||cap(SLOT_N[sh.slot]);const id='U'+Date.now().toString(36);
       S.mine[id]={n,slot:sh.slot,t:10,L:Object.assign({},sh.L),P:Object.assign({},sh.P)};applyUser();
-      if(sh.key){S.swap[sh.key]=id;delete S.checks[sh.key+'|L'];delete S.checks[sh.key+'|P'];}
-      save();sheetClose();toast(`“${n}” salva e já está no cardápio`);return true;}
+      if(sh.key){['L','P'].forEach(w=>{setCheck(sh.key+'|'+w,false);delete S.checks[sh.key+'|'+w];});S.swap[sh.key]=id;}
+      save();sheetClose();toast(sh.key?`“${n}” salva e já está no cardápio`:`“${n}” salva nas receitas`,un);return true;}
   }
   return false;}
 function shInput(t){
@@ -1551,13 +1623,16 @@ function shInput(t){
   if(t.dataset.act==='shname'&&V.sheet&&V.sheet.mode==='build'){V.sheet.n=t.value;return true;}
   return false;}
 /* muda quanto do preparo vai no prato: escala os ingredientes pela mistura da panela */
-function prSet(sh,w,gr,want){want=Math.max(0,want);const iL=shItems(sh,'L'),iP=shItems(sh,'P'),o=prFor(sh.mid,gr,iL,iP,want);
-  for(const id of gr.ids){const g=ING[id],q=want?(o[id]||0):0;shSet(sh,w,id,g.u==='g'||g.u==='ml'||g.u==='g cozido'?Math.round(q*10)/10:q);}}
+function prSet(sh,w,gr,want){want=Math.max(0,want);const iL=shItems(sh,'L'),iP=shItems(sh,'P'),own=w==='L'?iL:iP,cur=prRaw(gr,own);
+  const o=cur>0&&!gr.g.fix?Object.fromEntries(own.filter(i=>gr.ids.includes(i[0])).map(([id,q])=>[id,q*want/cur])):prFor(sh.mid,gr,iL,iP,want),un=snap();
+  for(const id of gr.ids)shSet(sh,w,id,want?(o[id]||0):0);
+  if(!want&&!prRaw(gr,shItems(sh,w==='L'?'P':'L')))toast(`${gr.n} saiu da refeição`,un);}
 function shChange(t){
   if(t.dataset.act==='shprset'&&V.sheet){V.shIn=null;const sh=V.sheet,v=parseQty(t.value),gr=prGroups(sh.mid,shItems(sh,'L'),shItems(sh,'P')).find(x=>x.ix===+t.dataset.ix);
     if(v!=null&&gr){prSet(sh,t.dataset.w,gr,v);save();}render(true);return true;}
   if(t.dataset.act!=='shset'||!V.sheet)return false;V.shIn=null;const d=t.dataset,g=ING[d.id],v=parseQty(t.value);
-  if(v!=null){const q=inGrams(d.id)?(g.hu?v:v/(g.gw||1)):(g.hu?v*g.hu[2]:v);shSet(V.sheet,d.w,d.id,q);save();}
+  if(v!=null){/* 350 "copos" de leite é 350 ml: número grande numa medida caseira vale como grama ou ml */
+    const big=!inGrams(d.id)&&g.hu&&v>20;const q=inGrams(d.id)||big?(g.hu?v:v/(g.gw||1)):(g.hu?v*g.hu[2]:v);shSet(V.sheet,d.w,d.id,q);save();}
   render(true);return true;}
 function shSubmit(f){
   if(f.dataset.act!=='ingsave'||!V.sheet)return false;const x=new FormData(f),num=v=>parseFloat(String(v||'').replace(',','.'));
@@ -1565,17 +1640,21 @@ function shSubmit(f){
   if(!n||!(p>=0)||!(k>=0))return true;
   const id='x'+Date.now().toString(36),ai=guessAisle(n),cat=String(x.get('cat')||'outro');
   S.ing[id]={n,u,p:u==='g'?p/100:p,k:u==='g'?k/100:k,cat,aisle:['hort','prot','lat','merc'].includes(ai)?ai:(cat==='fruta'||cat==='leg'?'hort':cat==='lat'?'lat':'merc')};
-  applyUser();V.newIng=null;V.shq='';['L','P'].forEach(w=>shSet(V.sheet,w,id,u==='g'?(w==='L'?100:70):1));pushRecent(id);save();render(true);
-  toast(`${n} cadastrado`);return true;}
+  const from=V.newIng&&V.newIng.from,sh=V.sheet;applyUser();V.newIng=null;V.shq='';V.swq='';
+  ['L','P'].forEach(w=>{const q0=from?shQ(sh,w,from):1;if(from)shSet(sh,w,from,0);if(q0)shSet(sh,w,id,u==='g'?(w==='L'?100:70):1);});
+  if(from)V.sw=null;pushRecent(id);save();render(true);toast(from?`${n} cadastrado no lugar de ${SN[from]}`:`${n} cadastrado`);return true;}
 
 /* ===== DESFAZER: ação na hora + aviso com "Desfazer" por 6 s (em vez de "toque de novo para confirmar") ===== */
-const SNAP_F=['custom','mine','ing','swap','checks','manual','shop','dayc','casa','have'];
+const SNAP_F=['custom','mine','ing','swap','checks','manual','shop','dayc','casa','have','eaten'];
 function snap(){const o={};SNAP_F.forEach(f=>{o[f]=clone(S[f]);});return o;}
 let toastT=null;
-function toast(msg,undo){V.toast={msg,undo};clearTimeout(toastT);toastT=setTimeout(()=>{V.toast=null;drawToast();},6000);drawToast();}
+/* guarda só o que a ação mudou: desfazer não volta marcações feitas depois, nem as do outro celular */
+function undoDiff(before){const a=flat(before),n={};SNAP_F.forEach(f=>{n[f]=S[f];});const b=flat(n),o={};
+  for(const k in a)if(a[k]!==b[k])o[k]=a[k];for(const k in b)if(!(k in a))o[k]=null;return o;}
+function toast(msg,undo){if(undo){undo=undoDiff(undo);if(!Object.keys(undo).length)undo=null;}V.toast={msg,undo};clearTimeout(toastT);toastT=setTimeout(()=>{V.toast=null;drawToast();},6000);drawToast();}
 function drawToast(){const el=document.getElementById('toast');if(!el)return;const t=V.toast;
   el.innerHTML=t?`<div class="toast" role="status"><span>${esc(t.msg)}</span>${t.undo?'<button data-act="undo">Desfazer</button>':''}</div>`:'';}
-function doUndo(){const t=V.toast;if(!t||!t.undo)return;Object.assign(S,clone(t.undo));applyUser();V.toast=null;clearTimeout(toastT);save();render(true);drawToast();}
+function doUndo(){const t=V.toast;if(!t||!t.undo)return;for(const k in t.undo)setPath(S,k,t.undo[k]);SNAP_F.forEach(f=>{S[f]=S[f]||{};});applyUser();V.toast=null;clearTimeout(toastT);save();render(true);drawToast();}
 
 /* ===== INTERFACE ===== */
 const $=(s,r)=>(r||document).querySelector(s);
@@ -1626,41 +1705,42 @@ function baseIng(){const s=new Set();WEEK.forEach(d=>Object.values(d.slots).forE
 function sgn(n){n=R0(n);return n>0?`+${n}`:n<0?`−${-n}`:'='; }
 /* Preparo único: soma o que vai junto (uma massa, uma vitamina, uma panela) e mostra quanto fica com cada um. */
 /* Panela em dobro: na primeira refeição soma as duas; na sobra só avisa que está pronto. */
-function relWhen(d,o){return `${o.d===d?'hoje':o.d>d?'amanhã':'ontem'} no ${o.k==='almoco'?'almoço':'jantar'}`;}
+function relWhen(d,o){const n=Math.round((new Date(o.d+'T12:00:00')-new Date(d+'T12:00:00'))/864e5);return `${n===0?'hoje':n===1?'amanhã':n===-1?'ontem':n>0?'daqui a '+n+' dias':'há '+(-n)+' dias'} no ${o.k==='almoco'?'almoço':'jantar'}`;}
 /* Uma linha por panela: proporção para fazer a quantidade que quiser. O quanto vai no prato está na tabela, pelo peso pronto. */
 function juntoBlock(mid,day,slot){
   const m=MEALS[mid],lo=day?loteOf(day.d,slot):null;
-  const iL=day?dayItems(day,slot,'L'):itemsOf(mid,'L'),iP=day?dayItems(day,slot,'P'):itemsOf(mid,'P'),gs=prGroups(mid,iL,iP);
-  if(lo&&lo.role==='sobra')return `<div class="junto sobra"><b>Já está pronto:</b> ${(m.jn||m.n).toLowerCase()} feito ${relWhen(day.d,lo.o)}. É só esquentar e pesar no prato.</div>`;
-  const pots=gs.filter(gr=>gr.g.anc&&gr.ids.length>1);
-  if(!pots.length)return lo?`<div class="junto"><b>Faça a mais:</b> serve também ${relWhen(day.d,lo.o)}.</div>`:'';
-  return pots.map(gr=>{
-    const tot=prMix(mid,gr,iL,iP),a=gr.ids.includes(gr.g.anc[0])?gr.g.anc:null,k=a&&tot[a[0]]?a[1]/tot[a[0]]:2;
-    const pot=Object.keys(tot).map(id=>[id,tot[id]*k]),u=prUn(gr),rende=u?`${frac(Math.round(pot.find(x=>x[0]===u[2])[1]/u[3]))} ${u[1]}`:gr.g.ml?`~${fmt(Math.round(prWeight(gr,pot)/50)*50,0)} ml`:(w=>w>=1000?`~${fmt(w/1000,1)} kg`:`~${fmt(w,0)} g`)(Math.round(prWeight(gr,pot)/50)*50);
-    let need=prQty(gr,iL)+prQty(gr,iP);
-    if(lo){const od=dayOf(lo.o.d);need+=prQty(gr,dayItems(od,lo.o.k,'L'))+prQty(gr,dayItems(od,lo.o.k,'P'));}
-    const nd=u?`${frac(need)} ${need>1.01?u[1]:u[0]}`:gr.g.ml?`${fmt(need,0)} ml`:`${fmt(need,0)} g pronto`;
-    return `<div class="junto"><b>${gr.g.n}: faça a quantidade que quiser.</b> Proporção: ${pot.map(x=>potQ(x[0],x[1])).join(', ')} (rende ${rende}).
-      <span class="sub">${lo?`Para os dois, agora e ${relWhen(day.d,lo.o)}: ${nd} no total.`:`Para os dois pratos: ${nd}.`}</span></div>`;}).join('');
+  const iL=day?dayRaw(day,slot,'L'):itemsOf(mid,'L'),iP=day?dayRaw(day,slot,'P'):itemsOf(mid,'P'),gs=prGroups(mid,iL,iP);
+  if(lo&&lo.role==='sobra'){const fria=SOBRA_FRIA[mid],ns=gs.map(g=>g.n.toLowerCase());
+    return `<div class="junto sobra"><b>Já está pronto</b> desde ${relWhen(day.d,lo.o)}${ns.length?': '+ns.join(' e '):''}. ${fria?`Sirva ${fria}`:'É só esquentar'} e pesar no prato.</div>`;}
+  const others=lo?lo.os.map(o=>[dayOf(o.d)||dayFor(o.d),o.k]):[];
+  const box=gs.map(gr=>{const u=prUn(gr),tot=gr2=>prQty(gr,dayRaw(gr2[0],gr2[1],'L'))+prQty(gr,dayRaw(gr2[0],gr2[1],'P'));
+    let need=prQty(gr,iL)+prQty(gr,iP);others.forEach(o=>{const g2=prGroups(MEALS[mid]?mid:mid,dayRaw(o[0],o[1],'L'),dayRaw(o[0],o[1],'P')).find(x=>x.ix===gr.ix);if(g2)need+=prQty(g2,dayRaw(o[0],o[1],'L'))+prQty(g2,dayRaw(o[0],o[1],'P'));});
+    const nd=u?`${frac(need)} ${need>1?u[1]:u[0]}`:gr.g.ml?`${fmt(need,0)} ml`:`${fmt(need,0)} g pronto`;
+    if(!(gr.g.anc&&gr.ids.length>1))return lo?`<div class="junto"><b>${gr.n}:</b> ${nd} para os dois, agora e ${lo.os.map(o=>relWhen(day.d,o)).join(' e ')}.</div>`:'';
+    const mix=prMix(mid,gr,iL,iP),a=gr.ids.includes(gr.g.anc[0])?gr.g.anc:null,k=a&&mix[a[0]]?a[1]/mix[a[0]]:2;
+    const pot=Object.keys(mix).filter(id=>mix[id]>0).map(id=>[id,mix[id]*k]),w=prRaw(gr,pot),rende=u?`${frac(Math.round(w))} ${u[1]}`:gr.g.ml?`~${fmt(Math.round(w/10)*10,0)} ml`:w>=1000?`~${fmt(Math.round(w/50)*50/1000,2)} kg`:`~${fmt(Math.round(w/10)*10,0)} g`;
+    return `<div class="junto"><b>${gr.n}: faça a quantidade que quiser.</b> Proporção: ${pot.map(x=>potQ(x[0],x[1])).join(', ')} (rende ${rende}).
+      <span class="sub">${lo?`Para os dois, agora e ${lo.os.map(o=>relWhen(day.d,o)).join(' e ')}: ${nd} no total.`:`Para os dois pratos: ${nd}.`}</span></div>`;}).join('');
+  return box;
 }
 function ceiaNote(day){
   const i={L:ceiaInfo(day,'L'),P:ceiaInfo(day,'P')};if(!i.L.auto&&!i.P.auto)return '';
-  const t=w=>{const x=i[w];if(!x.auto)return `${WHO[w]}: como ajustada no editor`;return x.gap<=3?`${WHO[w]}: hoje não precisa, a meta já fechou`:`${WHO[w]}: faltam ~${R0(x.gap)} g`;};
+  const t=w=>{const x=i[w];if(!x.auto)return `${WHO[w]}: como ajustada no editor`;return x.eaten?`${WHO[w]}: comida`:x.gap<=3?`${WHO[w]}: não precisa, o plano do dia já fecha a meta`:`${WHO[w]}: faltam ~${R0(x.gap)} g`;};
   return `<div class="junto ceia-note"><b>Ceia completa o dia.</b> As quantidades se ajustam ao que falta de proteína depois do jantar. <span class="sub"><span class="L">${t('L')}</span> · <span class="P">${t('P')}</span></span></div>`;
 }
 function altsBlock(day,k,mid){
-  const key=`${day.d}|${k}`,cur={L:nut(itemsOf(mid,'L')).p,P:nut(itemsOf(mid,'P')).p},have=baseIng();
-  const all=Object.keys(MEALS).filter(id=>MEALS[id].slot===KIND[k]&&id!==mid);
+  const key=`${day.d}|${k}`,cur={L:nut(dayItems(day,k,'L')).p,P:nut(dayItems(day,k,'P')).p},have=baseIng();
+  const all=Object.keys(MEALS).filter(id=>MEALS[id].slot===KIND[k]&&id!==mid&&!MEALS[id].del);
   /* almoço/jantar logo depois de um prato de panela ainda sem par: repetir vira sobra (cozinha uma vez só), então vem primeiro */
   let prev=null;if(KIND[k]==='ref'){const {m:lm,seq}=loteMap(),i=seq.findIndex(x=>x.d===day.d&&x.k===k),a=seq[i-1];
-    if(a&&MEALS[a.mid].lote&&a.mid!==mid&&!lm[a.d+'|'+a.k])prev=a;}
+    if(a&&MEALS[a.mid].lote&&a.mid!==mid)prev=a;}
   if(prev){all.splice(all.indexOf(prev.mid),1);all.unshift(prev.mid);}
-  const row=id=>{const m=MEALS[id],iL=itemsOf(id,'L'),iP=itemsOf(id,'P'),l=nut(iL).p,p=nut(iP).p;
+  const row=id=>{const m=MEALS[id],iL=plateOf(id,'L'),iP=plateOf(id,'P'),l=nut(iL).p,p=nut(iP).p;
     const extra=[...new Set(iL.concat(iP).map(it=>it[0]))].filter(i=>!have.has(i)).map(i=>SN[i]);
     return `<div class="alt"><div class="mini">${ill(id)}</div><div class="alt-tx"><b>${m.n}${m.user?' <span class="mine-tag">de vocês</span>':''}</b>
       <span class="sub">${m.t} min · <span class="L">Lucas ${R0(l)} g (${sgn(l-cur.L)})</span> · <span class="P">Pri ${R0(p)} g (${sgn(p-cur.P)})</span></span>
-      ${prev&&id===prev.mid?`<span class="sub lote-tip">Repete o prato de ${relWhen(day.d,prev)}: faz em dobro lá e aqui só esquenta</span>`:''}
-      <span class="sub">${extra.length?`Compra a mais: ${extra.join(', ')}`:'Só com o que já está na lista'}</span></div>
+      ${prev&&id===prev.mid?`<span class="sub lote-tip">Repete o prato de ${relWhen(day.d,prev)}: faz a mais lá e aqui só esquenta</span>`:''}
+      <span class="sub">${extra.length?`Pede o que não está no plano: ${extra.join(', ')}`:'Usa só o que já está no plano da semana'}</span></div>
       <button class="btn small primary" data-act="swap" data-key="${key}" data-id="${id}">Usar</button></div>`;};
   const main=all.filter(id=>!MEALS[id].outros),out=all.filter(id=>MEALS[id].outros);
   return `<div class="alts"><div class="eyebrow">Trocar por</div>
@@ -1670,30 +1750,31 @@ function altsBlock(day,k,mid){
 /* Quantidade para mostrar: medida caseira grande e o detalhe embaixo */
 function amtOf(id,q){const g=ING[id],h=g.hu;
   if(inGrams(id))return {big:fmt(gramsOf(id,q),0),small:gUnit(id)};
-  if(h){const n=q/h[2];return {big:frac(n),small:`${n>1.01?h[1]:h[0]} · ${fmt(q,0)} ${g.u==='ml'?'ml':'g'}`};}
+  if(h){const n=q/h[2];return {big:frac(n),small:`${q4(n)>1?h[1]:h[0]} · ${fmt(q,0)} ${g.u==='ml'?'ml':'g'}`};}
   if(g.u==='g'||g.u==='ml'||g.u==='g cozido')return {big:fmt(q,0),small:id==='frango'?`g cru · ~${Math.round(q*FR_PRONTO/5)*5} pronto`:g.u==='ml'?'ml':g.u};
   const t=fq(id,q);return {big:frac(q),small:t.replace(/^[\d,½¼¾]+\s*/,'').replace(/ de .*/,'')};}
 /* Quantidade de um item para uma pessoa, sem repetir o nome: "5" + "colheres · 50 g" */
 function qtyCell(id,q){if(!q)return '<td class="none">—</td>';const a=amtOf(id,q);return `<td><b>${a.big}</b>${a.small?`<small>${a.small}</small>`:''}</td>`;}
 /* Uma receita, duas quantidades: uma linha por ingrediente, Lucas e Pri lado a lado. Tocar no nome troca o item. */
 function qtyTable(day,k,mid){
-  const key=`${day.d}|${k}`,iL=dayItems(day,k,'L'),iP=dayItems(day,k,'P'),q=(its,id)=>(its.find(i=>i[0]===id)||[0,0])[1];
-  const nL=nut(iL),nP=nut(iP),gc=(gr,its)=>{const v=prQty(gr,its);if(!v)return '<td class="none">—</td>';const a=prAmt(gr,v);return `<td><b>${a.big}</b><small>${a.small}</small></td>`;};
-  const rows=plateRows(mid,iL,iP).map(({id,gr})=>gr?`<tr><th><button data-act="shopen" data-key="${key}" data-mid="${mid}" data-id="pr${gr.ix}" aria-label="Mudar ${gr.g.n}">${gr.g.n}<span aria-hidden="true">⇄</span></button></th>${gc(gr,iL)}${gc(gr,iP)}</tr>`:`<tr><th><button data-act="shopen" data-key="${key}" data-mid="${mid}" data-id="${id}" aria-label="Trocar ${cap(SN[id]||ING[id].n)}">${cap(SN[id]||ING[id].n)}<span aria-hidden="true">⇄</span></button></th>${qtyCell(id,q(iL,id))}${qtyCell(id,q(iP,id))}</tr>`).join('');
-  const empty=w=>!(w==='L'?iL:iP).length?'<div class="sub">Não precisa hoje. Se der fome, metade da receita.</div>':'';
+  const key=`${day.d}|${k}`,iL=dayRaw(day,k,'L'),iP=dayRaw(day,k,'P'),cm=compose(mid,iL,iP),q=(its,id)=>(its.find(i=>i[0]===id)||[0,0])[1];
+  const nL=nut(cm.L),nP=nut(cm.P),gc=(gr,its)=>{const v=prQty(gr,its);if(!v)return '<td class="none">—</td>';const a=prAmt(gr,v);return `<td><b>${a.big}</b><small>${a.small}</small></td>`;};
+  const rows=plateRows(mid,iL,iP).map(({id,gr})=>gr?`<tr><th><button data-act="shopen" data-key="${key}" data-mid="${mid}" data-id="pr${gr.ix}" aria-label="Mudar ${gr.n}">${gr.n}<span aria-hidden="true">⇄</span></button></th>${gc(gr,iL)}${gc(gr,iP)}</tr>`:`<tr><th><button data-act="shopen" data-key="${key}" data-mid="${mid}" data-id="${id}" aria-label="Trocar ${cap(SN[id]||ING[id].n)}">${cap(SN[id]||ING[id].n)}<span aria-hidden="true">⇄</span></button></th>${qtyCell(id,q(iL,id))}${qtyCell(id,q(iP,id))}</tr>`).join('');
+  const empty=w=>!(w==='L'?iL:iP).length?`<div class="sub">${WHO[w]}: não precisa hoje. Se der fome, metade da receita.</div>`:'';
   return `<table class="qtab"><thead><tr><th><span class="sub">Toque no item para trocar</span></th><th class="L">Lucas</th><th class="P">Pri</th></tr></thead>
-   <tbody>${rows}<tr class="add"><th colspan="3"><button data-act="shopen" data-key="${key}" data-mid="${mid}">+ Adicionar item</button></th></tr></tbody>
+   <tbody>${rows}<tr class="add"><th colspan="3"><button data-act="shopen" data-key="${key}" data-mid="${mid}" data-add="1">+ Adicionar item</button></th></tr></tbody>
    <tfoot><tr><th>Proteína</th><td>${R0(nL.p)} g</td><td>${R0(nP.p)} g</td></tr><tr><th>Energia</th><td>${R0(nL.k)} kcal</td><td>${R0(nP.k)} kcal</td></tr></tfoot></table>${empty('L')}${empty('P')}`;
 }
 /* Passo a passo dentro da refeição: cozinhar sem trocar de aba. Marcações valem para aquele dia. */
 function howTo(day,k,mid,lo){
   const key=`${day.d}|${k}`,open=!!V.open['how|'+key],r=RECIPES[mid]||{steps:['Separe os itens da tabela e monte o prato de cada um.'],tips:[]};
-  const steps=lo&&lo.role==='sobra'?['Pegue a porção de cada um que ficou na geladeira.','Esquente no micro-ondas por 2 a 3 min, mexendo na metade.']:r.steps;
+  const fria=SOBRA_FRIA[mid],ex=lo&&lo.role==='sobra'?plateRows(mid,dayRaw(day,k,'L'),dayRaw(day,k,'P')).filter(x=>!x.gr).map(x=>SN[x.id]):[];
+  const steps=lo&&lo.role==='sobra'?['Pegue da geladeira o que sobrou e pese no prato de cada um (quantidade na tabela).',fria?`Sirva ${fria}: não vai ao micro-ondas.`:'Esquente no micro-ondas por 2 a 3 min, mexendo na metade. Ovo cozido inteiro, corte antes.'].concat(ex.length?[`Junte o que não é da panela: ${ex.join(', ')}.`]:[]):r.steps;
   const sk=i=>`${key}|${mid}|${i}`,done=steps.filter((x,i)=>S.steps[sk(i)]).length;
   return `<div class="howto"><button class="howto-h" data-act="howto" data-key="${key}" aria-expanded="${open}"><span><b>Como fazer</b><span class="sub"> · ${done?`${done} de ${steps.length} feitos`:`${steps.length} ${steps.length>1?'passos':'passo'}`}</span></span>${CHEV}</button>
    ${open?`<ol class="steps">${steps.map((x,i)=>`<li class="${S.steps[sk(i)]?'done':''}" data-act="step" data-key="${sk(i)}"><span>${x}</span></li>`).join('')}</ol>${!(lo&&lo.role==='sobra')&&r.tips&&r.tips.length?`<div class="note">${r.tips.map(t=>`<div>${t}</div>`).join('')}</div>`:''}`:''}</div>`;}
 /* Próxima refeição de hoje: a primeira que ainda não foi marcada pelos dois. */
-function nextSlot(day){if(day.d!==TODAY)return null;const f=SLOTS.find(s=>day.slots[s[0]]&&!(S.checks[`${day.d}|${s[0]}|L`]&&S.checks[`${day.d}|${s[0]}|P`]));return f?f[0]:null;}
+function nextSlot(day){if(day.d!==TODAY)return null;const f=SLOTS.find(s=>day.slots[s[0]]&&!(S.checks[`${day.d}|${s[0]}|L`]&&S.checks[`${day.d}|${s[0]}|P`])&&(s[0]!=='ceia'||['L','P'].some(w=>dayItems(day,'ceia',w).length)));return f?f[0]:null;}
 function slotCard(day,k,label,nk){
   const base=day.slots[k],mid=slotsOf(day)[k],m=MEALS[mid],key=`${day.d}|${k}`,sw=V.swap===key,lo=loteOf(day.d,k);
   const open=key in V.open?V.open[key]:(k===nk||sw);
@@ -1777,7 +1858,7 @@ function runTxt(id){const m=runsOut(id,14);if(m===null)return 'sempre tem';if(m=
   return `${homeQ(id)<=1e-6?'acabou · ':''}falta ${dayWord(m.d)} no ${slotWord(m.k)}`;}
 function viewCompras(){
   /* comprado em outro dia já está guardado: carrinho de ontem vai para a casa */
-  if(Object.values(S.shop).some(c=>c&&typeof c==='object'&&c.d&&c.d<HOJE)){stowCart();save();}
+  if(SY.remote!==null&&Object.values(S.shop).some(c=>c&&typeof c==='object'&&c.d&&c.d<HOJE)){stowCart();save();}
   const cv=V.cv||'falta';
   const ctrl=[...new Set(Object.keys(S.casa).concat(Object.values(S.shop).map(c=>c&&c.id)))].filter(id=>id&&ING[id]);
   const L=shopList(),todo=L.rows.filter(r=>!r.done);
@@ -1846,13 +1927,13 @@ function manHint(v){if(!String(v||'').trim())return '';const m=parseManual(v);
   return `Reconhecido: <b>${g.n}</b> · ${buyText({id:m.id,packs,qty:packs*g.pack})}. Ao comprar, entra em casa.`;}
 
 /* ----- RECEITAS ----- */
-function whereUsed(id){const out=[];WEEK.forEach(d=>{const sl=slotsOf(d);SLOTS.forEach(s=>{if(sl[s[0]]===id)out.push(`${d.wd} ${d.d.slice(8)} (${s[1].split(' ')[0].toLowerCase()})`);});});return out.length?out.join(', '):'nenhum dia. Use o botão Trocar na aba Hoje para colocar no plano.';}
+function whereUsed(id){const out=[];WEEK.forEach(d=>{const sl=slotsOf(d);SLOTS.forEach(s=>{if(sl[s[0]]===id)out.push(`${d.wd} ${d.d.slice(8)} (${s[1].split(' ')[0].toLowerCase()})`);});});return out.length?out.join(', '):'nenhum dia. Use “Pôr no plano” acima.';}
 /* o que a receita pede em casa (só o que o app controla): {ok, falta:[ids]} */
 function recCasa(id){const need={};['L','P'].forEach(w=>itemsOf(id,w).forEach(([i,q])=>{need[i]=(need[i]||0)+q;}));
   const ids=Object.keys(need),k=ids.filter(known),falta=k.filter(i=>homeQ(i)<need[i]-1e-6);
   return {all:ids.length&&k.length===ids.length,falta,k:k.length};}
 function recBadge(id){if(!MEALS[id])return '';const c=recCasa(id);
-  if(c.falta.length)return `<span class="rb warn">falta ${c.falta.length>1?c.falta.length+' itens':SN[c.falta[0]]||ING[c.falta[0]].n}</span>`;
+  if(c.falta.length)return `<span class="rb warn">${c.falta.length>1?'faltam '+c.falta.length+' itens':'falta '+(SN[c.falta[0]]||ING[c.falta[0]].n)}</span>`;
   return c.all?'<span class="rb ok">tem tudo em casa</span>':'';}
 const SLOT_OF={cafe:['cafe'],ref:['almoco','jantar'],lanche:['lanche'],ceia:['ceia']};
 /* pôr esta receita no lugar de uma refeição dos próximos 3 dias */
@@ -1864,13 +1945,13 @@ function planChips(id){const m=MEALS[id],out=[];
 function recTag(id){const m=MEALS[id]||BASES[id];return `${m.user?'De vocês · ':''}${MEALS[id]?(m.outros?'Outros':m.slot==='cafe'?'Café':m.slot==='ref'?'Almoço ou jantar':m.slot==='lanche'?'Lanche':'Ceia'):'Preparo base'}`;}
 function recCard(id){
   const m=MEALS[id]||BASES[id],open=!!V.open[id],isMeal=!!MEALS[id];
-  const prot=isMeal?`<span class="L">${R0(nut(itemsOf(id,'L')).p)} g</span> · <span class="P">${R0(nut(itemsOf(id,'P')).p)} g</span>`:'';
+  const prot=isMeal?`<span class="L">${R0(nut(plateOf(id,'L')).p)} g</span> · <span class="P">${R0(nut(plateOf(id,'P')).p)} g</span>`:'';
   if(!open)return `<button class="rcard" data-act="exp" data-id="${id}" aria-expanded="false" id="rec-${id}"><span class="r-ph">${ill(id)}${recBadge(id)}</span>
      <span class="r-tx"><span class="tag">${recTag(id)}</span><b>${m.n}</b><span class="sub">${m.t} min${prot?' · '+prot:''}</span></span></button>`;
   const r=RECIPES[id]||{steps:['Separe os itens da tabela e monte o prato de cada um.'],tips:[]};
-  const cols=isMeal?`<div class="cols">${['L','P'].map(w=>{const its=itemsOf(id,w),n=nut(its);return `<div class="col ${w}"><h4>${WHO[w]}</h4><ul>${plateRows(id,itemsOf(id,'L'),itemsOf(id,'P')).map(({id:x,gr})=>{if(gr){const v=prQty(gr,its);return v?`<li>${prTxt(gr,v)}</li>`:'';}const it=its.find(i=>i[0]===x);return it?`<li>${fq(it[0],it[1])}${x==='frango'?' cru':''}</li>`:'';}).join('')}</ul><div class="tt">${R0(n.p)} g de proteína · ${R0(n.k)} kcal</div></div>`;}).join('')}</div>`:`<div class="note">${m.desc}</div>`;
+  const cols=isMeal?`<div class="cols">${['L','P'].map(w=>{const its=itemsOf(id,w),n=nut(plateOf(id,w));return `<div class="col ${w}"><h4>${WHO[w]}</h4><ul>${plateRows(id,itemsOf(id,'L'),itemsOf(id,'P')).map(({id:x,gr})=>{if(gr){const v=prQty(gr,its);return v?`<li>${prTxt(gr,v)}</li>`:'';}const it=its.find(i=>i[0]===x);return it?`<li>${fq(it[0],it[1])}${x==='frango'?` cru (~${Math.round(it[1]*FR_PRONTO/5)*5} g pronto)`:''}</li>`:'';}).join('')}</ul><div class="tt">${R0(n.p)} g de proteína · ${R0(n.k)} kcal</div></div>`;}).join('')}</div>`:`<div class="note">${m.desc}</div>`;
   const steps=`<ol class="steps">${r.steps.map((x,i)=>{const k=`${id}|${i}`;return `<li class="${S.steps[k]?'done':''}" data-act="step" data-key="${k}"><span>${x}</span></li>`;}).join('')}</ol>`;
-  const tt=(m.lote?['Prato de panela: faça a mais. Quando ele aparece em duas refeições seguidas, a segunda é só esquentar (até 3 dias na geladeira).']:[]).concat(r.tips);
+  const tt=(m.lote?['Prato de panela: faça a mais. Quando ele se repete nas refeições seguintes, as próximas são sobra (até 3 dias na geladeira).']:[]).concat(r.tips);
   const tips=tt.length?`<div class="note">${tt.map(t=>`<div>${t}</div>`).join('')}</div>`:'';
   const c=isMeal?recCasa(id):null;
   const casa=c&&c.falta.length?`<button class="buy warn" data-act="golist">Falta em casa: ${c.falta.map(i=>SN[i]||ING[i].n).join(', ')}. Ponha no plano e entra na lista.</button>`:c&&c.all?'<div class="buy">Tem tudo em casa para fazer.</div>':'';
@@ -1884,12 +1965,12 @@ function viewReceitas(){
   const F=[['all','Todas'],['casa','Dá para fazer'],['cafe','Café'],['ref','Almoço e jantar'],['lc','Lanche e ceia'],['outros','Outros'],['base','Base']];
   const chips=F.map(f=>`<button class="chip" data-act="filter" data-f="${f[0]}" aria-pressed="${V.filter===f[0]}">${f[1]}</button>`).join('');
   const q=singAll(norm(V.recq||''));
-  const ids=Object.keys(MEALS).concat(Object.keys(BASES)).filter(id=>{
+  const ids=Object.keys(MEALS).filter(x=>!MEALS[x].del).concat(Object.keys(BASES)).filter(id=>{
     const m=MEALS[id]||BASES[id],sl=m.slot,o=!!(MEALS[id]&&MEALS[id].outros);
-    if(q){const t=singAll(norm(m.n+' '+(MEALS[id]?itemsOf(id,'L').concat(itemsOf(id,'P')).map(i=>SN[i[0]]||'').join(' '):'')));if(!q.split(' ').every(w=>t.includes(w)))return false;}
+    if(q){const its=MEALS[id]?itemsOf(id,'L').concat(itemsOf(id,'P')).map(i=>i[0]):[],t=singAll(norm(m.n+' '+its.map(i=>(SN[i]||'')+' '+Object.keys(ALIAS).filter(a=>ALIAS[a]===i).join(' ')).join(' ')));if(!q.split(' ').every(w=>t.includes(w)))return false;}
     if(V.filter==='casa'){if(!MEALS[id])return false;const c=recCasa(id);return c.all&&!c.falta.length;}
     return V.filter==='all'||(V.filter==='outros'?o:!o&&(V.filter==='lc'?(sl==='lanche'||sl==='ceia'):sl===V.filter));});
-  const empty=V.filter==='casa'?'Nenhuma com tudo em casa (ou o app ainda não sabe o que tem). Marque em Compras › Em casa.':'Nenhuma receita com esse nome.';
+  const empty=V.recq?'Nenhuma receita com esse nome. <button class="link" data-act="recclear">Limpar busca</button>':V.filter==='casa'?'Nenhuma com tudo em casa (ou o app ainda não sabe o que tem). Marque em Compras › Em casa.':'Nenhuma receita com esse nome.';
   return `<input class="in-text rec-q" type="search" data-act="rec-q" placeholder="Buscar receita ou ingrediente" autocomplete="off" aria-label="Buscar receita" value="${esc(V.recq||'')}">
    <div class="chips">${chips}</div><div class="rgrid" id="rgrid">${ids.length?ids.map(recCard).join(''):`<div class="sub empty">${empty}</div>`}</div>`;
 }
@@ -1897,25 +1978,30 @@ function viewReceitas(){
 /* ----- PREPARO ----- */
 function ceilTo(n,s){return Math.ceil(n/s-1e-9)*s;}
 function eggOf(list){const f=list.find(i=>i[0]==='ovo');return f?f[1]:0;}
-function boiledEggs(days){let n=0;days.forEach(dd=>{const d=dayOf(dd);if(!d)return;Object.values(slotsOf(d)).forEach(mid=>{
-  if(MEALS[mid].oc)n+=eggOf(itemsOf(mid,'L'))+eggOf(itemsOf(mid,'P'));});});return n;}
-/* Potes: quanto de um item vai em cada refeição dos dias do bloco (frango pesado já assado, ~¾ do cru). */
-function potes(days,id,f){const out=[];WEEK.forEach(d=>{if(!days.includes(d.d))return;SLOTS.forEach(([k,lb])=>{
-  const q=w=>(dayItems(d,k,w).find(i=>i[0]===id)||[0,0])[1]*f;const L=q('L'),P=q('P');
-  if(L+P>0)out.push(`<li><span>${d.wd} ${+d.d.slice(8)} · ${lb.split(' ')[0].toLowerCase()}</span><span class="L">${L?fmt(Math.round(L/5)*5,0)+' g':'—'}</span><span class="P">${P?fmt(Math.round(P/5)*5,0)+' g':'—'}</span></li>`);});});
-  return out.length?`<ul class="potes"><li class="ph"><span>Pote${f<1?' · peso já pronto':''}</span><span class="L">Lucas</span><span class="P">Pri</span></li>${out.join('')}</ul>`:'';}
+function boiledEggs(days){let n=0;days.forEach(dd=>{const d=dayOf(dd);if(!d)return;const sl=slotsOf(d);Object.keys(sl).forEach(k=>{
+  if(MEALS[sl[k]].oc)n+=eggOf(dayItems(d,k,'L'))+eggOf(dayItems(d,k,'P'));});});return Math.ceil(n-1e-6);}
+/* Potes: quanto de um item vai em cada refeição dos dias do bloco (frango pesado já assado, ~¾ do cru).
+   Se vai para uma panela (molho, salada), é um pote só, no dia de fazer a panela. */
+function potes(days,id,f){const out=[],pan={};WEEK.forEach(d=>{if(!days.includes(d.d))return;SLOTS.forEach(([k,lb])=>{
+  const mid=slotsOf(d)[k];if(!mid)return;const g=prGroups(mid,dayRaw(d,k,'L'),dayRaw(d,k,'P')).find(x=>x.ids.includes(id)&&x.ids.length>1);
+  const q=w=>(dayItems(d,k,w).find(i=>i[0]===id)||[0,0])[1]*f;const L=q('L'),P=q('P');if(!(L+P>0))return;
+  if(g){const c=cookDate(d.d,k),lo=loteOf(d.d,k),ck=lo&&lo.role==='sobra'?lo.o.k:k,key=`${c}|${ck}`;
+    if(!pan[key]){pan[key]={q:0,lbl:`${dayFor(c).wd} ${+c.slice(8)} · ${g.n.toLowerCase()}`};out.push(pan[key]);}pan[key].q+=L+P;return;}
+  out.push(`<li><span>${d.wd} ${+d.d.slice(8)} · ${lb.split(' ')[0].toLowerCase()}</span><span class="L">${L?fmt(Math.round(L/5)*5,0)+' g':'—'}</span><span class="P">${P?fmt(Math.round(P/5)*5,0)+' g':'—'}</span></li>`);});});
+  const li=out.map(x=>typeof x==='string'?x:`<li><span>${x.lbl}</span><span class="both">${fmt(Math.round(x.q/5)*5,0)} g, um pote para a panela</span></li>`);
+  return li.length?`<ul class="potes"><li class="ph"><span>Pote${f<1?' · peso já pronto':''}</span><span class="L">Lucas</span><span class="P">Pri</span></li>${li.join('')}</ul>`:'';}
 /* Tarefas em ordem de início: o que demora mais (pressão, forno) começa primeiro, o resto entra enquanto espera. */
 function prepPlan(){
   const mk=(key,label,days,first)=>{
     const nd=needs(days);const fr=ceilTo(((nd.frango||{}).tot||0)*1.1,50);
-    const ar=nd.arroz?ceilTo(nd.arroz.tot*.34*1.1,10):0;
+    const ar=nd.arroz?Math.max(150,ceilTo(nd.arroz.tot*.34*1.1,10)):0;
     const feijAll=needs(ALL_DAYS).feijao;const fj=feijAll?ceilTo(feijAll.tot*.35*1.05,10):0;
     const ov=boiledEggs(days);
     const tasks=[
-      first?{id:`${WK}-${key}-feijao`,n:`Feijão: ${fj} g secos`,s:0,m:35,eq:'Pressão',k:'25 min na pressão',t:`Deixe de molho na véspera se puder. Rende ~${Math.round(fj*2.85/10)*10} g cozidos: congele em porções de 140 g, uma por refeição com feijão do Lucas.`}
-           :{id:`${WK}-${key}-feijao`,n:'Feijão: porções do congelador',s:0,m:2,eq:'Geladeira',k:'1 porção na véspera',t:'Passe uma porção para a geladeira na véspera de cada refeição com feijão.'},
-      {id:`${WK}-${key}-frango`,n:`Frango assado: ${fr} g`,s:0,m:30,eq:'Forno',k:'200 °C · 22 a 25 min',t:'Tempere com sal, páprica e limão enquanto o forno aquece. Asse, deixe amornar, desfie metade e fatie o resto.',potes:potes(days,'frango',FR_PRONTO)},
-      ar&&{id:`${WK}-${key}-arroz`,n:`Arroz: ${ar} g crus`,s:5,m:20,eq:'Panela',k:`12 min tampado · rende ~${ar*3} g`,t:'Refogue no azeite, junte 2,5 partes de água fervente, tampe e cozinhe 12 min. Só o Lucas come arroz.',potes:potes(days,'arroz',1)},
+      fj&&first?{id:`${WK}-${key}-feijao`,n:`Feijão: ${fj} g secos`,s:0,m:35,eq:'Pressão',k:'25 min na pressão',t:`Deixe de molho na véspera se puder. Rende ~${Math.round(fj*2.85/10)*10} g cozidos: congele em porções de 1 concha (140 g), uma por refeição com feijão.`}
+           :fj&&{id:`${WK}-${key}-feijao`,n:'Feijão: porções do congelador',s:0,m:2,eq:'Geladeira',k:'1 porção na véspera',t:'Passe uma porção para a geladeira na véspera de cada refeição com feijão.'},
+      {id:`${WK}-${key}-frango`,n:`Frango assado: ${fr} g`,s:0,m:30,eq:'Forno',k:'200 °C · 22 a 25 min',t:'Descongelado (na geladeira, de véspera). Tempere com sal, páprica e limão enquanto o forno aquece. Asse até não ter rosa no meio. Desfie o que vai para molho, salada e recheio; fatie o resto.',potes:potes(days,'frango',FR_PRONTO)},
+      ar&&{id:`${WK}-${key}-arroz`,n:`Arroz: ${ar} g crus`,s:5,m:20,eq:'Panela',k:`12 min tampado · rende ~${ar*3} g`,t:'Refogue no azeite, junte 2,5 partes de água fervente, tampe e cozinhe 12 min. Menos que isso queima: o que sobrar vai para a geladeira (4 dias).',potes:potes(days,'arroz',1)},
       ov&&{id:`${WK}-${key}-ovos`,n:`Ovos cozidos: ${ov} un`,s:15,m:12,eq:'Boca',k:'10 min + água gelada',t:'Água fria, ferva e conte 10 min. Passe em água gelada e guarde com casca.'},
       {id:`${WK}-${key}-azeite`,n:'Azeite aromatizado',s:25,m:8,eq:'Boca',k:'fogo baixo · 5 min',t:'100 ml de azeite com 2 dentes de alho amassados. Tire todo o alho. Geladeira, até 4 dias.'+(first?'':' Descarte o do domingo.')}].filter(Boolean);
     const end=Math.max(...tasks.map(t=>t.s+t.m))+10;
@@ -1936,7 +2022,7 @@ function viewPreparo(){
   if(TODAY>=BATCH2[0])plans.reverse();
   return `<div class="stack">${plans.map(p=>{const done=p.tasks.filter(t=>S.prep[t.id]).length,all=done===p.tasks.length,past=p.days[p.days.length-1]<TODAY;
    /* frango e arroz do bloco: só avisa o que o app controla em casa */
-   const ids=['frango','arroz'].filter(id=>p.nd[id]&&known(id)),miss=ids.filter(id=>homeQ(id)<p.nd[id].tot-1e-6);
+   const left=needsAhead(14),ids=['frango','arroz'].filter(id=>p.nd[id]&&known(id)),miss=ids.filter(id=>!S.prep[`${WK}-${p.key}-${id}`]&&homeQ(id)<Math.min(p.nd[id].tot,(left[id]||{tot:0}).tot)-1e-6);
    const buy=ids.length?`<button class="buy${miss.length?' warn':''}" data-act="golist">${miss.length?`Falta em casa: ${miss.map(id=>SN[id].replace(' cozido','')).join(' e ')} · ver lista`:`${ids.map(id=>cap(SN[id].replace(' cozido',''))).join(' e ')} em casa`}</button>`:'';
    const tasks=p.tasks.map((t,n)=>{const on=!!S.prep[t.id],run=TIMERS[t.id];
     return `<div class="task${on?' done':''}"><label class="tk"><input type="checkbox" data-act="prep" data-key="${t.id}"${on?' checked':''}><span class="box">${CHECK}</span>
@@ -1951,7 +2037,7 @@ function viewPreparo(){
 
 /* ----- AJUSTES ----- */
 /* Aceita 2 · 0,5 · 1/2 · ½ · 1½ · 1 1/2 */
-function parseQty(s){s=String(s||'').trim().replace(',','.').replace('½',' .5').replace('¼',' .25').replace('¾',' .75');
+function parseQty(s){s=String(s||'').trim().replace(/\.(?=\d{3}(\D|$))/g,'').replace(',','.').replace('½',' .5').replace('¼',' .25').replace('¾',' .75');
   let v=0,ok=false;for(const p of s.split(/\s+/).filter(Boolean)){const f=p.match(/^(\d+)\/(\d+)$/);const n=f?Number(f[1])/Number(f[2]):Number(p);if(!isFinite(n))return null;v+=n;ok=true;}
   return ok?v:null;}
 const ICONS=[['verde','Verde'],['preto','Preto'],['rosa','Rosa'],['claro','Claro']];
@@ -2020,10 +2106,10 @@ document.addEventListener('click',e=>{
   if(a.startsWith('sh')&&a!=='shop'&&shAct(a,t))return;
   switch(a){
     case 'undo':doUndo();return;
-    case 'shopen':sheetOpen({mode:'edit',mid:t.dataset.mid,key:t.dataset.key,sw:t.dataset.id||null});return;
-    case 'shbuild':{const mid=t.dataset.mid,it={L:{},P:{}};['L','P'].forEach(w=>itemsOf(mid,w).forEach(([i,q])=>{it[w][i]=q;}));
+    case 'shopen':sheetOpen({mode:'edit',mid:t.dataset.mid,key:t.dataset.key,sw:t.dataset.id||null,add:!!t.dataset.add});return;
+    case 'shbuild':{const mid=t.dataset.mid,it={L:{},P:{}},kd=(t.dataset.key||'').split('|');['L','P'].forEach(w=>(kd[1]?dayRaw(dayOf(kd[0]),kd[1],w):itemsOf(mid,w)).forEach(([i,q])=>{it[w][i]=q;}));
       V.swap=null;sheetOpen({mode:'build',key:t.dataset.key,slot:MEALS[mid].slot,n:'',L:it.L,P:it.P});return;}
-    case 'mealdel':{const un=snap(),id=t.dataset.id,n=MEALS[id].n;delete S.mine[id];delete S.custom[id];Object.keys(S.swap).forEach(k=>{if(S.swap[k]===id)delete S.swap[k];});applyUser();save();render(true);toast(`“${n}” apagada`,un);return;}
+    case 'mealdel':{const un=snap(),id=t.dataset.id,n=MEALS[id].n;{const used=Object.keys(S.swap).filter(k=>S.swap[k]===id),past=used.some(k=>k.slice(0,10)<HOJE||S.checks[k+'|L']||S.checks[k+'|P']);used.forEach(k=>{if(k.slice(0,10)>=HOJE&&!S.checks[k+'|L']&&!S.checks[k+'|P'])delete S.swap[k];});if(past)S.mine[id].del=1;else{delete S.mine[id];delete S.custom[id];}}applyUser();save();render(true);toast(`“${n}” apagada`,un);return;}
     case 'nav':setHash(t.dataset.v);return;
     case 'day':V.day=t.dataset.day;render(true);return;
     case 'day-go':V.day=t.dataset.day;setHash('hoje');return;
@@ -2035,7 +2121,7 @@ document.addEventListener('click',e=>{
       setTimeout(()=>{const el=document.getElementById('s-'+key);if(el)el.scrollIntoView({block:'start'});},60);return;}
     case 'timer':{const id=t.dataset.id;if(TIMERS[id])delete TIMERS[id];else{TIMERS[id]={end:Date.now()+Number(t.dataset.m)*60000,n:t.dataset.n};if(!timerI)timerI=setInterval(tickTimers,1000);}render(true);return;}
     case 'golist':V.cv='falta';setHash('compras');return;
-    case 'recipe':V.open[t.dataset.id]=true;V.filter='all';setHash('receitas');setTimeout(()=>{const el=document.getElementById('rec-'+t.dataset.id);if(el)el.scrollIntoView({block:'start'});},60);return;
+    case 'recipe':V.open[t.dataset.id]=true;V.filter='all';V.recq='';setHash('receitas');setTimeout(()=>{const el=document.getElementById('rec-'+t.dataset.id);if(el)el.scrollIntoView({block:'start'});},60);return;
     case 'exwho':V.extraWho=t.dataset.who;render(true);return;
     case 'exadd':case 'exdel':{const key=`${V.day}|${V.extraWho}`;const ex=S.extras[key]=S.extras[key]||{};const id=t.dataset.id;ex[id]=Math.max(0,(ex[id]||0)+(a==='exadd'?1:-1));save();render(true);return;}
     case 'have':S.have[t.dataset.id]=!S.have[t.dataset.id];save();render(true);return;
@@ -2043,29 +2129,32 @@ document.addEventListener('click',e=>{
     case 'cv':V.cv=t.dataset.v;render(true);return;
     case 'hz':S.hz=Number(t.dataset.n);save();render(true);return;
     case 'stow':{const un=snap(),n=stowCart();save();render(true);toast(`${n} ${n>1?'itens guardados':'item guardado'} em casa`,un);return;}
-    case 'jatenho':{const id=t.dataset.id,un=snap(),need=(needsAhead(S.hz||3)[id]||{tot:0}).tot;S.casa[id]=r3(Math.max(S.casa[id]||0,need));save();render(true);
-      toast(`Anotado: tem ${casaTxt(id,S.casa[id])} de ${SN[id]||ING[id].n}. Ajuste em Em casa.`,un);return;}
+    case 'jatenho':{const id=t.dataset.id,un=snap(),need=(needsAhead(S.hz||3)[id]||{tot:0}).tot;setHome(id,Math.max(netCasa(id),need));save();render(true);
+      toast(`Anotado em casa: ${casaTxt(id,homeQ(id))}${/^\d|^[¼½¾]/.test(casaTxt(id,1))&&ING[id].u!=='un'?' · '+(SN[id]||ING[id].n):''}. Ajuste em Em casa.`,un);return;}
     case 'casa':{const id=t.dataset.id,d=t.dataset.d;
       /* mexer à mão num item do carrinho: o carrinho dele já vai para a casa */
-      for(const k in S.shop){const x=S.shop[k];if(x&&x.id===id){S.casa[id]=r3((S.casa[id]||0)+x.q);delete S.shop[k];if(k.indexOf('m-')===0&&S.manual.lista)delete S.manual.lista[k.slice(2)];}}
-      const c=Math.max(0,S.casa[id]||0);S.casa[id]=r3(Math.max(0,d==='pk'?c+packQ(id):d==='0'?0:c+Number(d)*casaStep(id)));save();render(true);return;}
+      for(const k in S.shop){const x=S.shop[k];if(x&&x.id===id){delete S.shop[k];setHome(id,Math.max(0,netCasa(id))+x.q);if(k.indexOf('m-')===0&&S.manual.lista)delete S.manual.lista[k.slice(2)];}}
+      const c=Math.max(0,netCasa(id));setHome(id,d==='pk'?c+packQ(id):d==='0'?0:c+Number(d)*casaStep(id));save();render(true);return;}
     case 'casadel':{const un=snap(),id=t.dataset.id;delete S.casa[id];save();render(true);toast(`${cap(SN[id]||ING[id].n)} não é mais controlado`,un);return;}
-    case 'casaadd':{const id=t.dataset.id;S.casa[id]=packQ(id);V.casaq='';save();render(true);toast(`${cap(SN[id]||ING[id].n)}: ${casaTxt(id,S.casa[id])} em casa`);return;}
-    case 'resetall':{if(V.confirm==='all'){S.checks={};S.extras={};S.shop={};S.pantry={};S.prep={};S.steps={};S.have={};S.swap={};S.dayc={};V.confirm=null;save();}else arm('all');render(true);return;}
+    case 'casaadd':{const id=t.dataset.id;setHome(id,packQ(id));V.casaq='';save();render(true);toast(`${cap(SN[id]||ING[id].n)}: ${casaTxt(id,homeQ(id))} em casa`);return;}
+    case 'resetall':{if(V.confirm==='all'){for(const id in S.casa)S.casa[id]=r3(Math.max(0,netCasa(id)));S.eaten={};S.checks={};S.extras={};S.shop={};S.pantry={};S.prep={};S.steps={};S.have={};S.swap={};S.dayc={};V.confirm=null;save();}else arm('all');render(true);return;}
     case 'exp':V.open[t.dataset.id]=!V.open[t.dataset.id];render(true);return;
     case 'step':S.steps[t.dataset.key]=!S.steps[t.dataset.key];save();render(true);return;
     case 'clearsteps':Object.keys(S.steps).forEach(x=>{if(x.indexOf(t.dataset.id+'|')===0)delete S.steps[x];});save();render(true);return;
     case 'filter':V.filter=t.dataset.f;render(true);return;
+    case 'recclear':V.recq='';render(true);return;
     case 'plan':{const k=t.dataset.key,id=t.dataset.id,[dd,sk]=k.split('|'),d=dayFor(dd),un=snap();
+      setCheck(k+'|L',false);setCheck(k+'|P',false);delete S.checks[k+'|L'];delete S.checks[k+'|P'];
       if(slotsOf(d)[sk]===id&&id!==d.slots[sk])delete S.swap[k];else if(id===d.slots[sk])delete S.swap[k];else S.swap[k]=id;
-      setCheck(k+'|L',false);setCheck(k+'|P',false);delete S.checks[k+'|L'];delete S.checks[k+'|P'];save();render(true);
+      save();render(true);
       toast(slotsOf(d)[sk]===id?`No plano: ${dayWord(dd)}, ${slotWord(sk)}. A lista de compras já conta.`:`Voltou ao plano de ${dayWord(dd)}`,un);return;}
     case 'icon':S.icon=t.dataset.id;applyIcon();save();render(true);return;
     case 'swapopen':V.swap=V.swap===t.dataset.key?null:t.dataset.key;render(true);return;
     case 'edreset':{const un=snap();delete S.custom[t.dataset.mid];save();render(true);toast('Voltou à receita original',un);return;}
-    case 'swap':{const k=t.dataset.key,id=t.dataset.id,d=dayOf(k.split('|')[0]);
+    case 'swap':{const k=t.dataset.key,id=t.dataset.id,d=dayOf(k.split('|')[0]),un=snap();
+      setCheck(k+'|L',false);setCheck(k+'|P',false);delete S.checks[k+'|L'];delete S.checks[k+'|P'];
       if(id===d.slots[k.split('|')[1]])delete S.swap[k];else S.swap[k]=id;
-      setCheck(k+'|L',false);setCheck(k+'|P',false);delete S.checks[k+'|L'];delete S.checks[k+'|P'];V.swap=null;save();render(true);return;}
+      V.swap=null;V.open[k]=true;save();render(true);{const el=document.getElementById('s-'+k);if(el)el.scrollIntoView({block:'start'});}toast(`Trocado: ${MEALS[id].n}`,un);return;}
     case 'manpick':{const i=document.getElementById('man-in');if(i){i.value=t.dataset.t;i.dispatchEvent(new Event('input',{bubbles:true}));i.form.requestSubmit();}return;}
   }
 });
@@ -2094,6 +2183,12 @@ document.addEventListener('submit',e=>{const f=e.target;if(shSubmit(f)){e.preven
 window.addEventListener('hashchange',()=>go(location.hash.slice(1)));
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.classList&&e.target.classList.contains('ed-in'))e.target.blur();if(e.key==='Escape'&&V.sheet)sheetClose();});
 document.addEventListener('focusout',e=>{if(e.target.classList&&e.target.classList.contains('ed-in'))setTimeout(()=>{if(V.shIn){V.shIn=null;render(true);}},0);});
+/* O dia virou com o app aberto: recarrega na data certa (espera fechar painel ou terminar de digitar). */
+function dayRoll(){let t='';try{t=localStorage.getItem('cardapio-hoje-test')||'';}catch(e){}if(t||isoOf(new Date())===HOJE)return;
+  if(V.sheet||Object.keys(TIMERS).length||/^(INPUT|TEXTAREA|SELECT)$/.test((document.activeElement||{}).tagName||'')&&document.activeElement.type!=='checkbox')return;
+  saveNow();location.reload();}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')dayRoll();});
+window.addEventListener('focus',dayRoll);setInterval(dayRoll,30000);
 (function init(){
   document.getElementById('app').innerHTML=`<div class="wrap"><header class="hdr"><p class="eyebrow">Lucas e Pri · ${semTxt()}</p><h1 id="hdr-t"></h1><p id="sync-st" class="sync-st" hidden></p></header><main id="main"></main></div><nav class="nav" id="nav" aria-label="Seções"></nav><div id="sheet"></div><div id="toast" aria-live="polite"></div>`;
   const h=(location.hash||'').slice(1);V.view=VIEWS[h]?h:'hoje';applyIcon();render(false);
@@ -2102,7 +2197,7 @@ document.addEventListener('focusout',e=>{if(e.target.classList&&e.target.classLi
 /* Atualização: o app abre do cache (funciona sem sinal) e, se houver versão nova publicada, recarrega sozinho uma vez. */
 if('serviceWorker' in navigator&&location.protocol!=='file:'){
   const had=!!navigator.serviceWorker.controller;let reloaded=false;
-  navigator.serviceWorker.addEventListener('controllerchange',()=>{if(had&&!reloaded){reloaded=true;(function go(){if(V.sheet||/^(INPUT|TEXTAREA|SELECT)$/.test((document.activeElement||{}).tagName))return setTimeout(go,2000);saveNow();location.reload();})();}});
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{if(had&&!reloaded){reloaded=true;(function go(){if(V.sheet||Object.keys(TIMERS).length||/^(INPUT|TEXTAREA|SELECT)$/.test((document.activeElement||{}).tagName))return setTimeout(go,2000);saveNow();location.reload();})();}});
   navigator.serviceWorker.register('sw.js').then(reg=>{
     reg.update().catch(()=>{});
     let last=Date.now();const up=()=>{if(Date.now()-last<30000)return;last=Date.now();reg.update().catch(()=>{});};

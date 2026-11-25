@@ -3,7 +3,7 @@
    Em comum: tudo que é do plano e da casa, inclusive o que cada um comeu (checks), extras e passos de receita.
    Só do aparelho: ícone e a escolha de ver em gramas (unit).
    A casa (…/casas/<código>) vem embutida no app (CASA, no fim deste arquivo): nada para configurar. */
-const SHARED=['swap','shop','stock','have','pantry','prep','targets','ref','maxKg','custom','manual','checks','extras','steps','mine','ing','dayc','casa'];
+const SHARED=['swap','shop','stock','have','pantry','prep','targets','ref','maxKg','custom','manual','checks','extras','steps','mine','ing','dayc','casa','eaten'];
 /* passaram a sincronizar depois: na 1ª conexão de um aparelho que já estava na casa, o que só ele tem sobe (nada se apaga) */
 const LATE=['checks','extras','steps'];
 const SYK='cardapio-sync';
@@ -115,6 +115,8 @@ const CASA=(()=>{let b='';try{b=localStorage.getItem('cardapio-sync-test')||'';}
   return (b||'https://cardapio-lucas-pri-default-rtdb.firebaseio.com')+'/casas/2jiut88v973bhzvr2pwq4dtm';})();
 syLoad();
 if(SY.url!==CASA){SY.url=CASA;SY.pend={};SY.merge=true;syStore();}
+/* Aparelho que já está na casa: o que está salvo aqui é a base. Sem isso, o que se marca antes de conectar (ou aberto sem internet) era apagado quando a conexão chegava. */
+if(SY.mig&&!SY.merge){SY.base=flat(sharedOf(S));SY.based=true;}
 syListen();
 /* Voltou para o app (celular tira a conexão em segundo plano): reconecta e pega o que mudou nos outros aparelhos. */
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&SY.url&&SY.state!=='erro'){saveNow();syListen();}});

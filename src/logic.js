@@ -1,7 +1,7 @@
 /* ===== ESTADO E CÁLCULOS ===== */
 const KEY='cardapio-lucas-pri-v1';
 const DEF={checks:{},extras:{},shop:{},stock:{atum:4,sardinha:2},pantry:{},prep:{},steps:{},
-  targets:{L:{p:160,k:2800},P:{p:125,k:1750}},ref:{iog:3.6,whey:24},maxKg:14,have:{},swap:{},icon:'verde',custom:{},unit:{},manual:{},mine:{},ing:{},me:'',dayc:{},casa:{},hz:3};
+  targets:{L:{p:160,k:2800},P:{p:125,k:1750}},ref:{iog:3.6,whey:24},maxKg:14,have:{},swap:{},icon:'verde',custom:{},unit:{},manual:{},mine:{},ing:{},me:'',dayc:{},casa:{},eaten:{},hz:3};
 function clone(o){return JSON.parse(JSON.stringify(o));}
 function loadState(){
   const s=clone(DEF);
@@ -26,7 +26,7 @@ function applyUser(){
     SN[id]=u.n.toLowerCase();}
   for(const id in S.mine){const m=S.mine[id];if(!m||!m.n||!SLOT_OK[m.slot])continue;
     const its=w=>Object.keys(m[w]||{}).filter(i=>ING[i]&&m[w][i]>0).map(i=>[i,+m[w][i]]);
-    MEALS[id]={slot:m.slot,n:m.n,t:+m.t||10,user:1,L:its('L'),P:its('P')};}
+    MEALS[id]={slot:m.slot,n:m.n,t:+m.t||10,user:1,del:!!m.del,L:its('L'),P:its('P')};}
   ING_IDS=Object.keys(ING);
 }
 applyUser();
@@ -42,8 +42,8 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 
 function fmt(n,d){return Number(n).toLocaleString('pt-BR',{maximumFractionDigits:d==null?1:d});}
 /* 0,75 -> ¾ ; 1,5 -> 1½ (medidas caseiras) */
-function frac(n){const w=Math.floor(n+1e-9),r=n-w,F=[[.25,'¼'],[.5,'½'],[.75,'¾']].find(f=>Math.abs(f[0]-r)<.03);
-  return r<.03?String(w):r>.97?String(w+1):F?(w?w+F[1]:F[1]):fmt(n,1);}
+const q4=n=>n>0?Math.max(.25,Math.round(n*4)/4):0;
+function frac(n){n=q4(n);const w=Math.floor(n),r=n-w,F={0:'',.25:'¼',.5:'½',.75:'¾'}[r];return w?w+F:F||'0';}
 const R0=n=>Math.round(n);
 /* Medida em gramas: cada aparelho escolhe, por ingrediente (S.unit[id]='g'). */
 function canGrams(id){const g=ING[id];return !!(g.hu||g.gw);}
@@ -52,7 +52,7 @@ function gramsOf(id,q){const g=ING[id];return g.hu?q:q*(g.gw||1);}
 function gUnit(id){return ING[id].u==='ml'?'ml':'g';}
 function fq(id,q){
   if(inGrams(id))return `${fmt(gramsOf(id,q),0)} ${gUnit(id)} de ${SN[id]}`;
-  const n=frac(q),pl=q>1.01;
+  const n=frac(q),pl=q4(q)>1;
   switch(id){
     case 'ovo': return `${n} ${pl?'ovos':'ovo'}`;
     case 'atum': case 'sardinha': return `${n} ${pl?'latas':'lata'} de ${SN[id]}`;
@@ -64,9 +64,10 @@ function fq(id,q){
     case 'paofr': return `${n} ${pl?'pães franceses':'pão francês'}`;
     case 'ameixa': return `${n} ${pl?'ameixas':'ameixa'}`;
     case 'laranja': case 'kiwi': case 'maca': return `${n} ${SN[id]}${pl?'s':''}`;
-    default:{const h=ING[id].hu;if(h){const m=q/h[2],u=ING[id].u==='ml'?'ml':'g',w=m>1.01?h[1]:h[0];
+    default:{const h=ING[id].hu;if(h){const m=q/h[2],u=ING[id].u==='ml'?'ml':'g',w=q4(m)>1?h[1]:h[0];
       /* "¾ tomate", não "¾ tomate de tomate" */
       const same=h[0].split(/[ -]/)[0]===SN[id].split(/[ -]/)[0];return `${frac(m)} ${w}${same?'':' de '+SN[id]} (${fmt(q,0)} ${u})`;}
+      if(ING[id].u==='un')return `${n} un de ${SN[id]}`;
       return `${fmt(q)} ${ING[id].u==='ml'?'ml':'g'} de ${SN[id]}`;}
   }
 }
@@ -82,8 +83,8 @@ function customOf(mid,who){
   if(!S.custom[mid][who]){const o={};MEALS[mid][who].forEach(i=>{o[i[0]]=i[1];});S.custom[mid][who]=o;}
   return S.custom[mid][who];
 }
-function isCustom(mid){const c=S.custom[mid];if(!c)return false;
-  return ['L','P'].some(w=>c[w]&&JSON.stringify(itemsOf(mid,w))!==JSON.stringify(MEALS[mid][w]));}
+function isCustomW(mid,w){const c=S.custom[mid];return !!(c&&c[w])&&JSON.stringify(itemsOf(mid,w))!==JSON.stringify(MEALS[mid][w]);}
+function isCustom(mid){return ['L','P'].some(w=>isCustomW(mid,w));}
 function pOf(id){
   if(id==='iogurte') return S.ref.iog/100;
   if(id==='whey') return S.ref.whey;
@@ -95,27 +96,43 @@ function nut(items){let p=0,k=0;for(const it of items){p+=pOf(it[0])*it[1];k+=IN
 const gOf=(id,q)=>gramsOf(id,q);
 function prGroups(mid,iL,iP){const P=PRONTO[mid];if(!P)return [];
   const now=[...new Set(iL.concat(iP).filter(i=>i[1]>0).map(i=>i[0]))],base=new Set(MEALS[mid].L.concat(MEALS[mid].P).map(i=>i[0])),out=[],used=new Set();
-  P.forEach((g,ix)=>{const ids=g.i.filter(id=>now.includes(id)&&!used.has(id)),gone=new Set(g.i.filter(id=>!now.includes(id)&&base.has(id)).map(id=>ING[id].cat));
-    ids.forEach(id=>used.add(id));
-    now.forEach(id=>{if(!base.has(id)&&!used.has(id)&&gone.has(ING[id].cat)&&ids.length){ids.push(id);used.add(id);}});
-    if(ids.length)out.push({g,ix,ids});});
+  P.forEach((g,ix)=>{const ids=[],sub={};
+    g.i.forEach(id=>{if(now.includes(id)){if(!used.has(id)){ids.push(id);used.add(id);}return;}
+      /* saiu: entra no lugar o substituto mais parecido (PAR) que não é da receita; se não há parecido, o da mesma categoria */
+      if(!base.has(id))return;const free=now.filter(x=>!base.has(x)&&!used.has(x)&&!P.some(o=>o.i.includes(x)));
+      const r=(PAR[id]||[]).find(x=>free.includes(x))||free.find(x=>ING[x].cat===ING[id].cat);
+      if(r){ids.push(r);used.add(r);sub[r]=id;}});
+    /* sem o ingrediente principal não há preparo (só azeite não é batata assada): os itens aparecem soltos */
+    const main=ids.find(x=>x===g.i[0]||sub[x]===g.i[0]);
+    if(!main||(main!==g.i[0]&&!g.rn)){ids.forEach(x=>used.delete(x));return;}
+    const n=main!==g.i[0]?g.rn(SN[main]):g.sem&&!ids.includes(g.sem[0])?g.sem[1]:g.n;
+    out.push({g,ix,ids,sub,n});});
   return out;}
-function prWeight(gr,its){const y=gr.g.y||{};return gr.ids.reduce((a,id)=>{const it=its.find(i=>i[0]===id);return a+(it?gOf(id,it[1])*(y[id]||1):0);},0);}
+function prWeight(gr,its){const y=gr.g.y||{};return gr.ids.reduce((a,id)=>{const it=its.find(i=>i[0]===id);return a+(it?gOf(id,it[1])*(y[(gr.sub||{})[id]||id]||1):0);},0);}
 /* quantidade pronta na unidade da linha: unidades (crepe) ou gramas/ml arredondados de 5 em 5 */
 function prUn(gr){return gr.g.un&&gr.ids.includes(gr.g.un[2])?gr.g.un:null;}
-function prQty(gr,its){const u=prUn(gr);if(u){const it=its.find(i=>i[0]===u[2]);return it?Math.round(it[1]/u[3]*4)/4:0;}return Math.round(prWeight(gr,its)/5)*5;}
-/* a mistura da panela: a da receita; se vocês trocaram algum ingrediente, a que está nos pratos */
-function prMix(mid,gr,iL,iP){const B=MEALS[mid],src=gr.ids.every(id=>B.L.concat(B.P).some(i=>i[0]===id))?B.L.concat(B.P):iL.concat(iP);
-  const tot={};gr.ids.forEach(id=>{tot[id]=src.filter(i=>i[0]===id).reduce((a,i)=>a+i[1],0);});
-  return tot;}
+function prRaw(gr,its){const u=prUn(gr);if(u){const it=its.find(i=>i[0]===u[2]);return it?it[1]/u[3]:0;}return prWeight(gr,its);}
+function prQty(gr,its){const v=prRaw(gr,its);return prUn(gr)?Math.round(v*4)/4:Math.round(v/5)*5;}
+/* a mistura da panela. fix:1 (purê, crepe, farofa…) segue sempre a proporção da receita, senão desanda; o resto é o que está nos dois pratos somado. */
+function prMix(mid,gr,iL,iP){const B=MEALS[mid].L.concat(MEALS[mid].P),sum=src=>{const t={};gr.ids.forEach(id=>{t[id]=src.filter(i=>i[0]===id).reduce((a,i)=>a+i[1],0);});return t;};
+  const inBase=gr.ids.every(id=>B.some(i=>i[0]===id)),now=sum(iL.concat(iP));
+  return inBase&&(gr.g.fix||!Object.values(now).some(v=>v>0))?sum(B):now;}
 /* ingredientes (na unidade de cada um) para ter `want` pronto: {id: quantidade} */
-function prFor(mid,gr,iL,iP,want){const tot=prMix(mid,gr,iL,iP),u=prUn(gr),all=Object.keys(tot).map(id=>[id,tot[id]]);
-  const one=u?tot[u[2]]/u[3]:prWeight(gr,all),o={};if(!(one>0))return o;
+function prFor(mid,gr,iL,iP,want){const tot=prMix(mid,gr,iL,iP),one=prRaw(gr,Object.keys(tot).map(id=>[id,tot[id]])),o={};if(!(one>0))return o;
   for(const id in tot)o[id]=tot[id]*want/one;return o;}
-function prAmt(gr,q){const u=prUn(gr),h=gr.g.hu;if(u)return {big:frac(q),small:q>1.01?u[1]:u[0]};
+/* O que vai de verdade em cada prato: de uma panela só, cada um leva a parte dele da mistura (o copo maior da vitamina leva mais whey). */
+function compose(mid,iL,iP){const out={L:iL.slice(),P:iP.slice()};
+  for(const gr of prGroups(mid,iL,iP)){if(gr.ids.length<2)continue;
+    for(const w of ['L','P']){const src=w==='L'?iL:iP,v=prRaw(gr,src);const m=v>0?prFor(mid,gr,iL,iP,v):{};
+      const at=out[w].findIndex(i=>gr.ids.includes(i[0]));if(at<0)continue;
+      const rest=out[w].filter(i=>!gr.ids.includes(i[0]));rest.splice(Math.min(at,rest.length),0,...gr.ids.filter(id=>m[id]>0).map(id=>[id,m[id]]));out[w]=rest;}}
+  return out;}
+function plateOf(mid,w){return compose(mid,itemsOf(mid,'L'),itemsOf(mid,'P'))[w];}
+function prAmt(gr,q){const u=prUn(gr),h=gr.g.hu;if(u)return {big:frac(q),small:q>1?u[1]:u[0]};
   if(gr.g.ml)return {big:fmt(q,0),small:'ml'};
   return {big:fmt(q,0),small:'g pronto'+(h&&q?` · ${frac(Math.max(.5,Math.round(q/h[2]*2)/2))} ${q/h[2]>1.25?h[1]:h[0]}`:'')};}
-function prTxt(gr,q){const u=prUn(gr);if(u)return `${frac(q)} ${q>1.01?u[1]:u[0]}`;const a=prAmt(gr,q);return gr.g.ml?`${a.big} ml de ${gr.g.n.toLowerCase()}`:`${a.big} g de ${gr.g.n.toLowerCase()}${a.small.slice(1).replace(' · ',' (').replace(/^ pronto( \(.*)?$/,(m,x)=>x?x+')':'')}`;}
+function prTxt(gr,q){const a=prAmt(gr,q),h=gr.g.hu;if(prUn(gr))return `${a.big} ${a.small}`;
+  return gr.g.ml?`${a.big} ml de ${gr.n.toLowerCase()}`:`${a.big} g de ${gr.n.toLowerCase()}${h?` (${a.small.split(' · ')[1]})`:''}`;}
 /* frango cru -> ~¾ depois de pronto */
 const FR_PRONTO=.75;
 /* linhas para mostrar: {gr} (preparo) ou {id} (ingrediente solto), na ordem da receita */
@@ -148,9 +165,13 @@ function slotsOf(day){
 /* Panela em dobro: um prato de panela (lote:1) que aparece em dois almoços/jantares seguidos é feito uma vez só.
    A primeira é 'cook' (faz em dobro), a segunda é 'sobra' (só esquentar). Segue as trocas: trocar uma das duas desfaz o par. */
 const REF=['almoco','jantar'];
-function loteMap(){const seq=[];for(const d of WEEK){const sl=slotsOf(d);for(const k of REF)if(sl[k])seq.push({d:d.d,k,mid:sl[k]});}
-  const m={};for(let i=0;i+1<seq.length;i++){const a=seq[i],b=seq[i+1],ka=a.d+'|'+a.k;if(m[ka])continue;
-    if(a.mid===b.mid&&MEALS[a.mid].lote){m[ka]={role:'cook',o:b};m[b.d+'|'+b.k]={role:'sobra',o:a};}}
+function loteMap(){const seq=[];for(let i=-3;i<10;i++){const d=dayFor(addDays(WEEK[0].d,i)),sl=slotsOf(d);for(const k of REF)if(sl[k])seq.push({d:d.d,k,mid:sl[k]});}
+  /* só é panela se a refeição teve mesmo o preparo principal (o jantar "só frango e cenoura" não deixa purê para amanhã) */
+  const pot=x=>{const d=dayFor(x.d);return !!PRONTO[x.mid]&&prGroups(x.mid,dayRaw(d,x.k,'L'),dayRaw(d,x.k,'P')).some(g=>g.ix===0);};
+  const m={};for(let i=0;i<seq.length;i++){const a=seq[i];if(!MEALS[a.mid].lote||!pot(a))continue;
+    /* todas as repetições seguidas até 2 dias depois saem da mesma panela */
+    const os=[];let j=i+1;while(j<seq.length&&seq[j].mid===a.mid&&seq[j].d<=addDays(a.d,2)&&pot(seq[j])){os.push(seq[j]);j++;}
+    if(os.length){m[a.d+'|'+a.k]={role:'cook',o:os[0],os};os.forEach(b=>{m[b.d+'|'+b.k]={role:'sobra',o:a};});i=j-1;}}
   return {m,seq};}
 function loteOf(d,k){return loteMap().m[d+'|'+k]||null;}
 /* A sobra é comprada junto com o dia em que a panela é feita. */
@@ -160,20 +181,25 @@ function cookDate(d,k){const l=loteOf(d,k);return l&&l.role==='sobra'?l.o.d:d;}
    Não ajusta se a ceia foi mexida à mão no editor, nem em dia parcial. */
 function ceiaInfo(day,who){
   const sl=slotsOf(day),mid=sl.ceia;
-  if(!mid||!sl.cafe||!sl.jantar||(S.custom[mid]&&S.custom[mid][who])||dayOver(day,'ceia',who))return {f:1,auto:false};
-  let others=0;for(const s of SLOTS){if(s[0]==='ceia')continue;const m=sl[s[0]];if(m)others+=nut(dayOver(day,s[0],who)||itemsOf(m,who)).p;}
+  if(!mid||!sl.cafe||!sl.jantar||MEALS[mid].user||isCustomW(mid,who)||dayOver(day,'ceia',who))return {f:1,auto:false};
+  /* já comida: fica a quantidade de quando foi marcada, extra registrado depois não muda */
+  const ck=S.checks[`${day.d}|ceia|${who}`];if(typeof ck==='number')return {f:ck,auto:true,gap:0,eaten:true};
+  let others=0;for(const s of SLOTS){if(s[0]==='ceia')continue;const m=sl[s[0]];if(m)others+=nut(dayItems(day,s[0],who)).p;}
   /* extras registrados no dia (ex.: 1 dose de whey a mais) também contam */
   const ex=S.extras[`${day.d}|${who}`]||{};for(const e of EXTRAS){const c=ex[e.id]||0;if(c)others+=nut(e.it).p*c;}
   const base=nut(itemsOf(mid,who)).p||1,gap=S.targets[who].p-others;
   return {f:gap<=3?0:Math.min(3,Math.max(.5,gap/base)),auto:true,gap};
 }
-function scaleItems(its,f){if(f===1)return its;if(f===0)return [];return its.map(([id,q])=>{const st=ING[id].st||1;return [id,Math.max(st,Math.round(q*f/st)*st)];});}
+function scaleItems(its,f,w){if(f===1)return its;if(f===0)return [];return its.map(([id,q])=>{const st=ING[id].st||1;let v=Math.max(st,Math.round(q*f/st)*st);
+  if(w==='P'&&ING[id].pri>0&&v>ING[id].pri)v=Math.max(q,Math.floor(ING[id].pri/st)*st);return [id,v];});}
 /* Ingredientes de uma refeição num dia, para uma pessoa (com ajustes do editor e a ceia completando o dia). */
 /* Mudança só de um dia ("não tinha ovo, comi queijo"): S.dayc['data|refeição'] = {mid, L:{item:qtd}, P:{…}}. Vale se a refeição do dia ainda é a mesma. */
 function dayOver(day,slot,who){const o=S.dayc[day.d+'|'+slot];if(!o||o.mid!==slotsOf(day)[slot]||!o[who])return null;
   const base=itemsOf(o.mid,who).map(i=>i[0]),pos=id=>{const i=base.indexOf(id);return i<0?100+ING_IDS.indexOf(id):i;};
   return Object.keys(o[who]).filter(id=>ING[id]&&o[who][id]>0).sort((a,b)=>pos(a)-pos(b)).map(id=>[id,o[who][id]]);}
-function dayItems(day,slot,who){const mid=slotsOf(day)[slot];if(!mid)return [];const ov=dayOver(day,slot,who);if(ov)return ov;const its=itemsOf(mid,who);return slot==='ceia'?scaleItems(its,ceiaInfo(day,who).f):its;}
+/* dayRaw = como está salvo (o editor mexe nele); dayItems = o que vai no prato, com a panela repartida (proteína, compras e despensa) */
+function dayRaw(day,slot,who){const mid=slotsOf(day)[slot];if(!mid)return [];const ov=dayOver(day,slot,who);if(ov)return ov;const its=itemsOf(mid,who);return slot==='ceia'?scaleItems(its,ceiaInfo(day,who).f,who):its;}
+function dayItems(day,slot,who){const mid=slotsOf(day)[slot];if(!mid)return [];return PRONTO[mid]?compose(mid,dayRaw(day,slot,'L'),dayRaw(day,slot,'P'))[who]:dayRaw(day,slot,who);}
 function dayStats(day,who){
   const plan={p:0,k:0},done={p:0,k:0};
   const sl=slotsOf(day);for(const s of SLOTS){const mid=sl[s[0]];if(!mid)continue;const n=nut(dayItems(day,s[0],who));plan.p+=n.p;plan.k+=n.k;
@@ -220,7 +246,8 @@ function needText(id,q){
 }
 const PANTRY_STATIC=[
   {id:'sal',n:'Sal'},{id:'pimenta',n:'Pimenta-do-reino'},{id:'paprica',n:'Páprica'},
-  {id:'oregano',n:'Orégano'},{id:'alho',n:'Alho (1 cabeça, só para o azeite aromatizado)'}];
+  {id:'oregano',n:'Orégano'},{id:'alho',n:'Alho (1 cabeça, só para o azeite aromatizado)'},
+  {id:'limao-t',n:'Limão (tempero)'},{id:'cheiro',n:'Cheiro-verde'},{id:'louro',n:'Louro'},{id:'canela',n:'Canela'},{id:'cafe',n:'Café'}];
 /* ===== DESPENSA E LISTA DE COMPRAS (mercado sem dia certo) =====
    S.casa[id]: quanto tem em casa, na unidade da receita (lata, g, un, ml; arroz e feijão em peso cozido).
    Só é controlado o que já entrou em casa: comprado na lista, "Já tenho" ou ajustado em Em casa. O resto o app não sabe e não avisa.
@@ -232,23 +259,38 @@ const addDays=(iso,n)=>{const d=new Date(iso+'T12:00:00');d.setDate(d.getDate()+
 function dayFor(iso){const w=WEEK.find(x=>x.d===iso);if(w)return w;const p=PLANO[new Date(iso+'T12:00:00').getDay()];return {d:iso,wd:p.wd,slots:p.slots};}
 function cartOf(id){let q=0;for(const k in S.shop){const c=S.shop[k];if(c&&typeof c==='object'&&c.id===id)q+=c.q||0;}return q;}
 const known=id=>!!S.have[id]||id in S.casa||cartOf(id)>0;
-function homeQ(id){return S.have[id]?Infinity:Math.max(0,(S.casa[id]||0)+cartOf(id));}
+/* S.eaten['data|refeição|pessoa'] = {item: quanto saiu de casa}: marcar não mexe em S.casa, então dois celulares marcando ao mesmo tempo não se atropelam
+   e desmarcar devolve exatamente o que saiu, mesmo que a refeição tenha mudado depois. */
+function eatenOf(id){let q=0;for(const k in S.eaten){const v=S.eaten[k]&&S.eaten[k][id];if(v>0)q+=v;}return q;}
+const netCasa=id=>(S.casa[id]||0)-eatenOf(id);
+function setHome(id,q){S.casa[id]=r3(Math.max(0,q)+eatenOf(id));}
+function homeQ(id){return S.have[id]?Infinity:Math.max(0,netCasa(id)+cartOf(id));}
 const r3=n=>Math.round(n*1000)/1000;
-function eatMove(key,on){const [d,k,w]=key.split('|');if(!w)return;
-  for(const [id,q] of dayItems(dayFor(d),k,w)){if(S.have[id]||!(id in S.casa||cartOf(id)>0))continue;
-    S.casa[id]=r3(Math.max(-cartOf(id),(S.casa[id]||0)+(on?-q:q)));}}
-function setCheck(key,on){on=!!on;if(!!S.checks[key]===on)return;S.checks[key]=on;eatMove(key,on);}
+function eatMove(key,on){const [d,k,w]=key.split('|');if(!w)return;delete S.eaten[key];if(!on)return;
+  const o={};for(const [id,q] of dayItems(dayFor(d),k,w)){if(S.have[id]||!(id in S.casa||cartOf(id)>0))continue;const t=r3(Math.min(q,homeQ(id)));if(t>0)o[id]=t;}
+  if(Object.keys(o).length)S.eaten[key]=o;}
+function setCheck(key,on){on=!!on;if(!!S.checks[key]===on)return;const [d,k,w]=key.split('|');let v=on;
+  if(on&&k==='ceia'&&w){const c=ceiaInfo(dayFor(d),w);if(c.auto&&c.f>0)v=r3(c.f)||true;}
+  S.checks[key]=v;eatMove(key,on);}
+/* a refeição já marcada mudou: refaz o que saiu de casa */
+function reEat(key){['L','P'].forEach(w=>{const k=key+'|'+w;if(S.checks[k])eatMove(k,true);});}
 /* carrinho -> casa */
 function stowCart(){let n=0;for(const k in S.shop){const c=S.shop[k];if(!c||typeof c!=='object')continue;n++;
-    if(c.id&&ING[c.id])S.casa[c.id]=r3(Math.max(0,(S.casa[c.id]||0)+c.q));
+    if(c.id&&ING[c.id]){const id=c.id;delete S.shop[k];setHome(id,Math.max(0,netCasa(id))+c.q);}
     if(k.indexOf('m-')===0&&S.manual.lista)delete S.manual.lista[k.slice(2)];}
   S.shop={};return n;}
 const dayWord=d=>d===HOJE?'hoje':d===addDays(HOJE,1)?'amanhã':(dayFor(d).wd||'').toLowerCase();
 const slotWord=k=>(SLOTS.find(s=>s[0]===k)||['',''])[1].split(' ')[0].toLowerCase();
 /* refeições que ainda não foram comidas, em ordem, de hoje até n dias */
-function upcoming(n){const out=[];
-  for(let i=0;i<n;i++){const day=dayFor(addDays(HOJE,i)),sl=slotsOf(day);
-    for(const [k] of SLOTS){if(!sl[k])continue;for(const w of ['L','P']){if(S.checks[`${day.d}|${k}|${w}`])continue;const its=dayItems(day,k,w);if(its.length)out.push({d:day.d,k,w,its});}}}
+function upcoming(n){const out=[],lm=loteMap().m,last=addDays(HOJE,n-1);
+  for(let i=0;i<n+2;i++){const day=dayFor(addDays(HOJE,i)),sl=slotsOf(day);
+    for(const [k] of SLOTS){if(!sl[k])continue;const lo=lm[`${day.d}|${k}`],sob=lo&&lo.role==='sobra'?lo.o:null;
+      if(i>=n&&!(sob&&sob.d<=last&&sob.d>=HOJE))continue;
+      const cooked=sob&&(sob.d<HOJE||S.checks[`${sob.d}|${sob.k}|L`]||S.checks[`${sob.d}|${sob.k}|P`]);
+      const pot=sob?new Set(prGroups(sl[k],dayRaw(day,k,'L'),dayRaw(day,k,'P')).flatMap(g=>g.ids)):null;
+      for(const w of ['L','P']){if(S.checks[`${day.d}|${k}|${w}`])continue;let its=dayItems(day,k,w);
+        if(pot&&cooked)its=its.filter(x=>!pot.has(x[0]));else if(i>=n)its=its.filter(x=>pot.has(x[0]));
+        if(its.length)out.push({d:day.d,k,w,its});}}}
   return out;}
 function needsAhead(n){const out={};
   for(const m of upcoming(n))for(const [id,q] of m.its){const o=out[id]||(out[id]={tot:0,uses:[]});o.tot+=q;
@@ -266,8 +308,8 @@ function runsOut(id,n){let left=homeQ(id);if(!isFinite(left))return null;
 const packsFor=(id,q)=>{const g=ING[id];return Math.max(1,Math.ceil(q*(g.f||1)/g.pack-1e-9));};
 function shopList(){
   const n=S.hz||3,nd=needsAhead(n),rows=[];let w=0;
-  for(const id in nd){const g=ING[id];if(!g||g.pantry||S.have[id])continue;
-    const c=S.shop[id];if(c&&typeof c==='object'){rows.push({id,done:true,packs:c.p||1,qty:(c.p||1)*g.pack,need:nd[id].tot,uses:nd[id].uses});continue;}
+  for(const id in nd){const g=ING[id];if(!g||g.pantry&&!known(id)||S.have[id])continue;
+    const c=S.shop[id];if(c&&typeof c==='object'){rows.push({id,done:true,packs:c.p||1,qty:(c.p||1)*g.pack,need:nd[id].tot,uses:nd[id].uses,more:Math.max(0,nd[id].tot-homeQ(id))});w+=(c.p||1)*g.pack*(g.wp||1);continue;}
     const home=homeQ(id),miss=nd[id].tot-home;if(miss<=1e-6)continue;
     const packs=packsFor(id,miss),wt=packs*g.pack*(g.wp||1);w+=wt;
     rows.push({id,packs,qty:packs*g.pack,need:nd[id].tot,home:known(id)?home:null,uses:nd[id].uses,wt});}
