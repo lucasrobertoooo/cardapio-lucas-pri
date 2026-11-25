@@ -31,7 +31,7 @@ function capPri(id,q){const g=ING[id],st=g.st||1;if(g.pri===0)return 0;return g.
 function recents(){try{return JSON.parse(localStorage.getItem('cardapio-recentes')||'[]').filter(id=>ING[id]);}catch(e){return [];}}
 function pushRecent(id){try{const r=recents().filter(x=>x!==id);r.unshift(id);localStorage.setItem('cardapio-recentes',JSON.stringify(r.slice(0,10)));}catch(e){}}
 
-function sheetOpen(o){if(o.mode==='edit')o.scope=o.key?'dia':'sempre';V.sheet=o;V.sheetIn=true;V.sw=o.sw||null;V.shq='';V.swq='';V.shcat='';V.newIng=null;V.shIn=null;
+function sheetOpen(o){if(o.mode==='edit')o.scope=o.key?'dia':'sempre';V.sheet=o;V.sheetIn=true;V.prOpen=null;V.sw=o.sw&&ING[o.sw]?o.sw:null;V.shq='';V.swq='';V.shcat='';V.newIng=null;V.shIn=null;
   try{history.pushState({sheet:1},'');}catch(e){}render(true);
   if(o.sw)setTimeout(()=>{const el=document.getElementById('er-'+o.sw);if(el)el.scrollIntoView({block:'center'});},30);}
 function sheetClose(fromPop){if(!V.sheet)return;V.sheet=null;V.newIng=null;
@@ -99,12 +99,25 @@ function sheetHtml(){
   if(sh.mode==='edit'&&!MEALS[sh.mid]){V.sheet=null;return '';}
   const iL=shItems(sh,'L'),iP=shItems(sh,'P'),nL=nut(iL),nP=nut(iP);
   const ids=[...new Set(iL.map(i=>i[0]).concat(iP.map(i=>i[0])))];
-  const rows=ids.map(id=>{const g=ING[id],qL=shQ(sh,'L',id),qP=shQ(sh,'P',id),open=V.sw===id;
+  const gs=sh.mode==='edit'?prGroups(sh.mid,iL,iP):[],inG=id=>gs.find(x=>x.ids.includes(id));
+  const erRow=id=>{const g=ING[id],qL=shQ(sh,'L',id),qP=shQ(sh,'P',id),open=V.sw===id;
     const warn=qP&&g.pri!=null&&qP>g.pri?`<span class="ed-warn">${g.pri===0?'A Pri evita (FODMAP)':'Acima do limite FODMAP da Pri'}</span>`:'';
     return `<div class="er${open?' open':''}" id="er-${id}"><div class="er-h"><b>${cap(SN[id]||g.n)}</b><span class="er-c">${CAT_N[g.cat]||''}</span>${warn}</div>
      <div class="er-q">${stepHtml(sh,'L',id,qL)}${stepHtml(sh,'P',id,qP)}</div>
      <div class="er-a"><button class="link" data-act="shsw" data-id="${id}" aria-expanded="${open}">${open?'Fechar troca':'Trocar por…'}</button>${unitBtn(id)}<button class="link danger" data-act="shrm" data-id="${id}">Tirar</button></div>
-     ${open?swapChips(sh,id,qL,qP):''}</div>`;}).join('');
+     ${open?swapChips(sh,id,qL,qP):''}</div>`;};
+  /* preparo de panela: uma linha só, pelo pronto; os ingredientes ficam recolhidos */
+  const prRow=gr=>{const k='pr'+gr.ix,open=V.prOpen===k||gr.ids.includes(V.sw),one=gr.ids.length===1;
+    const stp=(w,its)=>{const q=prQty(gr,its),a=prAmt(gr,q),key=`${w}|${k}`;
+      const v=V.shIn===key?`<input class="ed-in" type="text" inputmode="decimal" autocomplete="off" data-act="shprset" data-w="${w}" data-ix="${gr.ix}" value="${fmt(q,2)}" aria-label="Quantidade de ${gr.g.n} para ${WHO[w]}">`
+        :`<button class="ed-v" data-act="shtype" data-key="${key}" aria-label="Digitar ${gr.g.n} para ${WHO[w]}"><b>${q?a.big:'0'}</b><small>${q?a.small:'não come'}</small></button>`;
+      return `<div class="stp ${w}"><span class="stp-w">${WHO[w]}</span><button data-act="shpr" data-w="${w}" data-ix="${gr.ix}" data-d="-1" aria-label="Menos ${gr.g.n} para ${WHO[w]}"${q?'':' disabled'}>−</button>${v}<button data-act="shpr" data-w="${w}" data-ix="${gr.ix}" data-d="1" aria-label="Mais ${gr.g.n} para ${WHO[w]}">+</button></div>`;};
+    const w=gr.ids.filter(id=>ING[id].pri===0&&shQ(sh,'P',id)).map(id=>SN[id]);
+    return `<div class="er pr" id="er-${k}"><div class="er-h"><b>${gr.g.n}</b><span class="er-c">${prUn(gr)?'':gr.g.ml?'no copo':'pronto, no prato'}</span>${w.length?`<span class="ed-warn">A Pri evita (FODMAP): ${w.join(', ')}</span>`:''}</div>
+     <div class="er-q">${stp('L',iL)}${stp('P',iP)}</div>
+     <div class="er-a"><button class="link" data-act="shpropen" data-k="${k}" aria-expanded="${open}">${open?'Fechar ingredientes':one?`Trocar ${SN[gr.ids[0]]}`:'Ingredientes: '+gr.ids.map(id=>SN[id]).join(', ')}</button>${one&&!open?'':''}</div>
+     ${open?`<div class="pr-in">${gr.ids.map(erRow).join('')}</div>`:''}</div>`;};
+  const rows=sh.mode==='edit'?plateRows(sh.mid,iL,iP).map(({id,gr})=>gr?prRow(gr):erRow(id)).join(''):ids.map(erRow).join('');
   const mealN=sh.mode==='edit'?MEALS[sh.mid].n:'';
   const dd=sh.key?dayOf(sh.key.split('|')[0]):null,dn=dd?(dd.d===TODAY?'hoje':`${WD_FULL[dd.wd].toLowerCase()} ${+dd.d.slice(8)}`):'';
   const scope=sh.mode==='edit'&&dd?`<div class="seg" role="group" aria-label="Onde vale a mudança"><button data-act="shscope" data-s="dia" aria-pressed="${sh.scope==='dia'}">Só ${dn}</button><button data-act="shscope" data-s="sempre" aria-pressed="${sh.scope==='sempre'}">Todos os dias</button></div>
@@ -133,6 +146,9 @@ function shAct(a,t){const sh=V.sheet;if(!sh)return false;const d=t.dataset;
   switch(a){
     case 'shclose':sheetClose();return true;
     case 'shq':{const q=shQ(sh,d.w,d.id),st=stepOf(d.id);shSet(sh,d.w,d.id,Math.max(0,q+Number(d.d)*st));save();render(true);return true;}
+    case 'shpropen':if(V.prOpen===d.k||(V.sw&&prGroups(sh.mid,shItems(sh,'L'),shItems(sh,'P')).some(x=>'pr'+x.ix===d.k&&x.ids.includes(V.sw)))){V.prOpen=null;V.sw=null;}else V.prOpen=d.k;render(true);return true;
+    case 'shpr':{const gr=prGroups(sh.mid,shItems(sh,'L'),shItems(sh,'P')).find(x=>x.ix===+d.ix);if(!gr)return true;
+      const st=prUn(gr)?(gr.g.un[3]<1?1:.5):gr.g.ml?50:25;prSet(sh,d.w,gr,prQty(gr,shItems(sh,d.w))+Number(d.d)*st);save();render(true);return true;}
     case 'shtype':V.shIn=d.key;render(true);{const i=document.querySelector('.sheet .ed-in');if(i){i.focus();i.select();}}return true;
     case 'shsw':V.sw=V.sw===d.id?null:d.id;V.swq='';render(true);return true;
     case 'shscope':sh.scope=d.s;render(true);return true;
@@ -166,7 +182,12 @@ function shInput(t){
   if(t.dataset.act==='shq-in'){V.shq=t.value;V.newIng=null;const r=document.getElementById('sh-res');if(r&&V.sheet)r.innerHTML=resultsHtml(V.sheet);return true;}
   if(t.dataset.act==='shname'&&V.sheet&&V.sheet.mode==='build'){V.sheet.n=t.value;return true;}
   return false;}
+/* muda quanto do preparo vai no prato: escala os ingredientes pela mistura da panela */
+function prSet(sh,w,gr,want){want=Math.max(0,want);const iL=shItems(sh,'L'),iP=shItems(sh,'P'),o=prFor(sh.mid,gr,iL,iP,want);
+  for(const id of gr.ids){const g=ING[id],q=want?(o[id]||0):0;shSet(sh,w,id,g.u==='g'||g.u==='ml'||g.u==='g cozido'?Math.round(q*10)/10:q);}}
 function shChange(t){
+  if(t.dataset.act==='shprset'&&V.sheet){V.shIn=null;const sh=V.sheet,v=parseQty(t.value),gr=prGroups(sh.mid,shItems(sh,'L'),shItems(sh,'P')).find(x=>x.ix===+t.dataset.ix);
+    if(v!=null&&gr){prSet(sh,t.dataset.w,gr,v);save();}render(true);return true;}
   if(t.dataset.act!=='shset'||!V.sheet)return false;V.shIn=null;const d=t.dataset,g=ING[d.id],v=parseQty(t.value);
   if(v!=null){const q=inGrams(d.id)?(g.hu?v:v/(g.gw||1)):(g.hu?v*g.hu[2]:v);shSet(V.sheet,d.w,d.id,q);save();}
   render(true);return true;}

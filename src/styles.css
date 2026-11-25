@@ -324,6 +324,7 @@ body.sheet-open{overflow:hidden}
 .stp .ed-v{padding:2px 0;width:100%;height:auto;min-height:34px}.stp .ed-v small{font-size:10.5px;color:var(--ink2);text-align:center;hyphens:none;word-break:normal;overflow-wrap:normal;line-height:1.15}
 .stp .ed-in{width:100%;justify-self:center}
 .er-a{display:flex;gap:18px}
+.er.pr .er-a .link{text-align:left}.pr-in{display:flex;flex-direction:column;gap:8px;border-top:1px dashed var(--line);padding-top:10px}.pr-in .er{background:var(--surface2)}
 .sw-list{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .sw-ch{display:flex;flex-direction:column;gap:2px;text-align:left;border:1px solid var(--line);background:var(--surface2);border-radius:12px;padding:8px 10px;color:var(--ink);min-width:0}
 .sw-ch b{font-size:14px}.sw-ch .sub{font-size:11.5px}.sw-ch .L{color:var(--lucas)}.sw-ch .P{color:var(--pri)}

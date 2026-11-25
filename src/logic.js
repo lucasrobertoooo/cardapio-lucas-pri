@@ -90,6 +90,45 @@ function pOf(id){
   return ING[id].p;
 }
 function nut(items){let p=0,k=0;for(const it of items){p+=pOf(it[0])*it[1];k+=ING[it[0]].k*it[1];}return{p,k};}
+/* ===== PRONTO NO PRATO =====: agrupa os ingredientes de uma panela numa linha só (purê, crepe, molho), pelo peso pronto.
+   its = [itens do Lucas, itens da Pri]. Um item trocado entra no grupo no lugar do que saiu (morango pela banana da vitamina). */
+const gOf=(id,q)=>gramsOf(id,q);
+function prGroups(mid,iL,iP){const P=PRONTO[mid];if(!P)return [];
+  const now=[...new Set(iL.concat(iP).filter(i=>i[1]>0).map(i=>i[0]))],base=new Set(MEALS[mid].L.concat(MEALS[mid].P).map(i=>i[0])),out=[],used=new Set();
+  P.forEach((g,ix)=>{const ids=g.i.filter(id=>now.includes(id)&&!used.has(id)),gone=new Set(g.i.filter(id=>!now.includes(id)&&base.has(id)).map(id=>ING[id].cat));
+    ids.forEach(id=>used.add(id));
+    now.forEach(id=>{if(!base.has(id)&&!used.has(id)&&gone.has(ING[id].cat)&&ids.length){ids.push(id);used.add(id);}});
+    if(ids.length)out.push({g,ix,ids});});
+  return out;}
+function prWeight(gr,its){const y=gr.g.y||{};return gr.ids.reduce((a,id)=>{const it=its.find(i=>i[0]===id);return a+(it?gOf(id,it[1])*(y[id]||1):0);},0);}
+/* quantidade pronta na unidade da linha: unidades (crepe) ou gramas/ml arredondados de 5 em 5 */
+function prUn(gr){return gr.g.un&&gr.ids.includes(gr.g.un[2])?gr.g.un:null;}
+function prQty(gr,its){const u=prUn(gr);if(u){const it=its.find(i=>i[0]===u[2]);return it?Math.round(it[1]/u[3]*4)/4:0;}return Math.round(prWeight(gr,its)/5)*5;}
+/* a mistura da panela: a da receita; se vocês trocaram algum ingrediente, a que está nos pratos */
+function prMix(mid,gr,iL,iP){const B=MEALS[mid],src=gr.ids.every(id=>B.L.concat(B.P).some(i=>i[0]===id))?B.L.concat(B.P):iL.concat(iP);
+  const tot={};gr.ids.forEach(id=>{tot[id]=src.filter(i=>i[0]===id).reduce((a,i)=>a+i[1],0);});
+  return tot;}
+/* ingredientes (na unidade de cada um) para ter `want` pronto: {id: quantidade} */
+function prFor(mid,gr,iL,iP,want){const tot=prMix(mid,gr,iL,iP),u=prUn(gr),all=Object.keys(tot).map(id=>[id,tot[id]]);
+  const one=u?tot[u[2]]/u[3]:prWeight(gr,all),o={};if(!(one>0))return o;
+  for(const id in tot)o[id]=tot[id]*want/one;return o;}
+function prAmt(gr,q){const u=prUn(gr),h=gr.g.hu;if(u)return {big:frac(q),small:q>1.01?u[1]:u[0]};
+  if(gr.g.ml)return {big:fmt(q,0),small:'ml'};
+  return {big:fmt(q,0),small:'g pronto'+(h&&q?` · ${frac(Math.max(.5,Math.round(q/h[2]*2)/2))} ${q/h[2]>1.25?h[1]:h[0]}`:'')};}
+function prTxt(gr,q){const u=prUn(gr);if(u)return `${frac(q)} ${q>1.01?u[1]:u[0]}`;const a=prAmt(gr,q);return gr.g.ml?`${a.big} ml de ${gr.g.n.toLowerCase()}`:`${a.big} g de ${gr.g.n.toLowerCase()}${a.small.slice(1).replace(' · ',' (').replace(/^ pronto( \(.*)?$/,(m,x)=>x?x+')':'')}`;}
+/* frango cru -> ~¾ depois de pronto */
+const FR_PRONTO=.75;
+/* linhas para mostrar: {gr} (preparo) ou {id} (ingrediente solto), na ordem da receita */
+function plateRows(mid,iL,iP){const gs=prGroups(mid,iL,iP),seen=new Set(),out=[];
+  for(const id of [...new Set(iL.concat(iP).map(i=>i[0]))]){const gr=gs.find(x=>x.ids.includes(id));
+    if(!gr)out.push({id});else if(!seen.has(gr.ix)){seen.add(gr.ix);out.push({gr});}}
+  return out;}
+/* quantidade de panela, redonda: "1 kg de batata", "220 ml de leite sem lactose", "6 ovos" */
+function potQ(id,q){const g=ING[id],ml=g.u==='ml',w=g.u==='g'||g.u==='g cozido'||ml;
+  if(w&&(q>=150||!g.hu)){const r=q>=100?Math.round(q/10)*10:Math.max(5,Math.round(q/5)*5);return `${r>=1000?fmt(r/1000,1)+(ml?' L':' kg'):r+(ml?' ml':' g')} de ${SN[id]}`;}
+  if(w&&g.hu){const n=Math.max(.5,Math.round(q/g.hu[2]*2)/2);return fq(id,n*g.hu[2]);}
+  return fq(id,id==='ovo'?Math.max(1,Math.round(q)):Math.max(.5,Math.round(q*2)/2));}
+
 const EXTRAS=[
   {id:'whey',n:'1 dose de whey',it:[['whey',1]]},
   {id:'atum',n:'1 lata de atum',it:[['atum',1]]},

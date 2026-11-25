@@ -217,6 +217,33 @@ const MEALS = {
   L:[['arroz',100],['feijao',140],['frango',140],['farinha',30],['banana',.5],['ovo',1],['tomate',50],['azeite',.5]],
   P:[['arroz',75],['frango',100],['farinha',22.5],['banana',.5],['ovo',1],['tomate',50],['azeite',.5]]}
 };
+/* Preparos que se fazem de uma vez e se pesam PRONTOS no prato (o Lucas cobrou: ninguém mede batata e leite por pessoa).
+   n = nome na linha, i = ingredientes da panela, y = quanto cada um pesa pronto (1 = igual ao cru; macarrão incha, frango e legume perdem água),
+   un = quando se conta em vez de pesar: [singular, plural, ingrediente-base, quanto dele por unidade] (1 crepe = 1 ovo),
+   ml:1 = bebida (mostra em ml), anc = âncora da proporção da panela: [ingrediente, quantidade], hu = colher, para quem não quer balança.
+   Só muda como se mostra e se ajusta: o que fica salvo continua por ingrediente (compras, casa e proteína saem dele). */
+const PRONTO={
+ C2:[{n:'Mingau', i:['aveia','leite','banana'], y:{leite:.9}, anc:['aveia',100]}],
+ C3:[{n:'Panqueca', i:['ovo','aveia','banana'], un:['panqueca','panquecas','ovo',.5], anc:['ovo',6]}],
+ L1:[{n:'Vitamina', i:['leite','whey','banana','aveia'], ml:1, anc:['leite',500]}],
+ L2:[{n:'Batido', i:['iogurte','whey','morango','aveia'], ml:1, anc:['iogurte',500]}],
+ M1:[{n:'Macarrão cozido', i:['macarrao'], y:{macarrao:2.3}},
+     {n:'Molho com frango', i:['passata','frango','espinafre','azeite'], y:{passata:.85,frango:.75,espinafre:.6}, anc:['passata',500], hu:['concha','conchas',100]}],
+ M2:[{n:'Batata assada', i:['batata'], y:{batata:.75}},{n:'Salada', i:['tomate','pepino']}],
+ M3:[{n:'Batata e legumes assados', i:['batata','cenoura','abobrinha'], y:{batata:.75,cenoura:.8,abobrinha:.75}, anc:['batata',500]}],
+ M4:[{n:'Crepe', i:['ovo','aveia','espinafre'], un:['crepe','crepes','ovo',1], anc:['ovo',6]},{n:'Batata assada', i:['batata'], y:{batata:.75}}],
+ M5:[{n:'Purê', i:['batata','leite','azeite'], y:{batata:.95}, anc:['batata',1000], hu:['colher de servir','colheres de servir',50]},
+     {n:'Legumes cozidos', i:['cenoura','abobrinha'], y:{cenoura:.95,abobrinha:.9}}],
+ M6:[{n:'Salada morna', i:['batata','tomate','pepino','azeite','frango','ovo'], y:{batata:.95,frango:.75}, anc:['batata',1000]}],
+ M7:[{n:'Macarrão com abobrinha', i:['macarrao','abobrinha','tomate','azeite'], y:{macarrao:2.3,abobrinha:.75,tomate:.8}, anc:['macarrao',500]}],
+ M8:[{n:'Molho com espinafre', i:['passata','espinafre','azeite'], y:{passata:.85,espinafre:.6}, anc:['passata',500], hu:['concha','conchas',100]},{n:'Batata cozida', i:['batata'], y:{batata:.95}}],
+ M9:[{n:'Batata assada', i:['batata'], y:{batata:.75}}],
+ M10:[{n:'Maionese de batata', i:['batata','cenoura','ovo','maionese'], y:{batata:.95,cenoura:.95}, anc:['batata',1000], hu:['colher de servir','colheres de servir',50]}],
+ M11:[{n:'Salada', i:['alface','tomate','pepino','azeite']}],
+ M12:[{n:'Couve refogada', i:['couve','azeite'], y:{couve:.6}}],
+ M13:[{n:'Crepe', i:['ovo','aveia'], un:['crepe','crepes','ovo',1], anc:['ovo',6]},{n:'Batata assada', i:['batata'], y:{batata:.75}}],
+ M14:[{n:'Farofa', i:['farinha','banana','ovo','azeite'], y:{ovo:.9,banana:.85}, anc:['farinha',100], hu:['colher de servir','colheres de servir',40]}]
+};
 /* Pratos de panela (lote:1) seguidos no plano viram uma panela só: cozinha em dobro e a refeição seguinte é sobra (loteOf em logic.js). */
 /* Semana de domingo a sábado, calculada pela data de hoje: vira sozinha todo domingo.
    PLANO é o cardápio-modelo, igual toda semana; as trocas da aba Hoje valem por data. Pratos de panela em pares. */
