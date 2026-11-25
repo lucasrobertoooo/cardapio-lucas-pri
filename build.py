@@ -29,10 +29,12 @@ html=f'''<!doctype html>
 /* Atualização: o app abre do cache (funciona sem sinal) e, se houver versão nova publicada, recarrega sozinho uma vez. */
 if('serviceWorker' in navigator&&location.protocol!=='file:'){{
   const had=!!navigator.serviceWorker.controller;let reloaded=false;
-  navigator.serviceWorker.addEventListener('controllerchange',()=>{{if(had&&!reloaded){{reloaded=true;if(typeof saveNow==='function')saveNow();location.reload();}}}});
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{{if(had&&!reloaded){{reloaded=true;(function go(){{if(V.sheet||/^(INPUT|TEXTAREA|SELECT)$/.test((document.activeElement||{{}}).tagName))return setTimeout(go,2000);saveNow();location.reload();}})();}}}});
   navigator.serviceWorker.register('sw.js').then(reg=>{{
     reg.update().catch(()=>{{}});
-    document.addEventListener('visibilitychange',()=>{{if(document.visibilityState==='visible')reg.update().catch(()=>{{}});}});
+    let last=Date.now();const up=()=>{{if(Date.now()-last<30000)return;last=Date.now();reg.update().catch(()=>{{}});}};
+    document.addEventListener('visibilitychange',()=>{{if(document.visibilityState==='visible')up();}});
+    window.addEventListener('focus',up);window.addEventListener('online',up);setInterval(up,15*60000);
   }}).catch(()=>{{}});
 }}
 </script></body></html>

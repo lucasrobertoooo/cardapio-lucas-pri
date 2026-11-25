@@ -74,12 +74,14 @@ function resultsHtml(sh){
   /* some da lista só o que os dois já têm: se só um tem, o botão adiciona para o outro */
   const has=w=>new Set(shItems(sh,w).map(i=>i[0])),hL=has('L'),hP=has('P');let ids,head='';
   const q=singAll(norm(V.shq||''));
-  if(q){ids=ING_IDS.filter(id=>{const n=singAll(norm(ING[id].n+' '+(SN[id]||'')));return q.split(' ').every(w=>n.includes(w));});}
+  if(q)ids=ingFind(V.shq);
   else if(V.shcat)ids=ING_IDS.filter(id=>ING[id].cat===V.shcat);
   else{ids=recents();if(ids.length)head='<div class="sub res-h">Usados por último</div>';else ids=['ovo','iogurte','whey','banana','pao','aveia','cottage','amendoim','tapioca','mussarela'];}
+  /* na busca, o que já está no prato dos dois aparece marcado (toque leva até ele) em vez de sumir */
+  const on=q||V.shcat?ids.filter(id=>hL.has(id)&&hP.has(id)):[];
   ids=ids.filter(id=>!(hL.has(id)&&hP.has(id))).slice(0,24);
   const chips=ids.map(id=>{const fw=hP.has(id)?' para o Lucas':hL.has(id)?' para a Pri':'';
-    return `<button class="ch-add" data-act="shadd" data-id="${id}">+ ${cap(SN[id]||ING[id].n)}${fw}${ING[id].pri===0&&!hP.has(id)?' <small>(Pri evita)</small>':''}</button>`;}).join('');
+    return `<button class="ch-add" data-act="shadd" data-id="${id}">+ ${cap(SN[id]||ING[id].n)}${fw}${ING[id].pri===0&&!hP.has(id)?' <small>(Pri evita)</small>':''}</button>`;}).join('')+on.map(id=>`<button class="ch-add on" data-act="shgo" data-id="${id}">✓ ${cap(SN[id]||ING[id].n)} <small>já está no prato</small></button>`).join('');
   const exact=q&&ING_IDS.some(id=>singAll(norm(SN[id]||''))===q||singAll(norm(ING[id].n))===q);
   const nw=q&&!exact&&!chips?`<button class="ch-add new" data-act="shnew">+ Cadastrar “${esc(V.shq.trim())}”</button>`:'';
   return head+(chips||nw?`<div class="res-chips">${chips}${nw}</div>`:'<div class="sub">Nada encontrado.</div>');}
@@ -145,6 +147,7 @@ function shAct(a,t){const sh=V.sheet;if(!sh)return false;const d=t.dataset;
       const ev=shQ(sh,'P',to)&&ING[to].pri===0?` · a Pri costuma evitar ${SN[to]} (FODMAP)`:'';
       V.sw=null;V.swq='';pushRecent(to);save();render(true);toast(`Trocado${shDay(sh)?' só '+(sh.key.split('|')[0]===TODAY?'hoje':'neste dia'):''}: ${SN[from]} → ${SN[to]}${ev}`,un);return true;}
     case 'shadd':{const id=d.id;['L','P'].forEach(w=>{if(!shQ(sh,w,id))shSet(sh,w,id,addQty(id,w));});pushRecent(id);V.shq='';save();render(true);return true;}
+    case 'shgo':{const el=document.getElementById('er-'+d.id);if(el)el.scrollIntoView({block:'center'});return true;}
     case 'shcat':V.shcat=d.c;V.shq='';V.newIng=null;render(true);return true;
     case 'shnew':V.newIng={n:cap((V.shq||'').trim()),cat:V.shcat||'outro'};render(true);return true;
     case 'shnewx':V.newIng=null;render(true);return true;

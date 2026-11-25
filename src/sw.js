@@ -19,8 +19,9 @@ async function cacheFonts() {
   } catch (e) {}
 }
 
+// cache: 'reload' ignora a cópia do navegador: sem isso a versão nova podia guardar a página velha.
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(cacheFonts).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL.map(u => new Request(u, { cache: 'reload' })))).then(cacheFonts).then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', e => {
