@@ -219,7 +219,7 @@ const MEALS = {
  M14:{slot:'ref', n:'Arroz, feijão, frango e farofa de banana e ovo', t:20, junto:['farinha','banana','ovo','azeite'], jn:'Farofa',
   L:[['arroz',100],['feijao',140],['frango',140],['farinha',30],['banana',.5],['ovo',1],['tomate',50],['azeite',.5]],
   P:[['arroz',75],['frango',100],['farinha',22.5],['banana',.5],['ovo',1],['tomate',50],['azeite',.5]]},
- /* como eles fizeram em 26/11: 200 g de frango para os dois, panela única; arroz do lote e legumes ao lado */
+ /* como eles fizeram em 26/11: panela com 400 g de frango cru, 100 g no prato de cada um; arroz do lote e legumes ao lado */
  M15:{slot:'ref', lote:1, n:'Strogonoff de frango com arroz e legumes', t:25,
   L:[['frango',100],['creme',45],['passata',50],['mostarda',5],['azeite',.5],['arroz',150],['cenoura',90],['abobrinha',75]],
   P:[['frango',100],['creme',45],['passata',50],['mostarda',5],['azeite',.5],['arroz',100],['cenoura',90],['abobrinha',75]]}
@@ -249,7 +249,7 @@ const PRONTO={
  M11:[{n:'Salada', i:['alface','tomate','pepino','azeite']}],
  M12:[{n:'Couve refogada', i:['couve','azeite'], y:{couve:.6}}],
  M13:[{n:'Crepe', i:['ovo','aveia'], un:['crepe','crepes','ovo',1], anc:['ovo',6], fix:1},{n:'Batata assada', i:['batata','azeite'], y:{batata:.75}, rn:s=>cap(s)+' assada'}],
- M15:[{n:'Strogonoff', i:['frango','creme','passata','mostarda','azeite'], y:{frango:.75,passata:.85}, anc:['frango',500], hu:['concha','conchas',100], fix:1},
+ M15:[{n:'Strogonoff', i:['frango','creme','passata','mostarda','azeite'], y:{frango:.75,passata:.85}, anc:['frango',400], hu:['concha','conchas',100], fix:1},
       {n:'Legumes refogados', i:['cenoura','abobrinha'], y:{cenoura:.9,abobrinha:.8}}],
  M14:[{n:'Farofa', i:['farinha','banana','ovo','azeite'], y:{ovo:.9,banana:.85}, anc:['farinha',100], hu:['colher de servir','colheres de servir',40], fix:1}]
 };
