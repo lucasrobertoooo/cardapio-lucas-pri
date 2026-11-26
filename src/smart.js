@@ -9,7 +9,7 @@ const ALIAS={'peito de frango':'frango','sassami':'frango','file de frango':'fra
   'pao de forma':'pao','pao frances':'paofr','pao de sal':'paofr','muçarela':'mussarela','mucarela':'mussarela','mozarela':'mussarela','queijo mussarela':'mussarela',
   'batata doce':'batatadoce','aipim':'mandioca','macaxeira':'mandioca','tomate pelado':'passata','molho de tomate':'passata','passata':'passata',
   'pasta de amendoim':'amendoim','grao de bico':'grao','flocao':'cuscuz','goma':'tapioca','queijo minas':'minas','iogurte natural':'iogurte','leite zero lactose':'leite',
-  'whey protein':'whey','proteina de soja':'pts','soja texturizada':'pts','macarrao de arroz':'macarrao','ameixa':'ameixa','castanha do para':'castanha','queijo parmesao':'parmesao','queijo ralado':'parmesao','queijo coalho':'minas','queijo branco':'minas','achocolatado':'nescau','toddy':'nescau','leite':'leite','leite em po':'leitepo','leite po':'leitepo','ninho':'leitepo','requeijao cremoso':'requeijao','catupiry':'requeijao','ricota fresca':'ricota','farinha de mandioca':'farinha','farinha para farofa':'farinha','mandioca':'mandioca'};
+  'whey protein':'whey','proteina de soja':'pts','soja texturizada':'pts','macarrao de arroz':'macarrao','ameixa':'ameixa','castanha do para':'castanha','queijo parmesao':'parmesao','queijo ralado':'parmesao','queijo coalho':'minas','queijo branco':'minas','achocolatado':'nescau','toddy':'nescau','leite':'leite','leite em po':'leitepo','leite po':'leitepo','ninho':'leitepo','requeijao cremoso':'requeijao','catupiry':'requeijao','ricota fresca':'ricota','farinha de mandioca':'farinha','farinha para farofa':'farinha','creme de leite':'creme','creme de leite sem lactose':'creme','mostarda amarela':'mostarda','mandioca':'mandioca'};
 let MIDX=null;
 function ingIndex(){
   if(MIDX&&MIDX.n===ING_IDS.length)return MIDX;
@@ -40,7 +40,7 @@ function matchIng(name){
 const UNW={abobrinha:250,berinjela:300,abobora:1500,batata:150,batatadoce:200,cenoura:120,tomate:100,pepino:200,pimentao:150,mandioca:500,mamao:800,abacaxi:1500,alface:250,couve:200,brocolis:300};
 const NUMW={um:1,uma:1,dois:2,duas:2,tres:3,quatro:4,cinco:5,seis:6,sete:7,oito:8,dez:10,doze:12,meia:.5,meio:.5};
 const UNITW=[[/^(kg|kgs|quilos?|kilos?)$/,'kg'],[/^(g|gr|grs|gramas?)$/,'g'],[/^(l|lt|litros?)$/,'l'],[/^ml$/,'ml'],[/^(un|und|unid|unidades?)$/,'un'],
-  [/^duzias?$/,'dz'],[/^cartelas?$/,'ct'],[/^(pct|pcts|pacotes?|caixas?|cx|latas?|bandejas?|potes?|macos?|garrafas?|pencas?|cachos?|barras?|pecas?|sacos?|vidros?|saquinhos?|pes?)$/,'pk']];
+  [/^duzias?$/,'dz'],[/^cartelas?$/,'ct'],[/^(pct|pcts|pacotes?|caixas?|cx|latas?|bandejas?|potes?|macos?|garrafas?|pencas?|cachos?|barras?|pecas?|sacos?|vidros?|saquinhos?|caixinhas?|bisnagas?|pes?)$/,'pk']];
 /* corredor provável do que não é ingrediente do app */
 const KW=[['casa','detergente sabao amaciante desinfetante sanitaria esponja papel toalha higienico guardanapo lixo aluminio filme vassoura pano alcool multiuso lustra limpador'],
   ['hig','shampoo xampu condicionador sabonete dente dental escova desodorante absorvente fio algodao cotonete barbeador lamina hidratante protetor'],

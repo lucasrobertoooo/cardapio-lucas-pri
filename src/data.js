@@ -71,6 +71,8 @@ const ING = {
   requeijao:{n:'Requeijão cremoso', u:'g', p:.11, k:2.2, pack:200, pk:['copo','copos'], size:'200 g', aisle:'lat'},
   ricota:   {n:'Ricota fresca', u:'g', p:.126, k:1.4, pack:400, pk:['peça','peças'], size:'~400 g', aisle:'lat'},
   leitepo:  {n:'Leite em pó', u:'g', p:.25, k:4.9, pack:380, pk:['lata','latas'], size:'380 g', aisle:'merc'},
+  creme:    {n:'Creme de leite sem lactose (caixinha)', u:'g', p:.025, k:1.95, pack:200, pk:['caixinha','caixinhas'], size:'200 g', aisle:'lat'},
+  mostarda: {n:'Mostarda amarela (sem alho e cebola)', u:'g', p:.037, k:.6, pack:200, pk:['bisnaga','bisnagas'], size:'200 g', aisle:'merc'},
   farinha:  {n:'Farinha de mandioca', u:'g', p:.012, k:3.65, pack:500, pk:['pacote','pacotes'], size:'500 g', aisle:'merc'}
 };
 /* Editor de refeição: st = passo do + e −, hu = medida caseira [singular, plural, g ou ml por medida],
@@ -101,7 +103,8 @@ const ADJ = {
   tapioca:{st:20}, cuscuz:{st:10}, minas:{st:15, hu:['fatia','fatias',30], pri:40}, castanha:{st:4, hu:['castanha','castanhas',4], pri:40},
   chocolate:{st:5, hu:['quadradinho','quadradinhos',5], pri:30}, mel:{st:5, hu:['colher','colheres',10], pri:0},
   requeijao:{st:15, hu:['colher de sopa','colheres de sopa',30], pri:0}, ricota:{st:15, hu:['colher de sopa','colheres de sopa',30], pri:0},
-  leitepo:{st:6.5, hu:['colher de sopa','colheres de sopa',13], pri:0}, farinha:{st:7.5, hu:['colher de sopa','colheres de sopa',15]}, maca:{fp:1, st:.5, pri:0, gw:150}
+  leitepo:{st:6.5, hu:['colher de sopa','colheres de sopa',13], pri:0}, farinha:{st:7.5, hu:['colher de sopa','colheres de sopa',15]},
+  creme:{st:15, hu:['colher de sopa','colheres de sopa',15]}, mostarda:{st:2.5, hu:['colher de chá','colheres de chá',5]}, maca:{fp:1, st:.5, pri:0, gw:150}
 };
 for (const id in ADJ) Object.assign(ING[id], ADJ[id]);
 /* Categoria de cada ingrediente: a troca no editor oferece os da mesma categoria, convertidos pelo que importa nela
@@ -110,7 +113,7 @@ const CATS=[['prot','Proteína','p'],['lat','Laticínios e whey','p'],['carbo','
   ['leg','Legumes e verduras','g'],['gord','Gorduras e doces','k'],['outro','Outros','k']];
 const CAT_OF={prot:'frango ovo atum sardinha peixe camarao pts',lat:'iogurte leite cottage mussarela parmesao whey minas requeijao ricota leitepo',
   carbo:'pao paofr arroz macarrao aveia batata batatadoce mandioca quinoa tapioca cuscuz farinha',fruta:'banana morango mamao uva laranja kiwi abacaxi ameixa maca',
-  leg:'cenoura abobrinha pepino tomate espinafre abobora alface couve brocolis pimentao berinjela vagem',gord:'azeite amendoim maionese castanha chocolate mel nescau',outro:'passata feijao grao limao'};
+  leg:'cenoura abobrinha pepino tomate espinafre abobora alface couve brocolis pimentao berinjela vagem',gord:'azeite amendoim maionese castanha chocolate mel nescau creme',outro:'passata feijao grao limao mostarda'};
 for (const c in CAT_OF) CAT_OF[c].split(' ').forEach(id=>{ING[id].cat=c;});
 /* Substitutos de verdade, do mais parecido ao menos: aparecem primeiro na troca de um item.
    O resto da mesma categoria fica em "Ver mais" (ninguém troca pão de forma por arroz). */
@@ -122,14 +125,14 @@ const PAR=[
   'atum sardinha frango peixe ovo','sardinha atum frango peixe','ovo minas mussarela cottage frango atum iogurte','pts frango atum',
   'iogurte leite cottage','leite iogurte leitepo','leitepo leite iogurte','cottage requeijao ricota minas mussarela iogurte ovo','requeijao cottage ricota minas mussarela','ricota cottage requeijao minas','minas cottage mussarela','mussarela minas cottage parmesao',
   'parmesao mussarela minas','feijao grao',
-  'amendoim castanha','castanha amendoim','azeite','maionese azeite','mel chocolate nescau','chocolate mel castanha nescau','nescau chocolate mel',
+  'amendoim castanha','castanha amendoim','azeite','maionese azeite','creme maionese azeite','mel chocolate nescau','chocolate mel castanha nescau','nescau chocolate mel',
   'alface couve espinafre pepino tomate','couve espinafre alface brocolis','espinafre couve alface brocolis','tomate pepino cenoura pimentao',
   'pepino tomate cenoura alface','cenoura abobrinha abobora vagem brocolis','abobrinha berinjela abobora cenoura vagem','abobora abobrinha cenoura batatadoce',
   'brocolis vagem couve espinafre abobrinha','vagem brocolis abobrinha cenoura','berinjela abobrinha pimentao','pimentao tomate berinjela'
 ].reduce((o,l)=>{const [k,...r]=l.split(' ');o[k]=r;return o;},{});
 /* Porção típica de quem adiciona um ingrediente no editor (o Lucas; a Pri recebe ~⅔). Sem POR: 1 medida caseira, 1 porção de fruta, 100 g ou 1 unidade. */
 const POR={ovo:2,frango:120,peixe:150,camarao:120,macarrao:80,pts:30,azeite:.5,aveia:30,parmesao:10,cottage:40,mussarela:30,arroz:100,alface:30,passata:150,
-  tapioca:60,cuscuz:60,minas:30,castanha:8,chocolate:20,mel:10,tomate:50,nescau:20,requeijao:30,ricota:30,leitepo:26,farinha:30};
+  tapioca:60,cuscuz:60,minas:30,castanha:8,chocolate:20,mel:10,tomate:50,nescau:20,requeijao:30,ricota:30,leitepo:26,farinha:30,creme:45,mostarda:5};
 for (const id in POR) ING[id].por=POR[id];
 const MEALS = {
  C1:{slot:'cafe', n:'Pão com cottage e ovos mexidos, iogurte e fruta', t:8, junto:['ovo'], jn:'Ovos mexidos',
@@ -215,7 +218,11 @@ const MEALS = {
  /* a farofa é uma só, com ovo e banana; a Pri fica com ½ banana firme (FODMAP) e sem o feijão */
  M14:{slot:'ref', n:'Arroz, feijão, frango e farofa de banana e ovo', t:20, junto:['farinha','banana','ovo','azeite'], jn:'Farofa',
   L:[['arroz',100],['feijao',140],['frango',140],['farinha',30],['banana',.5],['ovo',1],['tomate',50],['azeite',.5]],
-  P:[['arroz',75],['frango',100],['farinha',22.5],['banana',.5],['ovo',1],['tomate',50],['azeite',.5]]}
+  P:[['arroz',75],['frango',100],['farinha',22.5],['banana',.5],['ovo',1],['tomate',50],['azeite',.5]]},
+ /* como eles fizeram em 26/11: 200 g de frango para os dois, panela única; arroz do lote e legumes ao lado */
+ M15:{slot:'ref', lote:1, n:'Strogonoff de frango com arroz e legumes', t:25,
+  L:[['frango',100],['creme',45],['passata',50],['mostarda',5],['azeite',.5],['arroz',150],['cenoura',90],['abobrinha',75]],
+  P:[['frango',100],['creme',45],['passata',50],['mostarda',5],['azeite',.5],['arroz',100],['cenoura',90],['abobrinha',75]]}
 };
 /* Preparos que se fazem de uma vez e se pesam PRONTOS no prato (o Lucas cobrou: ninguém mede batata e leite por pessoa).
    n = nome na linha, i = ingredientes da panela, y = quanto cada um pesa pronto (1 = igual ao cru; macarrão incha, frango e legume perdem água),
@@ -242,6 +249,8 @@ const PRONTO={
  M11:[{n:'Salada', i:['alface','tomate','pepino','azeite']}],
  M12:[{n:'Couve refogada', i:['couve','azeite'], y:{couve:.6}}],
  M13:[{n:'Crepe', i:['ovo','aveia'], un:['crepe','crepes','ovo',1], anc:['ovo',6], fix:1},{n:'Batata assada', i:['batata','azeite'], y:{batata:.75}, rn:s=>cap(s)+' assada'}],
+ M15:[{n:'Strogonoff', i:['frango','creme','passata','mostarda','azeite'], y:{frango:.75,passata:.85}, anc:['frango',500], hu:['concha','conchas',100], fix:1},
+      {n:'Legumes refogados', i:['cenoura','abobrinha'], y:{cenoura:.9,abobrinha:.8}}],
  M14:[{n:'Farofa', i:['farinha','banana','ovo','azeite'], y:{ovo:.9,banana:.85}, anc:['farinha',100], hu:['colher de servir','colheres de servir',40], fix:1}]
 };
 /* Sobra que se come fria (a maionese) ou que vai fria ou morna (a salada morna) */
